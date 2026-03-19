@@ -1,0 +1,86 @@
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { setMockLoggedIn } from "@/hooks/useUser";
+
+const ICON_TALK = "/assets/svg-ic-social-kakao.svg-20eca7d6-4d65-40b8-954f-17463d423b00.png";
+const ICON_FACEBOOK =
+  "/assets/svg-ic-share-facebook.svg-527221c9-1874-4fae-83ed-579ce7d4210b.png";
+
+export default function LoginPage() {
+  const router = useRouter();
+
+  const onGoogleLogin = () => {
+    setMockLoggedIn(true);
+    router.push("/");
+  };
+
+  return (
+    <main className="flex-1">
+      <section className="mx-auto w-full max-w-[430px] px-5 pt-10">
+        <h1 className="text-center text-[26px] font-semibold leading-[36px]">
+          로그인을 통해
+          <br />
+          당신의 별을 더 오래 기억해요.
+        </h1>
+
+        <p className="mt-4 text-center text-[14px] leading-[22px] text-neutral-60">
+          로그인하면 결과 저장과 맞춤 힌트를 이어서 받을 수 있어요.
+        </p>
+
+        <div className="mt-8 flex flex-col gap-4">
+          <button
+            type="button"
+            onClick={onGoogleLogin}
+            className="flex h-14 w-full items-center justify-center gap-3 rounded-xl bg-neutral-10 text-[16px] font-semibold text-neutral-90"
+          >
+            <span className="grid h-8 w-8 place-items-center rounded-full bg-[#ffffff] text-[18px] font-bold">
+              G
+            </span>
+            구글 로그인
+          </button>
+
+          <button
+            type="button"
+            className="flex h-14 w-full items-center justify-center gap-3 rounded-xl bg-accent text-[16px] font-semibold text-neutral-90"
+          >
+            <Image src={ICON_TALK} alt="" width={26} height={26} />
+            카카오톡 로그인
+          </button>
+
+          <button
+            type="button"
+            className="flex h-14 w-full items-center justify-center gap-3 rounded-xl bg-[#3b72ff] text-[16px] font-semibold text-neutral-10"
+          >
+            <Image src={ICON_FACEBOOK} alt="" width={26} height={26} />
+            페이스북 로그인
+          </button>
+        </div>
+
+        <div className="mt-10 flex flex-col items-center gap-2">
+          <span className="text-[22px]">🔔</span>
+          <p className="text-center text-[13px] leading-[20px] text-neutral-60">
+            가입을 완료하면 모모피의 이용약관과 개인정보처리방침에
+            <br />
+            동의하게 됩니다.
+          </p>
+        </div>
+
+        <div className="mt-10 text-center text-[12px] text-neutral-60">
+          로그인은 화면 구현 단계에서는 동작하지 않습니다.
+          <br />
+          (다음 단계에서 기능 연결)
+        </div>
+
+        <div className="mt-6 text-center text-[13px]">
+          <Link href="/" className="text-primary">
+            메인으로 돌아가기
+          </Link>
+        </div>
+      </section>
+    </main>
+  );
+}
+
