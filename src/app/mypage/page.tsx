@@ -1,13 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { setMockLoggedIn } from "@/hooks/useUser";
+import { useUser } from "@/hooks/useUser";
 
 export default function MyPage() {
   const router = useRouter();
+  const { logout } = useUser();
 
-  const onLogout = () => {
-    setMockLoggedIn(false);
+  const onLogout = async () => {
+    await logout();
     router.push("/");
   };
 

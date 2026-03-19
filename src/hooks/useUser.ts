@@ -1,48 +1,75 @@
 "use client";
 
 import React from "react";
+import type { Provider, User } from "@supabase/supabase-js";
+import { getSupabaseClient } from "@/lib/supabase";
 
-const MOCK_AUTH_KEY = "yourtarot_mock_auth";
+export type OAuthProvider = "google" | "kakao" | "facebook";
 
-type MockUser = {
-  id: string;
-  name: string;
+const PROVIDER_MAP: Record<OAuthProvider, Provider> = {
+  google: "google",
+  kakao: "kakao",
+  facebook: "facebook",
 };
 
-function readMockUser(): MockUser | null {
-  if (typeof window === "undefined") return null;
-  const raw = window.localStorage.getItem(MOCK_AUTH_KEY);
-  if (raw !== "1") return null;
-  return { id: "mock-user", name: "Mock User" };
-}
-
-export function setMockLoggedIn(next: boolean) {
-  if (typeof window === "undefined") return;
-  if (next) {
-    window.localStorage.setItem(MOCK_AUTH_KEY, "1");
-  } else {
-    window.localStorage.removeItem(MOCK_AUTH_KEY);
-  }
-  window.dispatchEvent(new Event("mock-auth-changed"));
-}
-
 export function useUser() {
-  const [user, setUser] = React.useState<MockUser | null>(() => readMockUser());
+  const [user, setUser] = React.useState<User | null>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [authReady, setAuthReady] = React.useState(false);
 
   React.useEffect(() => {
-    const sync = () => setUser(readMockUser());
-    window.addEventListener("storage", sync);
-    window.addEventListener("mock-auth-changed", sync);
-    return () => {
-      window.removeEventListener("storage", sync);
-      window.removeEventListener("mock-auth-changed", sync);
-    };
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      setLoading(false);
+      setAuthReady(false);
+      return;
+    }
+
+    setAuthReady(true);
+
+    supabase.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user ?? null);
+      setLoading(false);
+    });
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => authListener.subscription.unsubscribe();
   }, []);
+
+  const loginWithProvider = async (provider: OAuthProvider) => {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      throw new Error("Supabase 환경변수가 설정되지 않았습니다.");
+    }
+
+    const redirectTo =
+      typeof window !== "undefined" ? `${window.location.origin}/` : undefined;
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: PROVIDER_MAP[provider],
+      options: { redirectTo },
+    });
+
+    if (error) {
+      throw error;
+    }
+  };
+
+  const logout = async () => {
+    const supabase = getSupabaseClient();
+    if (!supabase) return;
+    await supabase.auth.signOut();
+  };
 
   return {
     user,
-    loading: false,
-    loginMock: () => setMockLoggedIn(true),
-    logoutMock: () => setMockLoggedIn(false),
+    loading,
+    authReady,
+    loginWithProvider,
+    logout,
   };
 }
