@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function MenuPage() {
   return (
     <main className="flex-1">
-      <section className="mx-auto w-full max-w-[430px] px-0 pt-6">
+      <section className="mx-auto w-full max-w-[390px] px-0 pt-6">
         <div className="mx-4 rounded-2xl bg-neutral-10 px-6 py-10 text-neutral-90">
           <div className="flex items-center gap-3">
             <div className="grid h-7 w-7 place-items-center rounded-full bg-[rgba(111,66,193,0.12)]">

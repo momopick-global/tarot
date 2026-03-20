@@ -51,8 +51,8 @@ export default function Page06Analyzing() {
           </div>
         </div>
       </FlowScene>
-      <div className="mx-auto h-2 w-full max-w-[430px]" />
-      <div className="mx-auto w-full max-w-[430px] px-4">
+      <div className="mx-auto h-2 w-full max-w-[390px]" />
+      <div className="mx-auto w-full max-w-[390px] px-4">
         <Link
           href={`/page_07_reading-result_typea?master=${master}&card=${card}`}
           className="block rounded-xl bg-[#6422AB] px-4 py-3 text-center text-sm font-semibold text-white"

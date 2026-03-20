@@ -46,7 +46,7 @@ export default function Page07ReadingResultTypeA({
         </div>
       </FlowScene>
 
-      <section className="mx-auto w-full max-w-[430px] px-4 pt-5">
+      <section className="mx-auto w-full max-w-[390px] px-4 pt-5">
         <div className="space-y-3 rounded-xl border border-primary/50 bg-[rgba(11,10,32,0.75)] p-4 text-[13px] leading-[1.55] text-white">
           <p>🔮 운세 요약: {result.summary}</p>
           <p>💘 애정: {result.love}</p>
@@ -86,7 +86,7 @@ export default function Page07ReadingResultTypeA({
         </div>
       </section>
 
-      <div className="mx-auto w-full max-w-[430px] px-4 pb-6 pt-6">
+      <div className="mx-auto w-full max-w-[390px] px-4 pb-6 pt-6">
         <Link
           href={`/page_01_masters_list_1?from=${card}`}
           className="block rounded-xl border border-primary bg-[rgba(16,12,44,0.95)] px-4 py-3 text-center text-sm font-semibold text-[#d8ccff]"

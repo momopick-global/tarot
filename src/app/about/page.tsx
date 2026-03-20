@@ -6,7 +6,7 @@ const ICON_EYE = "/assets/svg-logo-yourtarot.svg-699577b6-cedf-4beb-8082-e9fc60a
 export default function AboutPage() {
   return (
     <main className="flex-1">
-      <section className="mx-auto w-full max-w-[430px] px-5 pt-8 pb-4">
+      <section className="mx-auto w-full max-w-[390px] px-5 pt-8 pb-4">
         <div className="mt-4 flex flex-col items-center gap-3">
           <div className="relative h-36 w-36">
             <div className="absolute inset-0 rounded-full border border-accent/60" />

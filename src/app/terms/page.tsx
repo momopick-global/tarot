@@ -89,7 +89,7 @@ const MARKDOWN = `# 이용약관
 export default function TermsPage() {
   return (
     <main className="flex-1">
-      <section className="mx-auto w-full max-w-[430px] px-5 pt-6 pb-6">
+      <section className="mx-auto w-full max-w-[390px] px-5 pt-6 pb-6">
         <MarkdownArticle markdown={MARKDOWN} />
       </section>
     </main>

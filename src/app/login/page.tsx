@@ -23,7 +23,7 @@ export default function LoginPage() {
 
   return (
     <main className="flex-1">
-      <section className="mx-auto w-full max-w-[430px] px-5 pt-10">
+      <section className="mx-auto w-full max-w-[390px] px-5 pt-10">
         <h1 className="text-center text-[26px] font-semibold leading-[36px]">
           로그인을 통해
           <br />

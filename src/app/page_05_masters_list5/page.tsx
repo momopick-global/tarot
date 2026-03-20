@@ -71,8 +71,8 @@ export default function Page05MastersList5() {
           </Link>
         </div>
       </FlowScene>
-      <div className="mx-auto h-2 w-full max-w-[430px]" />
-      <div className="mx-auto w-full max-w-[430px] px-4 pb-2">
+      <div className="mx-auto h-2 w-full max-w-[390px]" />
+      <div className="mx-auto w-full max-w-[390px] px-4 pb-2">
         <Link
           href={`/page_06_analyzing?master=${current.id}&card=${card}`}
           className="block min-h-[48px] rounded-xl border border-primary bg-[rgba(12,10,36,0.92)] px-4 py-3 text-center text-sm font-semibold text-[#d8ccff]"

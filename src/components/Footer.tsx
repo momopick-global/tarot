@@ -8,34 +8,34 @@ const ICON_TALK = "/assets/svg-ic-social-kakao.svg-20eca7d6-4d65-40b8-954f-17463
 
 export function Footer() {
   return (
-    <footer className="w-full bg-[#17182E] pb-10 pt-10">
+    <footer className="mx-auto w-full max-w-[390px] bg-[#17182E] pb-5 pt-0">
       <div className="flex flex-col items-center gap-6">
-        <Image src={ICON_EYE} alt="" width={22} height={22} />
+        <Image src={ICON_EYE} alt="" width={37} height={28} />
 
-        <div className="w-[86%] border-t border-neutral-30" />
+        <div className="w-[86%] border-t border-[#666666]" />
 
         <nav
           aria-label="푸터 링크"
           className="flex flex-wrap items-center justify-center gap-2 text-center text-[13px] text-neutral-60"
         >
-          <Link className="hover:text-neutral-10" href="/terms">
+          <Link className="text-[16px] text-white hover:text-neutral-10" href="/terms">
             이용약관
           </Link>
-          <span className="text-neutral-30">|</span>
-          <Link className="hover:text-neutral-10" href="/personal">
+          <span className="text-[#666666]">|</span>
+          <Link className="text-[16px] text-white hover:text-neutral-10" href="/personal">
             개인정보처리방침
           </Link>
-          <span className="text-neutral-30">|</span>
-          <Link className="hover:text-neutral-10" href="/disclaimer">
+          <span className="text-[#666666]">|</span>
+          <Link className="text-[16px] text-white hover:text-neutral-10" href="/disclaimer">
             면책조항
           </Link>
-          <span className="text-neutral-30">|</span>
-          <Link className="hover:text-neutral-10" href="/partner">
+          <span className="text-[#666666]">|</span>
+          <Link className="text-[16px] text-white hover:text-neutral-10" href="/partner">
             제휴문의
           </Link>
         </nav>
 
-        <div className="w-[86%] border-t border-neutral-30 pt-4" />
+        <div className="w-[86%] border-t border-[#666666] pt-4" />
 
         <div className="w-[86%] text-left text-[11px] leading-[18px] text-neutral-60">
           <div>ASOG Co., Ltd. | CEO: jungyoungcheol</div>

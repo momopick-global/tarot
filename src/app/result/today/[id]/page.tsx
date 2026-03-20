@@ -19,7 +19,7 @@ export default function ResultTodayPage({
 
   return (
     <main className="flex-1">
-      <section className="mx-auto w-full max-w-[430px] px-5 pt-10 pb-6">
+      <section className="mx-auto w-full max-w-[390px] px-5 pt-10 pb-6">
         <h1 className="text-[18px] font-semibold">오늘의 결과</h1>
         <p className="mt-4 text-[14px] leading-[22px] text-neutral-60">
           (데모 화면) 카드와 마스터 선택 결과가 여기에 표시됩니다.

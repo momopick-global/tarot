@@ -3,7 +3,7 @@ export type Master = {
   name: string;
   type: string;
   desc: string;
-  image: string | null;
+  image: string;
   profileTitle: string;
   profileSummary: string;
   specialty: string;
@@ -16,7 +16,7 @@ export const FLOW_MASTERS: Master[] = [
     name: "카시안",
     type: "분석형",
     desc: "별의 움직임과 타로를 함께 분석하는 논리적 리더",
-    image: "/assets/master_01_Cassian_thum-4f10f821-c817-4965-8914-064d2df141f8.png",
+    image: "/assets/master_01_thumb.png",
     profileTitle: "천문학자 / 분석형",
     profileSummary: "냉철한 분석과 논리적인 설명으로 복잡한 선택지를 또렷하게 정리합니다.",
     specialty: "커리어, 진로, 관계의 균형",
@@ -27,7 +27,7 @@ export const FLOW_MASTERS: Master[] = [
     name: "카이언",
     type: "상담형",
     desc: "현실 공감과 따뜻한 말로 방향을 제시하는 조언가",
-    image: "/assets/master_02_Aiden__thum-157fb7f3-0bbf-4bec-a633-5ce0db9fedd0.png",
+    image: "/assets/master_02_thumb.png",
     profileTitle: "상담가 / 공감형",
     profileSummary: "감정을 세심하게 듣고, 지금 당장 실천 가능한 조언을 전합니다.",
     specialty: "관계 회복, 자존감, 일상 루틴",
@@ -38,7 +38,7 @@ export const FLOW_MASTERS: Master[] = [
     name: "모르가나",
     type: "직설형",
     desc: "강한 추진력과 결단을 돕는 직관형",
-    image: null,
+    image: "/assets/master_03_thumb.png",
     profileTitle: "전략가 / 직설형",
     profileSummary: "핵심만 빠르게 짚어 결단을 돕는 스타일입니다.",
     specialty: "결정, 전환, 우선순위",
@@ -49,7 +49,7 @@ export const FLOW_MASTERS: Master[] = [
     name: "노아",
     type: "구원형",
     desc: "정서 회복을 중심으로 위로를 건네는 치유형",
-    image: null,
+    image: "/assets/master_04_thumb.png",
     profileTitle: "치유자 / 구원형",
     profileSummary: "불안한 마음을 안정시키고 회복 포인트를 제시합니다.",
     specialty: "정서 회복, 관계 안정",
@@ -60,7 +60,7 @@ export const FLOW_MASTERS: Master[] = [
     name: "에레비스",
     type: "현실형",
     desc: "현실적인 액션 플랜을 제시하는 전략형",
-    image: null,
+    image: "/assets/master_05_thumb.png",
     profileTitle: "실행가 / 현실형",
     profileSummary: "현실적 제약을 고려해 가능한 행동 계획을 만듭니다.",
     specialty: "업무, 프로젝트, 재정 계획",
@@ -71,7 +71,7 @@ export const FLOW_MASTERS: Master[] = [
     name: "세리나",
     type: "행운형",
     desc: "밝은 흐름과 타이밍 포인트를 잡는 낙관형",
-    image: null,
+    image: "/assets/master_06_thumb.png",
     profileTitle: "인도자 / 행운형",
     profileSummary: "긍정적 흐름을 읽고 좋은 타이밍을 안내합니다.",
     specialty: "기회 포착, 대인운",
@@ -82,7 +82,7 @@ export const FLOW_MASTERS: Master[] = [
     name: "닉스",
     type: "초월형",
     desc: "깊은 내면과 영감을 읽는 신비형",
-    image: null,
+    image: "/assets/master_07_thumb.png",
     profileTitle: "신비가 / 초월형",
     profileSummary: "내면의 그림자를 해석해 직관적 통찰을 이끕니다.",
     specialty: "자아 탐색, 감정 해석",
@@ -93,7 +93,7 @@ export const FLOW_MASTERS: Master[] = [
     name: "클로토",
     type: "시형",
     desc: "감성적인 문장과 상징으로 해석하는 서정형",
-    image: null,
+    image: "/assets/master_08_thumb.png",
     profileTitle: "시인 / 서정형",
     profileSummary: "상징과 이야기로 감정을 부드럽게 해석합니다.",
     specialty: "감성 회복, 관계 메시지",
@@ -104,7 +104,7 @@ export const FLOW_MASTERS: Master[] = [
     name: "피피",
     type: "감성형",
     desc: "감정의 결을 섬세하게 짚어주는 공감형",
-    image: null,
+    image: "/assets/master_09_thumb.png",
     profileTitle: "공감자 / 감성형",
     profileSummary: "작은 감정 변화까지 세밀하게 읽어 위로를 전합니다.",
     specialty: "감정 정리, 관계 대화",

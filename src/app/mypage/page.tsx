@@ -14,7 +14,7 @@ export default function MyPage() {
 
   return (
     <main className="flex-1">
-      <section className="mx-auto w-full max-w-[430px] px-5 pt-14">
+      <section className="mx-auto w-full max-w-[390px] px-5 pt-14">
         <div className="flex flex-col items-center gap-4">
           <div className="grid h-24 w-24 place-items-center rounded-full bg-[radial-gradient(circle_at_30%_30%,#b79cff_0%,#6f42c1_60%,#2b173f_100%)] text-[34px]">
             🦄

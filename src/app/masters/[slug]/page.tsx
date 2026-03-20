@@ -28,7 +28,7 @@ export default function MasterDetailPage({
 
   return (
     <main className="flex-1">
-      <section className="mx-auto w-full max-w-[430px] px-5 pt-8 pb-6">
+      <section className="mx-auto w-full max-w-[390px] px-5 pt-8 pb-6">
         <div className="flex items-center justify-between">
           <h1 className="text-[18px] font-semibold">마스터 상세</h1>
           <Link href="/masters" className="text-[14px] text-primary">

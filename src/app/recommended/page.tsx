@@ -6,7 +6,7 @@ const ICON_EYE = "/assets/svg-logo-yourtarot.svg-699577b6-cedf-4beb-8082-e9fc60a
 export default function RecommendedPage() {
   return (
     <main className="flex-1">
-      <section className="mx-auto w-full max-w-[430px] px-5 pt-8">
+      <section className="mx-auto w-full max-w-[390px] px-5 pt-8">
         <h1 className="flex items-center gap-2 text-[16px] font-semibold">
           💡 작은 아이디어라도 큰 힘이 됩니다
         </h1>

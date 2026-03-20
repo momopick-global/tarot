@@ -20,7 +20,7 @@ export default function PageMasterProfile01({
 
   return (
     <main className="w-full">
-      <FlowScene backHref="/page_02_masters_list_2">
+      <FlowScene backHref="/page_01_masters_list_1">
         <div className="mt-2 flex justify-center">
           <Image src={profileSrc} alt={current.name} width={170} height={170} className="rounded-xl" />
         </div>
@@ -47,7 +47,7 @@ export default function PageMasterProfile01({
         </div>
       </FlowScene>
 
-      <div className="mx-auto w-full max-w-[430px] px-4 py-6">
+      <div className="mx-auto w-full max-w-[390px] px-4 py-6">
         <Link
           href={`/page_03_card-selection_1?master=${current.id}`}
           className="block rounded-xl bg-[#6422AB] px-4 py-3 text-center text-sm font-semibold text-white"

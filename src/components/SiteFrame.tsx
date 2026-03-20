@@ -16,8 +16,6 @@ export function SiteFrame({
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const hideHeaderOn = [
-    "/page_01_masters_list_1",
-    "/page_02_masters_list_2",
     "/page_03_card-selection_1",
     "/page_04_card-selection_2",
     "/page_05_masters_list5",
@@ -25,7 +23,8 @@ export function SiteFrame({
     "/page_07_reading-result_typea",
     "/page-master-profile_01",
   ];
-  const shouldHideHeader = hideHeaderOn.includes(pathname ?? "");
+  const normalizedPathname = (pathname ?? "").replace(/\/+$/, "") || "/";
+  const shouldHideHeader = hideHeaderOn.includes(normalizedPathname);
   const closeMenu = () => setIsMenuOpen(false);
 
   React.useEffect(() => {

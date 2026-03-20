@@ -18,8 +18,8 @@ export function Header({
   const isLoggedIn = Boolean(user);
 
   return (
-    <header className="w-full bg-[#17182E]">
-      <div className="mx-auto flex h-[42px] w-full max-w-[430px] items-center justify-between px-6">
+    <header className="mx-auto w-full max-w-[390px] bg-[#17182E]">
+      <div className="flex h-[42px] w-full items-center justify-between px-0">
         <button
           type="button"
           onClick={onMenuClick}
