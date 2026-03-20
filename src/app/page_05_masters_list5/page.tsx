@@ -2,14 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FlowScene } from "@/components/FlowScene";
 import { FLOW_MASTERS } from "@/lib/flowData";
 import { useMemo, useState } from "react";
 
-const MASTER = "/assets/master_01_Cassian_thum-4f10f821-c817-4965-8914-064d2df141f8.png";
-const MASTER_2 = "/assets/master_02_Aiden__thum-157fb7f3-0bbf-4bec-a633-5ce0db9fedd0.png";
+const CARD_BACK = "/assets/card-back-page04.png";
 
 export default function Page05MastersList5() {
+  const router = useRouter();
   const [masterId] = useState(() => {
     if (typeof window === "undefined") return "cassian";
     return new URL(window.location.href).searchParams.get("master") ?? "cassian";
@@ -18,51 +19,58 @@ export default function Page05MastersList5() {
     if (typeof window === "undefined") return "40";
     return new URL(window.location.href).searchParams.get("card") ?? "40";
   });
-  const [opened, setOpened] = useState(false);
+  const [isOpening, setIsOpening] = useState(false);
   const current = useMemo(
     () => FLOW_MASTERS.find((m) => m.id === masterId) ?? FLOW_MASTERS[0],
     [masterId],
   );
-  const masterImage =
-    current.image ?? (current.id === "kaien" ? MASTER_2 : MASTER);
+  const cardIndex = useMemo(() => {
+    const n = Number.parseInt(card, 10);
+    if (!Number.isFinite(n)) return 40;
+    return Math.min(77, Math.max(0, n));
+  }, [card]);
+  const frontCardSrc = `/images/cards/01_Cassian/${cardIndex}.png`;
+
+  const onOpenCard = () => {
+    if (isOpening) return;
+    setIsOpening(true);
+    window.setTimeout(() => {
+      router.push(`/page_06_analyzing?master=${current.id}&card=${card}`);
+    }, 980);
+  };
 
   return (
     <main className="w-full">
       <FlowScene backHref={`/page_03_card-selection_1?master=${current.id}`}>
-        <div className="mt-1 flex justify-center">
-          <Image src={masterImage} alt={current.name} width={170} height={170} className="rounded-xl" />
-        </div>
-
-        <div className="mt-4 rounded-xl border border-primary bg-[rgba(8,7,22,0.78)] p-4 text-[14px] leading-[1.6] text-white">
-          깊은 숨을 한번 들이마시고
-          <br />
-          천천히 카드를 뒤집어 보세요.
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setOpened((v) => !v)}
-          className={`mx-auto mt-6 w-[150px] rounded-2xl border-2 border-primary bg-[linear-gradient(180deg,#171035_0%,#0f0a24_100%)] p-2 transition-transform duration-500 ${opened ? "rotate-y-180" : ""}`}
-        >
-          <div className="relative h-[220px] rounded-xl border border-[#a992e2]">
-            <span className="absolute right-[-8px] top-[-8px] grid h-7 w-7 place-items-center rounded-full bg-[#6422AB] text-sm">
-              ✓
-            </span>
-            {opened ? (
-              <div className="absolute inset-2 grid place-items-center rounded-lg bg-[radial-gradient(circle_at_50%_25%,#5a4aa7_0%,#291f58_60%,#181334_100%)] text-xs text-white">
-                선택 카드 #{card}
+        <div className="mt-10 flex min-h-[300px] items-center justify-center">
+          <div className="relative h-[244px] w-[156px] [perspective:1200px]">
+            <div
+              className="relative h-full w-full transition-[transform,opacity] duration-[950ms] ease-out"
+              style={{
+                transformStyle: "preserve-3d",
+                transform: isOpening ? "rotateY(360deg) scale(1.7)" : "rotateY(0deg) scale(1)",
+                opacity: isOpening ? 0 : 1,
+              }}
+            >
+              <div className="absolute inset-0 overflow-hidden rounded-[14px] border border-[#a992e2] shadow-[0_18px_32px_rgba(4,3,14,0.55)] [backface-visibility:hidden]">
+                <Image src={CARD_BACK} alt="카드 뒷면" fill className="object-cover" />
               </div>
-            ) : null}
+              <div className="absolute inset-0 overflow-hidden rounded-[14px] border border-[#a992e2] shadow-[0_18px_32px_rgba(4,3,14,0.55)] [transform:rotateY(180deg)] [backface-visibility:hidden]">
+                <Image src={frontCardSrc} alt="카드 앞면" fill className="object-cover" />
+              </div>
+            </div>
           </div>
-        </button>
+        </div>
 
         <div className="grid grid-cols-2 gap-3 pb-8 pt-7">
-          <Link
-            href={`/page_06_analyzing?master=${current.id}&card=${card}`}
+          <button
+            type="button"
+            onClick={onOpenCard}
+            disabled={isOpening}
             className="rounded-xl bg-[#6422AB] px-3 py-3 text-center text-[20px] font-semibold text-white"
           >
-            {opened ? "해석 시작" : "카드 열기"}
-          </Link>
+            {isOpening ? "카드 여는 중..." : "카드 열기"}
+          </button>
           <Link
             href={`/page_03_card-selection_1?master=${current.id}`}
             className="rounded-xl border border-primary bg-[rgba(12,10,36,0.92)] px-3 py-3 text-center text-[16px] text-[#d8ccff]"

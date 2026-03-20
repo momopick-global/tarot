@@ -24,16 +24,6 @@ export function MasterIntroPopup({
         aria-label="마스터 상세 닫기"
       />
       <div className="relative z-10 w-full max-w-[350px] rounded-xl border border-primary bg-[rgba(9,7,28,0.94)] p-4 text-white shadow-2xl">
-        <div className="mb-1 flex justify-end">
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            aria-label="상세 닫기"
-            className="text-[22px] leading-none text-white/90 hover:text-white"
-          >
-            ×
-          </button>
-        </div>
         <div className="min-w-0 text-[14px] leading-[1.6] text-white">
           별들은 이미 답을 알고 있습니다.
           <br />

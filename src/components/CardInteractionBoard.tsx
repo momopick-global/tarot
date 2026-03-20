@@ -1,27 +1,28 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { useRouter } from "next/navigation";
 
 const CARD_BACK = "/assets/card-back-page04.png";
 const TOTAL_CARDS = 78;
-const VISIBLE_CARDS = 11;
+const VISIBLE_CARDS = 7;
 const MAX_VISIBLE_OFFSET = Math.floor(VISIBLE_CARDS / 2);
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
 export function CardInteractionBoard({
   masterId,
 }: Readonly<{
   masterId: string;
 }>) {
-  const cards = useMemo(() => Array.from({ length: TOTAL_CARDS }, (_, idx) => idx), []);
+  const router = useRouter();
   const [deckOrder, setDeckOrder] = useState<number[]>(
     Array.from({ length: TOTAL_CARDS }, (_, idx) => idx),
   );
   const [selectedCard, setSelectedCard] = useState(39);
   const [displayIndex, setDisplayIndex] = useState(39); // fractional deck position
-  const [dragX, setDragX] = useState(0);
   const [isFlowing, setIsFlowing] = useState(false);
+  const [isOpening, setIsOpening] = useState(false);
   const dragStartX = useRef<number | null>(null);
   const dragStartDisplayIndex = useRef(0);
   const dragStartAt = useRef<number>(0);
@@ -52,27 +53,25 @@ export function CardInteractionBoard({
   }, []);
 
   const cardId = useMemo(() => `${selectedCard + 1}`.padStart(2, "0"), [selectedCard]);
-  const deckPositionByCardId = useMemo(() => {
-    const arr = Array.from({ length: TOTAL_CARDS }, () => 0);
-    deckOrder.forEach((cardIdValue, pos) => {
-      arr[cardIdValue] = pos;
-    });
-    return arr;
-  }, [deckOrder]);
-
-  const animateToIndex = (target: number, onDone?: () => void) => {
+  const animateToIndex = (
+    target: number,
+    onDone?: () => void,
+    durationOverride?: number,
+    easingFn: (t: number) => number = (t) => 1 - Math.pow(1 - t, 3),
+  ) => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     const from = displayIndexRef.current;
     const distance = Math.abs(target - from);
-    const duration = Math.min(420, 170 + distance * 28);
+    const duration = durationOverride ?? Math.min(420, 170 + distance * 28);
     const startedAt = performance.now();
 
     const tick = (now: number) => {
       const t = Math.min(1, (now - startedAt) / duration);
-      const eased = 1 - Math.pow(1 - t, 3);
+      const eased = easingFn(t);
       const value = from + (target - from) * eased;
       setDisplayIndex(value);
-      setSelectedCard(Math.round(normalize(value)));
+      const rounded = mod(Math.round(value), TOTAL_CARDS);
+      setSelectedCard(deckOrderRef.current[rounded] ?? 0);
 
       if (t < 1) {
         rafRef.current = requestAnimationFrame(tick);
@@ -125,7 +124,6 @@ export function CardInteractionBoard({
       const rounded = mod(Math.round(displayIndexRef.current), TOTAL_CARDS);
       setSelectedCard(deckOrderRef.current[rounded] ?? 0);
     }
-    setDragX(0);
     setIsFlowing(true);
 
     flowVelocity.current = (direction === "left" ? 1 : -1) * (1.45 + initialBoost * 0.85);
@@ -177,6 +175,13 @@ export function CardInteractionBoard({
   };
 
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (isOpening) return;
+    // 스와이프 감속/스냅 중 다시 터치하면 즉시 정지하고 잡을 수 있게 처리
+    if (rafRef.current && !isFlowing) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+      setDisplayIndex(displayIndexRef.current);
+    }
     if (isFlowing) {
       flowStopRequested.current = true;
       return;
@@ -192,14 +197,15 @@ export function CardInteractionBoard({
   };
 
   const onPointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (isOpening) return;
     if (isFlowing) return;
     if (dragStartX.current === null) return;
     const delta = e.clientX - dragStartX.current;
     if (Math.abs(delta) > 8) draggedEnough.current = true;
-    setDragX(Math.max(-120, Math.min(120, delta)));
-    const dragSensitivity = 56; // px per card step
-    const nextDisplay = dragStartDisplayIndex.current - delta / dragSensitivity;
+    const dragSensitivity = 58;
+    const nextDisplay = dragStartDisplayIndex.current + delta / dragSensitivity;
     setDisplayIndex(nextDisplay);
+    displayIndexRef.current = nextDisplay;
     const rounded = mod(Math.round(nextDisplay), TOTAL_CARDS);
     setSelectedCard(deckOrderRef.current[rounded] ?? 0);
 
@@ -213,6 +219,7 @@ export function CardInteractionBoard({
   };
 
   const onPointerUp = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (isOpening) return;
     if (isFlowing) return;
     if (dragStartX.current !== null) {
       const delta = e.clientX - dragStartX.current;
@@ -220,107 +227,43 @@ export function CardInteractionBoard({
       const avgVelocity = delta / elapsed; // px/ms
       const velocity = Math.abs(swipeVelocity.current) > Math.abs(avgVelocity) ? swipeVelocity.current : avgVelocity;
       const absVelocity = Math.abs(velocity);
-      const absDelta = Math.abs(delta);
 
-      // Swipe: keep current deck and move like a carousel.
-      // Quick/long swipe moves several cards, but no shuffle-flow animation.
-      if (delta <= -14 || velocity <= -0.2) {
-        const dragSensitivity = 56;
-        const cardsPerFrame = (-velocity * 16.7) / dragSensitivity; // px/ms -> cards/frame
-        const initial = Math.max(0.08, Math.min(0.85, Math.abs(cardsPerFrame)));
-        const start = Math.max(0.12, initial + Math.min(0.38, absDelta / 220));
-        setIsFlowing(true);
-        flowVelocity.current = start;
-        flowStopRequested.current = false;
-        flowLastTime.current = 0;
+      // Swipe carousel: continuous drag -> short inertia -> snap (demo-like).
+      if (Math.abs(delta) >= 8 || absVelocity >= 0.12) {
+        const absProgress = Math.min(1, Math.abs(delta) / 52);
+        const intent = absVelocity > 0.15 ? velocity : delta;
+        const direction = intent > 0 ? 1 : -1; // swipe direction follows finger movement
+        const projectedCards = absProgress * 1.55 + absVelocity * 7.8;
+        let stepCount = Math.floor(projectedCards + 0.08);
+        if (stepCount === 0 && (absProgress > 0.2 || absVelocity > 0.18)) stepCount = 1;
+        stepCount = clamp(stepCount, 0, 12);
 
-        const tick = (now: number) => {
-          if (!flowLastTime.current) flowLastTime.current = now;
-          const dt = Math.min(32, now - flowLastTime.current || 16.7);
-          flowLastTime.current = now;
-          const step = flowVelocity.current * (dt / 16.7);
-          const next = displayIndexRef.current + step;
-          setDisplayIndex(next);
-          displayIndexRef.current = next;
-          const rounded = mod(Math.round(next), TOTAL_CARDS);
-          setSelectedCard(deckOrderRef.current[rounded] ?? 0);
-
-          flowVelocity.current *= 0.9;
-          if (Math.abs(flowVelocity.current) <= 0.03) {
-            const target = mod(Math.round(displayIndexRef.current), TOTAL_CARDS);
-            animateToIndex(target, () => {
-              setIsFlowing(false);
-              flowVelocity.current = 0;
-              flowLastTime.current = 0;
-            });
-            return;
+        const target = displayIndexRef.current + direction * stepCount;
+        const duration = Math.min(2400, 980 + stepCount * 140);
+        const easeOutLongTail = (t: number) => {
+          if (t < 0.8) {
+            const p = t / 0.8;
+            return 0.88 * (1 - Math.pow(1 - p, 3));
           }
-          rafRef.current = requestAnimationFrame(tick);
+          const p = (t - 0.8) / 0.2;
+          return 0.88 + 0.12 * (1 - Math.pow(1 - p, 5));
         };
-        if (rafRef.current) cancelAnimationFrame(rafRef.current);
-        rafRef.current = requestAnimationFrame(tick);
-      } else if (delta >= 14 || velocity >= 0.2) {
-        const dragSensitivity = 56;
-        const cardsPerFrame = (-velocity * 16.7) / dragSensitivity;
-        const initial = Math.max(0.08, Math.min(0.85, Math.abs(cardsPerFrame)));
-        const start = -Math.max(0.12, initial + Math.min(0.38, absDelta / 220));
-        setIsFlowing(true);
-        flowVelocity.current = start;
-        flowStopRequested.current = false;
-        flowLastTime.current = 0;
-
-        const tick = (now: number) => {
-          if (!flowLastTime.current) flowLastTime.current = now;
-          const dt = Math.min(32, now - flowLastTime.current || 16.7);
-          flowLastTime.current = now;
-          const step = flowVelocity.current * (dt / 16.7);
-          const next = displayIndexRef.current + step;
-          setDisplayIndex(next);
-          displayIndexRef.current = next;
-          const rounded = mod(Math.round(next), TOTAL_CARDS);
-          setSelectedCard(deckOrderRef.current[rounded] ?? 0);
-
-          flowVelocity.current *= 0.9;
-          if (Math.abs(flowVelocity.current) <= 0.03) {
-            const target = mod(Math.round(displayIndexRef.current), TOTAL_CARDS);
-            animateToIndex(target, () => {
-              setIsFlowing(false);
-              flowVelocity.current = 0;
-              flowLastTime.current = 0;
-            });
-            return;
-          }
-          rafRef.current = requestAnimationFrame(tick);
-        };
-        if (rafRef.current) cancelAnimationFrame(rafRef.current);
-        rafRef.current = requestAnimationFrame(tick);
+        animateToIndex(target, undefined, duration, easeOutLongTail);
       } else {
-        animateToIndex(displayIndexRef.current);
+        animateToIndex(Math.round(displayIndexRef.current), undefined, 240);
       }
     }
     dragStartX.current = null;
     lastMoveX.current = null;
     lastMoveTime.current = null;
     swipeVelocity.current = 0;
-    setDragX(0);
     e.currentTarget.releasePointerCapture(e.pointerId);
-  };
-
-  const shortestOffset = (from: number, to: number) => {
-    let offset = to - from;
-    if (offset > TOTAL_CARDS / 2) offset -= TOTAL_CARDS;
-    if (offset < -TOTAL_CARDS / 2) offset += TOTAL_CARDS;
-    return offset;
-  };
-
-  const normalize = (n: number) => {
-    const m = n % TOTAL_CARDS;
-    return m < 0 ? m + TOTAL_CARDS : m;
   };
 
   const mod = (n: number, m: number) => ((n % m) + m) % m;
 
   const startShuffleFlow = () => {
+    if (isOpening) return;
     if (isFlowing) return;
     beginFlow("left", 0.5, {
       shuffleDeck: true,
@@ -328,10 +271,20 @@ export function CardInteractionBoard({
     });
   };
 
+  const startOpenFlow = () => {
+    if (isOpening) return;
+    setIsOpening(true);
+    window.setTimeout(() => {
+      router.push(`/page_05_masters_list5?master=${masterId}&card=${cardId}`);
+    }, 520);
+  };
+
   return (
     <div className="page-fade">
       <div
-        className="relative left-1/2 mt-10 h-[310px] w-[390px] -translate-x-1/2 touch-pan-y overflow-visible [perspective:1200px]"
+        className={`relative left-1/2 mt-10 h-[310px] w-[390px] -translate-x-1/2 touch-pan-y overflow-visible ${
+          isOpening ? "pointer-events-none" : ""
+        }`}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -342,20 +295,63 @@ export function CardInteractionBoard({
           const base = Math.floor(displayIndex);
           const fraction = displayIndex - base;
           const offset = relative - fraction;
-          const distance = Math.abs(offset);
-          const isCenter = distance < 0.18;
           const deckPos = mod(base + relative, TOTAL_CARDS);
           const cardIdx = deckOrder[deckPos] ?? 0;
 
-          const width = isCenter ? 126 : Math.max(92, 118 - distance * 2);
-          const height = isCenter ? 198 : Math.max(156, 188 - distance * 3);
-          const x = offset * 31 - width / 2 + dragX * (isCenter ? 0.5 : 0.22);
-          const y = distance * 8;
-          const rotate = offset * 6 + dragX * (isCenter ? 0.03 : 0.01);
-          const rotateY = offset * -8;
-          const scale = isCenter ? 1.04 : Math.max(0.84, 1 - distance * 0.04);
-          const opacity = isCenter ? 1 : Math.max(0.72, 1 - distance * 0.08);
-          const blur = isCenter ? 0 : Math.min(1.4, distance * 0.28);
+          // 7-card fan: center + left/right 3 cards clearly visible.
+          const clamped = clamp(offset, -3.2, 3.2);
+          const absClamped = Math.abs(clamped);
+          const dir = clamped === 0 ? 0 : clamped > 0 ? 1 : -1;
+
+          let x = 0;
+          let y = -6;
+          let scale = 1.12;
+          let rotate = 0;
+          let opacity = 1;
+          let blur = 0;
+
+          if (absClamped <= 1) {
+            x = dir * (absClamped * 102);
+            y = -6 + absClamped * 32;
+            scale = 1.12 - absClamped * 0.17;
+            rotate = dir * (absClamped * 10);
+          } else if (absClamped <= 2) {
+            const local = absClamped - 1;
+            x = dir * (102 + local * 66);
+            y = 26 + local * 32;
+            scale = 0.95 - local * 0.1;
+            rotate = dir * (10 + local * 8);
+            opacity = 1;
+            blur = local * 0.2;
+          } else {
+            const local = Math.min(1, absClamped - 2);
+            x = dir * (168 + local * 16);
+            y = 58 + local * 26;
+            scale = 0.85 - local * 0.06;
+            rotate = dir * (18 + local * 6);
+            opacity = 1;
+            blur = local * 0.5;
+          }
+
+          if (absClamped > 3.1) {
+            opacity = 0;
+            blur = 4;
+          }
+
+          // Center card stays sharp; side cards keep a subtle blur.
+          if (absClamped > 0.15) {
+            blur = Math.max(1.2, blur);
+          }
+
+          const width = 128;
+          const height = 198;
+          const tx = x - width / 2;
+          const zIndex = 320 - Math.round(absClamped * 52);
+          const isVisibleCard = absClamped <= 3.1;
+          const exitY = isOpening ? 120 + absClamped * 16 : 0;
+          const exitScale = isOpening ? 0.9 : 1;
+          const exitOpacity = isOpening ? Math.max(0, 0.12 - absClamped * 0.02) : 1;
+          const exitBlur = isOpening ? 2.4 : 0;
 
           return (
             <button
@@ -364,18 +360,19 @@ export function CardInteractionBoard({
               onClick={() => {
                 if (draggedEnough.current) return;
                 setSelectedCard(cardIdx);
-                setDisplayIndex(base + relative);
+                animateToIndex(base + relative, undefined, 320);
               }}
-              className={`absolute bottom-0 left-1/2 overflow-hidden rounded-[14px] border bg-[#0f0a24] shadow-[0_14px_26px_rgba(4,3,14,0.5)] transition-[transform,filter,opacity] duration-200 ${
-                isCenter ? "border-[#8F55FF]" : "border-[#7A5BC6]"
+              className={`absolute bottom-0 left-1/2 overflow-hidden rounded-[14px] border bg-[#0f0a24] shadow-[0_14px_26px_rgba(4,3,14,0.5)] transition-[transform,filter,opacity] duration-500 ease-out ${
+                absClamped < 0.55 ? "border-[#8F55FF]" : "border-[#7A5BC6]"
               }`}
               style={{
                 width,
                 height,
-                transform: `translateX(${x}px) translateY(${y}px) rotate(${rotate}deg) rotateY(${rotateY}deg) scale(${scale})`,
-                zIndex: 120 - distance,
-                opacity,
-                filter: `blur(${blur}px)`,
+                transform: `translateX(-50%) translate(${x}px, ${y + exitY}px) scale(${scale * exitScale}) rotate(${rotate}deg)`,
+                zIndex,
+                opacity: opacity * exitOpacity,
+                filter: `blur(${blur + exitBlur}px)`,
+                pointerEvents: isVisibleCard ? "auto" : "none",
               }}
             >
               <Image src={CARD_BACK} alt="카드 뒷면" fill className="object-cover" />
@@ -389,15 +386,18 @@ export function CardInteractionBoard({
       <div className="pb-6 text-center text-[11px] text-[#b9abdf]">선택 카드: #{cardId}</div>
 
       <div className="grid grid-cols-2 gap-3">
-        <Link
-          href={`/page_05_masters_list5?master=${masterId}&card=${cardId}`}
+        <button
+          type="button"
+          onClick={startOpenFlow}
+          disabled={isOpening}
           className="rounded-2xl bg-[#6422AB] px-3 py-3 text-center text-[20px] font-semibold text-white"
         >
-          카드 열기
-        </Link>
+          {isOpening ? "카드 여는 중..." : "카드 열기"}
+        </button>
         <button
           type="button"
           onClick={startShuffleFlow}
+          disabled={isOpening}
           className="rounded-2xl border border-primary bg-[rgba(12,10,36,0.92)] px-3 py-3 text-center text-[16px] text-[#d8ccff]"
         >
           {isFlowing ? "흐름 중..." : "카드섞기"}
