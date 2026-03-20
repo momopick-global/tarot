@@ -48,11 +48,11 @@ export default function Home() {
           지금까지 123명이 테스트했어요.
         </p>
 
-        <div className="mt-6">
+        <div className="mt-[56px] rounded-xl bg-[#17182E] py-4">
           <div className="text-center text-[14px] text-neutral-10">
             친구에게 공유하기
           </div>
-          <div className="mt-4 flex items-center justify-center gap-5">
+          <div className="mt-4 mb-[50px] flex items-center justify-center gap-5">
             <Image src={ICON_SHARE_LINK} alt="" width={44} height={44} />
             <Image src={ICON_SHARE_TALK} alt="" width={44} height={44} />
             <Image
