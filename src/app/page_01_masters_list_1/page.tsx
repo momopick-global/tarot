@@ -11,6 +11,7 @@ const DETAIL_DIAGRAM = "/assets/diagram-master-detail.png";
 
 export default function Page01MastersList1() {
   const [selected, setSelected] = useState<string | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [showGuide, setShowGuide] = useState(true);
   const masters = useMemo(
     () =>
@@ -25,9 +26,6 @@ export default function Page01MastersList1() {
   const current = selected
     ? FLOW_MASTERS.find((m) => m.id === selected) ?? null
     : null;
-  const selectedIndex = selected ? FLOW_MASTERS.findIndex((m) => m.id === selected) : -1;
-  const selectedRowEndIndex =
-    selectedIndex < 0 ? -1 : Math.min(Math.ceil((selectedIndex + 1) / 3) * 3 - 1, masters.length - 1);
 
   return (
     <main className="w-full">
@@ -55,12 +53,19 @@ export default function Page01MastersList1() {
         ) : null}
 
         <div className="mt-5 grid grid-cols-3 gap-2.5 pb-8">
-          {masters.map(([id, name, kind, image], idx) => (
+          {masters.map(([id, name, kind, image]) => (
             <div key={id} className="contents">
               <button
                 type="button"
-                onClick={() => setSelected(id)}
-                className={`rounded-xl p-1 ${selected === id ? "ring-2 ring-primary" : ""}`}
+                onClick={() => {
+                  setSelected(id);
+                  setIsDetailOpen(true);
+                }}
+                className={`rounded-xl border-2 p-1 transition-colors ${
+                  selected === id
+                    ? "selection-glow-pulse border-primary"
+                    : "border-transparent"
+                }`}
               >
                 <div className="relative aspect-square overflow-hidden rounded-xl">
                   <Image
@@ -77,47 +82,6 @@ export default function Page01MastersList1() {
                   <span className="text-[#cfc4ff]">({kind})</span>
                 </div>
               </button>
-
-              {current && idx === selectedRowEndIndex ? (
-                <div className="relative col-span-3 mx-auto mt-1 w-full max-w-[350px] rounded-lg border border-primary bg-[rgba(9,7,28,0.78)] p-3 text-white">
-                  <div className="mb-1 flex justify-end">
-                    <button
-                      type="button"
-                      onClick={() => setSelected(null)}
-                      aria-label="상세 닫기"
-                      className="text-[20px] leading-none text-white/90 hover:text-white"
-                    >
-                      ×
-                    </button>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="relative h-[98px] w-[98px] shrink-0 overflow-hidden rounded-md">
-                      <Image src={DETAIL_DIAGRAM} alt="마스터 다이어그램" fill className="object-cover" />
-                    </div>
-                    <div className="min-w-0 text-[12px] leading-[1.45]">
-                      <div className="font-semibold">{current.profileTitle}</div>
-                      <div className="mt-1 text-[#d6cbff]">{current.desc}</div>
-                      <div className="mt-2 text-[#d6cbff]">🔮 미래형 🌕 분석형 ♍ 객관형</div>
-                      <div className="mt-1 text-[#d6cbff]">🌙 신비형 🔮 고전형</div>
-                    </div>
-                  </div>
-                  <div className="mt-3 grid grid-cols-2 gap-2 pb-[10px]">
-                    <Link
-                      href={`/page-master-profile_01?master=${current.id}`}
-                        className="rounded-lg bg-[#6422AB] px-3 py-2 text-center text-[16px] font-semibold"
-                    >
-                      자세히 보기
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={() => setSelected(null)}
-                        className="rounded-lg border border-primary px-3 py-2 text-center text-[16px] text-[#d6cbff]"
-                    >
-                      닫기
-                    </button>
-                  </div>
-                </div>
-              ) : null}
             </div>
           ))}
         </div>
@@ -140,6 +104,55 @@ export default function Page01MastersList1() {
             </button>
           )}
         </div>
+
+        {current && isDetailOpen ? (
+          <div className="fixed inset-0 z-40 flex items-center justify-center px-5" role="dialog" aria-modal="true">
+            <button
+              type="button"
+              onClick={() => setIsDetailOpen(false)}
+              className="absolute inset-0 bg-[rgba(2,1,10,0.55)] backdrop-blur-[3px]"
+              aria-label="마스터 상세 닫기"
+            />
+            <div className="relative z-10 w-full max-w-[350px] rounded-xl border border-primary bg-[rgba(9,7,28,0.94)] p-4 text-white shadow-2xl">
+              <div className="mb-1 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setIsDetailOpen(false)}
+                  aria-label="상세 닫기"
+                  className="text-[22px] leading-none text-white/90 hover:text-white"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="relative h-[98px] w-[98px] shrink-0 overflow-hidden rounded-md">
+                  <Image src={DETAIL_DIAGRAM} alt="마스터 다이어그램" fill className="object-cover" />
+                </div>
+                <div className="min-w-0 text-[12px] leading-[1.45]">
+                  <div className="font-semibold">{current.profileTitle}</div>
+                  <div className="mt-1 text-[#d6cbff]">{current.desc}</div>
+                  <div className="mt-2 text-[#d6cbff]">🔮 미래형 🌕 분석형 ♍ 객관형</div>
+                  <div className="mt-1 text-[#d6cbff]">🌙 신비형 🔮 고전형</div>
+                </div>
+              </div>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <Link
+                  href={`/page-master-profile_01?master=${current.id}`}
+                  className="rounded-lg bg-[#6422AB] px-3 py-2 text-center text-[16px] font-semibold"
+                >
+                  자세히 보기
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setIsDetailOpen(false)}
+                  className="rounded-lg border border-primary px-3 py-2 text-center text-[16px] text-[#d6cbff]"
+                >
+                  닫기
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </FlowScene>
       <HomeShareSection />
     </main>

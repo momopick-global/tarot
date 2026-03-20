@@ -63,3 +63,34 @@ body {
 .page-fade {
   animation: pageFadeIn 280ms ease-out;
 }
+
+@keyframes selectionGlowPulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(176, 98, 255, 0.75),
+      0 0 8px rgba(176, 98, 255, 0.65),
+      0 0 16px rgba(133, 46, 255, 0.45);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(203, 134, 255, 0.95),
+      0 0 16px rgba(182, 104, 255, 0.95),
+      0 0 26px rgba(138, 54, 255, 0.85);
+  }
+}
+
+.selection-glow-pulse {
+  animation: selectionGlowPulse 0.85s ease-in-out infinite;
+}
+
+@keyframes cardStageUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

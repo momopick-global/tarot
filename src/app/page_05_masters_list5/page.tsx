@@ -28,7 +28,7 @@ export default function Page05MastersList5() {
 
   return (
     <main className="w-full">
-      <FlowScene backHref="/page_04_card-selection_2">
+      <FlowScene backHref={`/page_03_card-selection_1?master=${current.id}`}>
         <div className="mt-1 flex justify-center">
           <Image src={masterImage} alt={current.name} width={170} height={170} className="rounded-xl" />
         </div>
@@ -64,7 +64,7 @@ export default function Page05MastersList5() {
             {opened ? "해석 시작" : "카드 열기"}
           </Link>
           <Link
-            href="/page_04_card-selection_2"
+            href={`/page_03_card-selection_1?master=${current.id}`}
             className="rounded-xl border border-primary bg-[rgba(12,10,36,0.92)] px-3 py-3 text-center text-[16px] text-[#d8ccff]"
           >
             다시 섞기

@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>YourTarot Card Interaction Demo</title>
+  <style>
+    :root {
+      --bg-1: #12110f;
+      --bg-2: #1e1b16;
+      --gold: #f0b54d;
+      --gold-soft: rgba(240, 181, 77, 0.35);
+      --text: #f7f1e8;
+      --muted: #c8b79a;
+      --panel: rgba(28, 23, 17, 0.82);
+      --line: rgba(255,255,255,0.08);
+      --card-w: 160px;
+      --card-h: 232px;
+      --radius: 22px;
+      --duration: 520ms;
+      --ease: cubic-bezier(.22,.9,.2,1);
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      font-family: Inter, Pretendard, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 50% 18%, rgba(255,184,92,.14), transparent 28%),
+        radial-gradient(circle at 50% 88%, rgba(255,184,92,.06), transparent 25%),
+        linear-gradient(180deg, #1b1712 0%, #11100d 55%, #0c0b09 100%);
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    .app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .phone-frame {
+      position: relative;
+      width: min(100vw, 430px);
+      height: 100dvh;
+      max-height: 932px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 10%, rgba(255,178,79,.08), transparent 32%),
+        linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)),
+        linear-gradient(180deg, #1b1712 0%, #14110e 52%, #0d0b09 100%);
+      border-left: 1px solid rgba(255,255,255,0.04);
+      border-right: 1px solid rgba(255,255,255,0.04);
+      isolation: isolate;
+    }
+
+    .noise,
+    .vignette,
+    .glow-ring {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .noise {
+      opacity: .07;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,.35) 0 0.5px, transparent 0.8px),
+        radial-gradient(circle at 80% 40%, rgba(255,255,255,.25) 0 0.5px, transparent 0.8px),
+        radial-gradient(circle at 60% 70%, rgba(255,255,255,.18) 0 0.5px, transparent 0.8px);
+      background-size: 18px 18px, 24px 24px, 22px 22px;
+      mix-blend-mode: soft-light;
+    }
+
+    .vignette {
+      background: radial-gradient(circle at 50% 45%, transparent 44%, rgba(0,0,0,.45) 100%);
+    }
+
+    .glow-ring {
+      background: radial-gradient(circle at 50% 50%, rgba(240,181,77,.08), transparent 30%);
+      filter: blur(14px);
+      opacity: .8;
+    }
+
+    .topbar {
+      position: absolute;
+      top: max(16px, env(safe-area-inset-top));
+      left: 18px;
+      right: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 20;
+    }
+
+    .topbar .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.07);
+      background: rgba(255,255,255,.03);
+      display: grid;
+      place-items: center;
+      color: #f3e9d7;
+      backdrop-filter: blur(10px);
+    }
+
+    .brand {
+      position: absolute;
+      top: 72px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      z-index: 15;
+    }
+
+    .brand .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(240,181,77,.24);
+      background: rgba(240,181,77,.08);
+      color: #ffd489;
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .brand h1 {
+      margin: 14px 20px 8px;
+      font-size: 28px;
+      line-height: 1.15;
+      font-weight: 700;
+      letter-spacing: -.03em;
+    }
+
+    .brand p {
+      margin: 0 auto;
+      width: min(320px, calc(100% - 40px));
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .carousel-zone {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 180px;
+      height: 380px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      user-select: none;
+    }
+
+    .orbit {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .orb {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffd28b 0%, rgba(255,210,139,.1) 68%, transparent 72%);
+      filter: blur(.2px);
+      opacity: .85;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .orb:nth-child(1) { left: 18%; top: 24%; animation-delay: 0s; }
+    .orb:nth-child(2) { right: 20%; top: 26%; animation-delay: 1.6s; }
+    .orb:nth-child(3) { left: 26%; bottom: 20%; animation-delay: 2.6s; }
+    .orb:nth-child(4) { right: 24%; bottom: 18%; animation-delay: .8s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) scale(1); opacity: .55; }
+      50% { transform: translateY(-10px) scale(1.15); opacity: 1; }
+    }
+
+    .card-stack {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      perspective: 1400px;
+      transform-style: preserve-3d;
+    }
+
+    .tarot-card {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: var(--card-w);
+      height: var(--card-h);
+      transform-style: preserve-3d;
+      transform-origin: center center;
+      transition: transform var(--duration) var(--ease), opacity var(--duration) var(--ease), filter var(--duration) var(--ease);
+      cursor: grab;
+      will-change: transform, opacity;
+    }
+
+    .tarot-card .card-shell,
+    .tarot-card .card-inner {
+      transition: transform 420ms cubic-bezier(.16,1,.3,1), filter 420ms ease, opacity 420ms ease;
+      will-change: transform, filter;
+    }
+
+    .tarot-card:active { cursor: grabbing; }
+
+    .card-shell {
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+      box-shadow:
+        0 22px 40px rgba(0,0,0,.42),
+        0 0 0 1px rgba(240,181,77,.07) inset,
+        0 0 40px rgba(240,181,77,.08);
+    }
+
+    .card-shell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.08), transparent 26%),
+        radial-gradient(circle at 50% 30%, rgba(255,214,140,.18), transparent 35%),
+        linear-gradient(180deg, #463625 0%, #2e2419 52%, #17120e 100%);
+    }
+
+    .card-shell::after {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.08);
+      pointer-events: none;
+    }
+
+    .card-inner {
+      position: absolute;
+      inset: 0;
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      z-index: 2;
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: rgba(255,237,204,.9);
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .card-center {
+      display: grid;
+      place-items: center;
+      gap: 10px;
+      margin-top: 6px;
+      text-align: center;
+    }
+
+    .sigil {
+      position: relative;
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,222,172,.18);
+      box-shadow: 0 0 0 8px rgba(255,220,160,.035), 0 0 34px rgba(255,204,112,.12);
+      background:
+        radial-gradient(circle at 50% 50%, rgba(255,217,140,.18), rgba(255,217,140,.04) 42%, transparent 43%),
+        repeating-conic-gradient(from 0deg, rgba(255,223,172,.18) 0deg 6deg, transparent 6deg 30deg),
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,.05), transparent 58%);
+    }
+
+    .sigil::before,
+    .sigil::after {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border: 1px solid rgba(255,225,190,.18);
+      border-radius: 50%;
+    }
+
+    .sigil::after {
+      inset: 28px;
+      background: radial-gradient(circle, rgba(255,211,128,.9) 0 3px, transparent 4px);
+      box-shadow: 0 0 18px rgba(255,194,82,.35);
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+    }
+
+    .card-sub {
+      font-size: 12px;
+      color: #d9c6a3;
+      line-height: 1.5;
+      max-width: 122px;
+    }
+
+    .card-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mini-chip {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(240,181,77,.22);
+      background: rgba(240,181,77,.08);
+      font-size: 11px;
+      color: #ffd48c;
+      letter-spacing: .04em;
+    }
+
+    .hint {
+      position: absolute;
+      left: 50%;
+      bottom: 172px;
+      transform: translateX(-50%);
+      z-index: 15;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      color: #e7d2b0;
+      font-size: 12px;
+      backdrop-filter: blur(12px);
+      white-space: nowrap;
+      transition: opacity .25s ease;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(240,181,77,.08);
+      border: 1px solid rgba(240,181,77,.16);
+      color: #ffd488;
+      font-size: 11px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .bottom-panel {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: max(20px, calc(env(safe-area-inset-bottom) + 12px));
+      z-index: 20;
+      padding: 16px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.025));
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: 0 22px 36px rgba(0,0,0,.34);
+      backdrop-filter: blur(14px);
+    }
+
+    .meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .meta .left strong {
+      display: block;
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+
+    .meta .left span,
+    .meta .right {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .progress-wrap {
+      position: relative;
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.05);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.06);
+    }
+
+    .progress-bar {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 0%;
+      border-radius: inherit;
+      background:
+        linear-gradient(90deg, rgba(240,181,77,.88), rgba(255,212,140,1));
+      box-shadow: 0 0 24px rgba(240,181,77,.38);
+      transition: width 360ms ease;
+    }
+
+    .progress-bar::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.32), transparent);
+      transform: translateX(-100%);
+      animation: shimmer 1.8s linear infinite;
+    }
+
+    @keyframes shimmer {
+      100% { transform: translateX(200%); }
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    button {
+      appearance: none;
+      border: 0;
+      outline: 0;
+      border-radius: 16px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .primary-btn {
+      min-height: 52px;
+      padding: 0 18px;
+      background: linear-gradient(180deg, #f8c46b 0%, #ecaa3f 100%);
+      color: #23180b;
+      font-weight: 700;
+      box-shadow: 0 12px 30px rgba(240,181,77,.26);
+    }
+
+    .secondary-btn {
+      min-width: 54px;
+      min-height: 52px;
+      background: rgba(255,255,255,.04);
+      color: #f3e8d7;
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .result-layer {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      z-index: 40;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .42s ease;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(255,196,93,.10), transparent 26%),
+        linear-gradient(180deg, rgba(14,12,10,.24), rgba(8,8,8,.82));
+      backdrop-filter: blur(10px);
+    }
+
+    .result-layer.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .result-card {
+      width: min(100%, 360px);
+      border-radius: 28px;
+      padding: 22px;
+      background: linear-gradient(180deg, rgba(36,29,22,.95), rgba(20,17,13,.96));
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: 0 26px 60px rgba(0,0,0,.52), 0 0 60px rgba(240,181,77,.08);
+      text-align: center;
+      transform: translateY(18px) scale(.96);
+      transition: transform .5s var(--ease);
+    }
+
+    .result-layer.show .result-card {
+      transform: translateY(0) scale(1);
+    }
+
+    .result-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(240,181,77,.09);
+      color: #ffd488;
+      border: 1px solid rgba(240,181,77,.2);
+      font-size: 12px;
+      margin-bottom: 14px;
+    }
+
+    .result-card h2 {
+      margin: 0 0 10px;
+      font-size: 28px;
+      line-height: 1.12;
+    }
+
+    .result-card p {
+      margin: 0 0 18px;
+      color: #d5c2a0;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .result-actions {
+      display: grid;
+      gap: 10px;
+    }
+
+    .ghost-btn {
+      min-height: 48px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      color: #f5eadb;
+    }
+
+    .burst {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffd38c 0, rgba(255,211,140,.1) 65%, transparent 70%);
+      box-shadow: 0 0 14px rgba(255,211,140,.42);
+      opacity: 0;
+    }
+
+    @media (max-width: 390px) {
+      :root {
+        --card-w: 148px;
+        --card-h: 216px;
+      }
+      .brand h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <main class="phone-frame" id="app">
+      <div class="noise"></div>
+      <div class="glow-ring"></div>
+      <div class="vignette"></div>
+
+      <header class="topbar">
+        <button class="icon-btn" aria-label="뒤로가기">←</button>
+        <button class="icon-btn" aria-label="메뉴">⋯</button>
+      </header>
+
+      <section class="brand">
+        <div class="eyebrow">✦ yourtarot</div>
+        <h1>오늘의 카드를 선택하세요</h1>
+        <p>영상 레퍼런스 느낌으로 가운데 카드가 강조되고, 좌우 카드는 살짝 기울어진 상태로 대기합니다.</p>
+      </section>
+
+      <section class="carousel-zone" id="dragArea">
+        <div class="orbit">
+          <span class="orb"></span>
+          <span class="orb"></span>
+          <span class="orb"></span>
+          <span class="orb"></span>
+        </div>
+        <div class="card-stack" id="cardStack"></div>
+      </section>
+
+      <div class="hint" id="hint">좌우로 밀어 카드 선택 · 가운데 카드를 탭</div>
+
+      <section class="bottom-panel">
+        <div class="meta">
+          <div class="left">
+            <strong id="activeTitle">The Sun</strong>
+            <span id="activeDesc">직관적인 선택이 좋은 하루예요.</span>
+          </div>
+          <div class="right"><span id="stepText">1 / 78</span></div>
+        </div>
+
+        <div class="status-pill" id="statusPill">대기 중</div>
+
+        <div class="progress-wrap" aria-hidden="true">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="actions">
+          <button class="primary-btn" id="drawBtn">이 카드로 해석 받기</button>
+          <button class="secondary-btn" id="shuffleBtn" aria-label="셔플">↻</button>
+        </div>
+      </section>
+
+      <section class="result-layer" id="resultLayer">
+        <div class="burst" id="burst"></div>
+        <div class="result-card">
+          <div class="result-badge">✦ 선택 완료</div>
+          <h2 id="resultTitle">The Sun</h2>
+          <p id="resultText">당신의 에너지가 바깥으로 자연스럽게 퍼지는 날입니다. 오늘은 지나치게 고민하기보다 먼저 움직이는 편이 더 좋은 결과를 만듭니다.</p>
+          <div class="result-actions">
+            <button class="primary-btn" id="againBtn">다시 선택하기</button>
+            <button class="ghost-btn" id="closeResultBtn">닫기</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const cardNames = [
+      'The Fool','The Magician','The High Priestess','The Empress','The Emperor','The Hierophant','The Lovers','The Chariot','Strength','The Hermit','Wheel of Fortune','Justice','The Hanged Man','Death','Temperance','The Devil','The Tower','The Star','The Moon','The Sun','Judgement','The World',
+      'Ace of Wands','Two of Wands','Three of Wands','Four of Wands','Five of Wands','Six of Wands','Seven of Wands','Eight of Wands','Nine of Wands','Ten of Wands','Page of Wands','Knight of Wands','Queen of Wands','King of Wands',
+      'Ace of Cups','Two of Cups','Three of Cups','Four of Cups','Five of Cups','Six of Cups','Seven of Cups','Eight of Cups','Nine of Cups','Ten of Cups','Page of Cups','Knight of Cups','Queen of Cups','King of Cups',
+      'Ace of Swords','Two of Swords','Three of Swords','Four of Swords','Five of Swords','Six of Swords','Seven of Swords','Eight of Swords','Nine of Swords','Ten of Swords','Page of Swords','Knight of Swords','Queen of Swords','King of Swords',
+      'Ace of Pentacles','Two of Pentacles','Three of Pentacles','Four of Pentacles','Five of Pentacles','Six of Pentacles','Seven of Pentacles','Eight of Pentacles','Nine of Pentacles','Ten of Pentacles','Page of Pentacles','Knight of Pentacles','Queen of Pentacles','King of Pentacles'
+    ];
+
+    const cards = cardNames.map((title, index) => ({
+      id: index,
+      title,
+      subtitle: `tarot card ${String(index).padStart(2, '0')}`,
+      chip: index < 22 ? 'major arcana' : 'arcana',
+      desc: '랜덤 흐름 속에서 멈춘 카드가 오늘의 메시지가 됩니다.',
+      result: `${title} 카드가 선택되었습니다. 이 카드는 지금의 흐름에서 중요한 힌트를 상징합니다.`
+    }));
+
+    const state = {
+      current: 0,
+      dragX: 0,
+      startX: 0,
+      pointerDown: false,
+      animating: false,
+      moved: false,
+      cardNodes: [],
+      deckOrder: [],
+      autoplay: {
+        active: false,
+        velocity: 0,
+        rafId: null,
+        fractionalIndex: 0,
+        stopRequested: false,
+        spinCount: 0,
+        lastTime: 0
+      }
+    };
+
+    const cardStack = document.getElementById('cardStack');
+    const dragArea = document.getElementById('dragArea');
+    const activeTitle = document.getElementById('activeTitle');
+    const activeDesc = document.getElementById('activeDesc');
+    const stepText = document.getElementById('stepText');
+    const progressBar = document.getElementById('progressBar');
+    const statusPill = document.getElementById('statusPill');
+    const drawBtn = document.getElementById('drawBtn');
+    const shuffleBtn = document.getElementById('shuffleBtn');
+    const hint = document.getElementById('hint');
+    const resultLayer = document.getElementById('resultLayer');
+    const resultTitle = document.getElementById('resultTitle');
+    const resultText = document.getElementById('resultText');
+    const againBtn = document.getElementById('againBtn');
+    const closeResultBtn = document.getElementById('closeResultBtn');
+    const burst = document.getElementById('burst');
+
+    function createCard(card, index) {
+      const el = document.createElement('article');
+      el.className = 'tarot-card';
+      el.dataset.index = index;
+      el.innerHTML = `
+        <div class="card-shell"></div>
+        <div class="card-inner">
+          <div class="card-top">
+            <span>your tarot</span>
+            <span>${String(index + 1).padStart(2, '0')}</span>
+          </div>
+          <div class="card-center">
+            <div class="sigil"></div>
+            <div class="card-title">${card.title}</div>
+            <div class="card-sub">${card.subtitle}</div>
+          </div>
+          <div class="card-bottom">
+            <div class="mini-chip">${card.chip}</div>
+          </div>
+        </div>
+      `;
+      el.addEventListener('click', () => {
+        if (state.animating || state.moved) return;
+        const idx = Number(el.dataset.index);
+        if (idx !== state.current) {
+          state.current = idx;
+          updateCards(true);
+        } else {
+          drawCurrentCard();
+        }
+      });
+      return el;
+    }
+
+    function buildCards() {
+      cardStack.innerHTML = '';
+      state.cardNodes = cards.map((card, index) => {
+        const node = createCard(card, index);
+        cardStack.appendChild(node);
+        return node;
+      });
+      state.deckOrder = shuffleIndices(cards.length);
+      state.current = 0;
+      state.autoplay.fractionalIndex = 0;
+      updateCards(false);
+      updateStatus('대기 중');
+    }
+
+    function shuffleIndices(length) {
+      const arr = Array.from({ length }, (_, i) => i);
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function currentDeckCard() {
+      const idx = state.deckOrder[state.current] ?? 0;
+      return cards[idx];
+    }
+
+    function getOffset(index) {
+      const len = cards.length;
+      const deckIndex = state.deckOrder.indexOf(index);
+      let offset = deckIndex - state.autoplay.fractionalIndex;
+      if (offset > len / 2) offset -= len;
+      if (offset < -len / 2) offset += len;
+      return offset;
+    }
+
+    function updateCards(animate = true) {
+      const len = cards.length;
+      const currentCard = currentDeckCard();
+
+      state.cardNodes.forEach((node, index) => {
+        const offset = getOffset(index);
+        const abs = Math.abs(offset);
+        const direction = offset === 0 ? 0 : offset > 0 ? 1 : -1;
+
+        const arcX = offset * 96;
+        const fanX = direction * Math.pow(abs, 1.12) * 28;
+        const depthX = arcX + fanX;
+        const dragLead = !state.autoplay.active && Math.abs(offset) < 1.1 ? state.dragX * (offset === 0 ? 0.92 : 0.18) : 0;
+        const x = depthX + dragLead;
+
+        const y = abs === 0 ? -10 : 6 + Math.pow(abs, 1.28) * 16;
+        const zDepth = abs === 0 ? 0 : -abs * 120;
+        const scale = abs === 0 ? 1.02 : Math.max(0.72, 0.98 - abs * 0.092);
+        const rotate = abs === 0 && !state.autoplay.active ? state.dragX * 0.045 : offset * 8;
+        const rotateY = abs === 0 && !state.autoplay.active ? state.dragX * 0.11 : offset * -22;
+        const rotateX = abs === 0 ? -2 : abs * 2.1;
+        const opacity = abs > 3.15 ? 0 : Math.max(0, 1 - abs * 0.16);
+        const blur = abs === 0 ? 0 : Math.min(abs * 2.1, 7);
+        const shadowLift = abs === 0 ? 1 : Math.max(0.72, 1 - abs * 0.08);
+        const z = 200 - abs;
+
+        node.style.zIndex = z;
+        node.style.opacity = String(opacity);
+        node.style.filter = `blur(${blur}px)`;
+        node.style.transition = animate ? '' : 'none';
+        node.style.transform = `translate3d(calc(-50% + ${x}px), calc(-50% + ${y}px), ${zDepth}px) scale(${scale}) rotate(${rotate}deg) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+
+        const shell = node.querySelector('.card-shell');
+        const inner = node.querySelector('.card-inner');
+        if (shell) {
+          const shellShift = direction * abs * -1.8;
+          shell.style.transform = `translate3d(${shellShift}px, 0, 0) scale(${shadowLift})`;
+          shell.style.filter = abs === 0
+            ? 'drop-shadow(0 28px 46px rgba(0,0,0,.42)) drop-shadow(0 0 28px rgba(240,181,77,.10))'
+            : `drop-shadow(0 ${18 - abs * 2}px ${24 - abs * 1.5}px rgba(0,0,0,.26))`;
+        }
+        if (inner) {
+          const parallaxX = direction * abs * 1.05;
+          inner.style.transform = `translate3d(${parallaxX}px, 0, 0)`;
+          inner.style.opacity = String(Math.max(0.7, 1 - abs * 0.08));
+        }
+      });
+
+      activeTitle.textContent = currentCard.title;
+      activeDesc.textContent = currentCard.desc;
+      stepText.textContent = `${state.current + 1} / ${len}`;
+      progressBar.style.width = `${((state.current + 1) / len) * 100}%`;
+      resultTitle.textContent = currentCard.title;
+      resultText.textContent = currentCard.result;
+    }
+
+    function updateStatus(text) {
+      statusPill.textContent = text;
+    }
+
+    function clamp(n, min, max) {
+      return Math.max(min, Math.min(max, n));
+    }
+
+    function goNext() {
+      state.current = (state.current + 1) % cards.length;
+      state.autoplay.fractionalIndex = state.current;
+      snapToIndex();
+    }
+
+    function goPrev() {
+      state.current = (state.current - 1 + cards.length) % cards.length;
+      state.autoplay.fractionalIndex = state.current;
+      snapToIndex();
+    }
+
+    function flingTo(direction, velocityBoost = 0) {
+      if (state.animating || state.autoplay.active) return;
+      state.animating = true;
+
+      const push = direction === 'next' ? 1 : -1;
+      state.deckOrder = shuffleIndices(cards.length);
+      state.current = 0;
+      state.autoplay.fractionalIndex = 0;
+      updateStatus('흐름 시작');
+
+      window.setTimeout(() => {
+        state.animating = false;
+        startMomentumFlow(push * (1.5 + velocityBoost * 1.5));
+      }, 120);
+    }
+
+    function startMomentumFlow(initialVelocity = 2.2) {
+      stopMomentumFlow(true);
+      state.autoplay.active = true;
+      state.autoplay.velocity = initialVelocity;
+      state.autoplay.stopRequested = false;
+      state.autoplay.lastTime = 0;
+      state.autoplay.spinCount = 0;
+      updateStatus('랜덤 흐름 중 · 터치하면 정지');
+      hint.textContent = '카드가 흐르는 중 · 카드 영역 터치 시 멈춤';
+
+      const minFullLoop = cards.length * 1.05;
+      let traveled = 0;
+
+      const tick = (time) => {
+        if (!state.autoplay.active) return;
+        if (!state.autoplay.lastTime) state.autoplay.lastTime = time;
+        const dt = Math.min(32, time - state.autoplay.lastTime || 16.7);
+        state.autoplay.lastTime = time;
+
+        const frameStep = state.autoplay.velocity * (dt / 16.7);
+        state.autoplay.fractionalIndex += frameStep;
+        traveled += Math.abs(frameStep);
+
+        while (state.autoplay.fractionalIndex >= cards.length) {
+          state.autoplay.fractionalIndex -= cards.length;
+          state.autoplay.spinCount += 1;
+        }
+        while (state.autoplay.fractionalIndex < 0) {
+          state.autoplay.fractionalIndex += cards.length;
+          state.autoplay.spinCount += 1;
+        }
+
+        const rounded = mod(Math.round(state.autoplay.fractionalIndex), cards.length);
+        state.current = rounded;
+
+        if (state.autoplay.stopRequested && Math.abs(state.autoplay.velocity) > 0.18) {
+          state.autoplay.velocity *= 0.86;
+        } else if (traveled >= minFullLoop) {
+          state.autoplay.velocity *= 0.968;
+        }
+
+        if (!state.autoplay.stopRequested && Math.abs(state.autoplay.velocity) <= 0.42 && traveled >= minFullLoop) {
+          state.autoplay.stopRequested = true;
+          updateStatus('감속 중');
+        }
+
+        updateCards(false);
+
+        if (state.autoplay.stopRequested && Math.abs(state.autoplay.velocity) <= 0.12) {
+          finishMomentumStop();
+          return;
+        }
+
+        state.autoplay.rafId = requestAnimationFrame(tick);
+      };
+
+      state.autoplay.rafId = requestAnimationFrame(tick);
+    }
+
+    function requestStopMomentum() {
+      if (!state.autoplay.active) return;
+      state.autoplay.stopRequested = true;
+      state.autoplay.velocity *= 0.7;
+      updateStatus('터치 감지 · 멈추는 중');
+    }
+
+    function finishMomentumStop() {
+      cancelAnimationFrame(state.autoplay.rafId);
+      state.autoplay.rafId = null;
+      state.autoplay.active = false;
+      state.autoplay.velocity = 0;
+      state.autoplay.stopRequested = false;
+      state.current = mod(Math.round(state.autoplay.fractionalIndex), cards.length);
+      state.autoplay.fractionalIndex = state.current;
+      updateCards(true);
+      updateStatus('정지 완료');
+      hint.textContent = '가운데 카드를 탭하거나 버튼으로 해석 받기';
+    }
+
+    function stopMomentumFlow(silent = false) {
+      if (state.autoplay.rafId) cancelAnimationFrame(state.autoplay.rafId);
+      state.autoplay.rafId = null;
+      state.autoplay.active = false;
+      state.autoplay.velocity = 0;
+      state.autoplay.stopRequested = false;
+      state.autoplay.lastTime = 0;
+      if (!silent) updateStatus('정지 완료');
+    }
+
+    function mod(n, m) {
+      return ((n % m) + m) % m;
+    }
+
+    function snapToIndex(customDuration = 540) {
+      state.animating = true;
+      state.dragX = 0;
+      state.cardNodes.forEach(node => {
+        node.style.transition = `transform ${customDuration}ms cubic-bezier(.16,1,.3,1), opacity ${Math.max(320, customDuration * 0.8)}ms ease, filter ${Math.max(320, customDuration * 0.8)}ms ease`;
+      });
+      updateCards(true);
+      window.setTimeout(() => {
+        state.animating = false;
+      }, customDuration);
+    }
+
+    function onPointerDown(e) {
+      if (state.autoplay.active) {
+        requestStopMomentum();
+        return;
+      }
+      if (state.animating) return;
+      state.pointerDown = true;
+      state.moved = false;
+      state.startX = e.clientX;
+      dragArea.setPointerCapture?.(e.pointerId);
+      hint.style.opacity = '0.45';
+    }
+
+    function onPointerMove(e) {
+      if (state.autoplay.active) return;
+      if (!state.pointerDown || state.animating) return;
+      const dx = e.clientX - state.startX;
+      state.dragX = clamp(dx, -140, 140);
+      if (Math.abs(dx) > 8) state.moved = true;
+      updateCards(false);
+    }
+
+    function onPointerUp(e) {
+      if (state.autoplay.active) return;
+      if (!state.pointerDown) return;
+      state.pointerDown = false;
+      const dx = state.dragX;
+      const velocityBoost = Math.abs(dx) / 120;
+      hint.style.opacity = '1';
+
+      if (dx <= -26) {
+        flingTo('next', velocityBoost);
+      } else if (dx >= 26) {
+        flingTo('prev', velocityBoost);
+      } else {
+        snapToIndex();
+      }
+
+      setTimeout(() => { state.moved = false; }, 50);
+    }
+
+    function drawCurrentCard() {
+      if (state.animating || state.autoplay.active) return;
+      const activeDeckIndex = state.deckOrder[state.current];
+      const activeNode = state.cardNodes[activeDeckIndex];
+      state.animating = true;
+      hint.style.opacity = '0';
+      activeNode.style.transition = 'transform 620ms cubic-bezier(.2,.9,.2,1), opacity 620ms ease, filter 620ms ease';
+      activeNode.style.transform += ' scale(1.08) translateY(-10px)';
+      activeNode.style.filter = 'blur(0px) drop-shadow(0 0 28px rgba(240,181,77,.26))';
+
+      setTimeout(() => {
+        spawnParticles();
+        resultLayer.classList.add('show');
+      }, 250);
+
+      setTimeout(() => {
+        state.animating = false;
+      }, 760);
+    }
+
+    function closeResult(resetScale = false) {
+      resultLayer.classList.remove('show');
+      if (resetScale) {
+        const activeDeckIndex = state.deckOrder[state.current];
+        const node = state.cardNodes[activeDeckIndex];
+        if (node) node.style.transition = '';
+      }
+      state.dragX = 0;
+      updateCards(true);
+      hint.style.opacity = '1';
+    }
+
+    function randomBetween(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    function spawnParticles() {
+      burst.innerHTML = '';
+      const rect = dragArea.getBoundingClientRect();
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+
+      for (let i = 0; i < 28; i++) {
+        const p = document.createElement('span');
+        p.className = 'particle';
+        const angle = (Math.PI * 2 * i) / 28 + randomBetween(-0.18, 0.18);
+        const distance = randomBetween(70, 180);
+        const tx = Math.cos(angle) * distance;
+        const ty = Math.sin(angle) * distance;
+        p.style.left = `${cx}px`;
+        p.style.top = `${cy}px`;
+        p.animate([
+          { transform: 'translate(-50%, -50%) scale(.4)', opacity: 0 },
+          { transform: 'translate(-50%, -50%) scale(1)', opacity: 1, offset: 0.15 },
+          { transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(.7)`, opacity: 0 }
+        ], {
+          duration: randomBetween(900, 1450),
+          easing: 'cubic-bezier(.2,.8,.2,1)',
+          fill: 'forwards'
+        });
+        burst.appendChild(p);
+      }
+    }
+
+    function shuffleCards() {
+      if (state.animating || state.autoplay.active) return;
+      state.deckOrder = shuffleIndices(cards.length);
+      state.current = 0;
+      state.autoplay.fractionalIndex = 0;
+      updateCards(true);
+      updateStatus('덱 순서 재설정');
+    }
+
+    dragArea.addEventListener('pointerdown', onPointerDown);
+    dragArea.addEventListener('pointermove', onPointerMove);
+    dragArea.addEventListener('pointerup', onPointerUp);
+    dragArea.addEventListener('pointercancel', onPointerUp);
+    drawBtn.addEventListener('click', drawCurrentCard);
+    shuffleBtn.addEventListener('click', shuffleCards);
+    againBtn.addEventListener('click', () => closeResult(true));
+    closeResultBtn.addEventListener('click', () => closeResult(true));
+
+    buildCards();
+  </script>
+</body>
+</html>

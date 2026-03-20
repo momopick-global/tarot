@@ -1,73 +1,69 @@
 import Image from "next/image";
-import Link from "next/link";
 
-const ICON_EYE = "/assets/svg-logo-yourtarot.svg-699577b6-cedf-4beb-8082-e9fc60a6227c.png";
+const ABOUT_TOP_LOGO = "/assets/about-logo-frame214.png";
 
 export default function AboutPage() {
   return (
     <main className="flex-1">
-      <section className="mx-auto w-full max-w-[390px] px-5 pt-8 pb-4">
-        <div className="mt-4 flex flex-col items-center gap-3">
-          <div className="relative h-36 w-36">
-            <div className="absolute inset-0 rounded-full border border-accent/60" />
-            <div className="absolute inset-0 grid place-items-center">
-              <Image src={ICON_EYE} alt="" width={34} height={34} />
+      <section className="mx-auto w-full max-w-[390px] px-4 pb-6 pt-6">
+        <div className="mx-auto w-full max-w-[350px]">
+          <div className="mt-2 flex flex-col items-center gap-3">
+            <div className="relative h-[180px] w-[175px]">
+              <Image src={ABOUT_TOP_LOGO} alt="YourTarot 로고" fill className="object-contain" priority />
             </div>
           </div>
-          <div className="text-[20px] font-semibold text-accent">YourTarot</div>
-        </div>
 
-        <div className="mt-6 space-y-6 text-[14px] leading-[22px] text-neutral-10">
-          <div>
-            <div className="font-semibold">1. 서비스 소개</div>
-            <p className="mt-2 text-neutral-60">
-              당신의 오늘을 키워드처럼 담아낸 타로 해석을 제공합니다.
-              카드와 문장의 조합으로 마음에 작은 울림을 전해요.
-            </p>
+          <div className="mt-8 space-y-7 text-[14px] leading-[1.55] text-white">
+            <div>
+              <div className="text-[16px] font-bold leading-none">1. 서비스 소개</div>
+              <p className="mt-2 text-[14px] leading-[1.45] text-[#D9DAE6]">
+                당신의 질문에 카드가 답합니다
+                <br />
+                유어타로는 타로 카드와 함께 현재의 흐름과 운세를 확인할 수 있는 서비스입니다.
+                당신이 선택한 카드 속에서 지금의 고민과 가능성을 발견해보세요.
+                직관적이고 이해하기 쉬운 타로 리딩을 제공합니다.
+              </p>
+            </div>
+
+            <div>
+              <div className="text-[16px] font-bold leading-none">2. 유어타로 특징</div>
+              <ul className="mt-2 space-y-1 text-[14px] leading-[1.45] text-[#D9DAE6]">
+                <li>✓ 쉬운 타로 해설</li>
+                <li>✓ 다양한 운세 리딩</li>
+                <li>✓ 유명한 타로 마스터</li>
+                <li>✓ 간편한 이용</li>
+              </ul>
+            </div>
+
+            <div>
+              <div className="text-[16px] font-bold leading-none">3. 타로의 의미</div>
+              <p className="mt-2 text-[14px] leading-[1.45] text-[#D9DAE6]">
+                타로는 미래를 결정하는 것이 아니라 가능성을 보여주는
+                도구입니다.
+                카드는 방향을 제시하고 선택은 당신이 합니다.
+              </p>
+            </div>
+
+            <div>
+              <div className="text-[16px] font-bold leading-none">4. 추천 대상</div>
+              <ul className="mt-2 space-y-1 text-[14px] leading-[1.45] text-[#D9DAE6]">
+                <li>✓ 오늘의 운세가 궁금할 때</li>
+                <li>✓ 연애나 인간관계 고민이 있을 때</li>
+                <li>✓ 가볍게 타로를 보고 싶을 때</li>
+              </ul>
+            </div>
+
+            <div>
+              <div className="text-[16px] font-bold leading-none">5. 지금 카드를 선택하세요</div>
+              <p className="mt-2 text-[14px] leading-[1.45] text-[#D9DAE6]">
+                카드를 선택하고
+                <br />
+                당신의 타로 메시지를 확인해보세요.
+                <br />
+                🔮 지금 당신의 운세가 시작됩니다.
+              </p>
+            </div>
           </div>
-
-          <div>
-            <div className="font-semibold">2. 유어타로 특징</div>
-            <ul className="mt-2 list-disc space-y-1 pl-5 text-neutral-60">
-              <li>마음의 흐름을 한눈에 정리해요.</li>
-              <li>쉽게 읽히는 문장으로 안내해요.</li>
-              <li>카드를 통해 오늘을 다시 바라봐요.</li>
-            </ul>
-          </div>
-
-          <div>
-            <div className="font-semibold">3. 타로의 의미</div>
-            <p className="mt-2 text-neutral-60">
-              타로는 미래를 단정하기보다, 지금의 선택과 감정을 비추는
-              거울처럼 쓰입니다.
-            </p>
-          </div>
-
-          <div>
-            <div className="font-semibold">4. 추천 대상</div>
-            <ul className="mt-2 list-disc space-y-1 pl-5 text-neutral-60">
-              <li>요즘 고민이 많은 분</li>
-              <li>자기 이해를 시작하고 싶은 분</li>
-              <li>가벼운 질문으로 마음을 정리하고 싶은 분</li>
-            </ul>
-          </div>
-
-          <div>
-            <div className="font-semibold">5. 지금 카드를 선택하세요</div>
-            <p className="mt-2 text-neutral-60">
-              당신의 오늘을 가장 잘 설명하는 카드를 만나보세요. 선택이
-              시작입니다.
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-8">
-          <Link
-            href="/"
-            className="block rounded-xl bg-[#6422AB] px-5 py-4 text-center text-[20px] font-semibold text-neutral-10"
-          >
-            홈으로 돌아가기
-          </Link>
         </div>
       </section>
     </main>
