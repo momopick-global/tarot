@@ -15,8 +15,8 @@ export default function Page05MastersList5() {
     return new URL(window.location.href).searchParams.get("master") ?? "cassian";
   });
   const [card] = useState(() => {
-    if (typeof window === "undefined") return "05";
-    return new URL(window.location.href).searchParams.get("card") ?? "05";
+    if (typeof window === "undefined") return "40";
+    return new URL(window.location.href).searchParams.get("card") ?? "40";
   });
   const [opened, setOpened] = useState(false);
   const current = useMemo(
