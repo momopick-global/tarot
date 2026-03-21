@@ -43,9 +43,8 @@ next-env.d.ts
 
 # local temporary/demo artifacts
 .npm-cache/
-card_swipe_interaction_demo.html
-card_swipe_mobile_demo.html
+/card_swipe_interaction_demo.html
+/card_swipe_mobile_demo.html
 public/card_swipe_interaction_demo.html
-public/card_swipe_mobile_demo.html
 public/IMG_9660.MOV
 public/assets/bg_03_01_Cassian.png

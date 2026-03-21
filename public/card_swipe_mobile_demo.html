@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Mobile Card Swipe Interaction</title>
+    <style>
+      :root {
+        --bg-top: #1a1433;
+        --bg-bottom: #090615;
+        --card-a: #6f3bff;
+        --card-b: #2f1a7d;
+        --text: #f2ebff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+        font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+        color: var(--text);
+        background: radial-gradient(circle at 30% 20%, #2e2255 0%, #120d28 45%, #080511 100%);
+      }
+
+      .app {
+        width: 100%;
+        max-width: 430px;
+        height: 100%;
+        margin: 0 auto;
+        display: grid;
+        grid-template-rows: 1fr auto;
+        padding: 18px 0 24px;
+      }
+
+      .deck-area {
+        position: relative;
+        width: 100%;
+        height: 72vh;
+        min-height: 460px;
+        touch-action: pan-y;
+        user-select: none;
+        -webkit-user-select: none;
+        overflow: hidden;
+      }
+
+      .card {
+        position: absolute;
+        left: 50%;
+        bottom: 44px;
+        width: 128px;
+        height: 198px;
+        border-radius: 14px;
+        border: 1px solid rgba(197, 172, 255, 0.72);
+        background: linear-gradient(165deg, var(--card-a), var(--card-b));
+        box-shadow: 0 16px 36px rgba(4, 3, 14, 0.52);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        transform-origin: center bottom;
+        will-change: transform, opacity, filter;
+      }
+
+      .meta {
+        text-align: center;
+        padding: 0 18px;
+      }
+
+      .meta h1 {
+        margin: 0 0 8px;
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      .meta p {
+        margin: 0;
+        font-size: 13px;
+        opacity: 0.88;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div id="deckArea" class="deck-area"></div>
+      <div class="meta">
+        <h1>카드 덱 스와이프</h1>
+        <p>손가락을 좌우로 밀면 카드가 끊기지 않고 부드럽게 흐르듯 이동합니다.</p>
+      </div>
+    </div>
+
+    <script>
+      const TOTAL_CARDS = 78;
+      const CARD_LABELS = Array.from({ length: TOTAL_CARDS }, (_, i) => `${String(i + 1).padStart(2, "0")}`);
+
+      // 중심 인덱스
+      let currentIndex = 0;
+
+      // 드래그 진행도(-1 ~ 1)
+      let progress = 0;
+      let targetProgress = 0;
+      let displayProgress = 0;
+
+      let isDragging = false;
+      let startX = 0;
+      let dragWidth = 170;
+      let pointerId = null;
+
+      let lastX = 0;
+      let lastT = 0;
+      let velocity = 0; // px/ms
+
+      let rafId = null;
+      let snapRafId = null;
+      let isSnapping = false;
+
+      const deckArea = document.getElementById("deckArea");
+      const cardElements = [];
+
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+      }
+
+      function wrapIndex(index) {
+        return ((index % TOTAL_CARDS) + TOTAL_CARDS) % TOTAL_CARDS;
+      }
+
+      function wrapOffset(offset) {
+        const half = Math.floor(TOTAL_CARDS / 2);
+        let v = offset;
+        if (v > half) v -= TOTAL_CARDS;
+        if (v < -half) v += TOTAL_CARDS;
+        return v;
+      }
+
+      function lerp(a, b, t) {
+        return a + (b - a) * t;
+      }
+
+      // 필수 함수 1: 카드 생성
+      function createCards() {
+        deckArea.innerHTML = "";
+        for (let i = 0; i < TOTAL_CARDS; i += 1) {
+          const el = document.createElement("div");
+          el.className = "card";
+          el.textContent = CARD_LABELS[i];
+          el.dataset.index = String(i);
+          deckArea.appendChild(el);
+          cardElements.push(el);
+        }
+        updateCards(0);
+      }
+
+      // 필수 함수 4: offset -> transform 스타일 계산
+      function getCardStyle(offset) {
+        const side = offset === 0 ? 0 : offset > 0 ? 1 : -1;
+        const abs = Math.abs(offset);
+
+        // 스크린샷 톤: 중앙 크게, 양옆은 안쪽으로 겹치며 기울고,
+        // 바깥 카드는 가장자리에서 살짝만 보이게 배치.
+        const center = { x: 0, y: -6, scale: 1.12, rotate: 0 };
+        const near = { x: 102, y: 26, scale: 0.95, rotate: 10 };
+        const far = { x: 168, y: 58, scale: 0.85, rotate: 18 };
+        const outer = { x: 184, y: 84, scale: 0.79, rotate: 16 };
+
+        let x = 0;
+        let y = 0;
+        let scale = 1;
+        let rotate = 0;
+
+        if (abs <= 1) {
+          const t = abs;
+          x = lerp(center.x, near.x, t) * side;
+          y = lerp(center.y, near.y, t);
+          scale = lerp(center.scale, near.scale, t);
+          rotate = lerp(center.rotate, near.rotate, t) * side;
+        } else if (abs <= 2) {
+          const t = clamp(abs - 1, 0, 1);
+          x = lerp(near.x, far.x, t) * side;
+          y = lerp(near.y, far.y, t);
+          scale = lerp(near.scale, far.scale, t);
+          rotate = lerp(near.rotate, far.rotate, t) * side;
+        } else if (abs <= 3) {
+          const t = clamp(abs - 2, 0, 1);
+          x = lerp(far.x, outer.x, t) * side;
+          y = lerp(far.y, outer.y, t);
+          scale = lerp(far.scale, outer.scale, t);
+          rotate = lerp(far.rotate, outer.rotate, t) * side;
+        } else {
+          x = outer.x * side;
+          y = outer.y;
+          scale = outer.scale;
+          rotate = outer.rotate * side;
+        }
+
+        return { x, y, scale, rotate };
+      }
+
+      // 필수 함수 2: progress 기반 실시간 카드 갱신
+      function updateCards(nextProgress) {
+        progress = clamp(nextProgress, -1, 1);
+
+        for (let i = 0; i < cardElements.length; i += 1) {
+          const el = cardElements[i];
+          const rawOffset = wrapOffset(i - currentIndex);
+          const visualOffset = rawOffset + progress;
+
+          // 중앙 + 좌우 3장만 표시 (총 7장)
+          if (Math.abs(visualOffset) > 3.1) {
+            el.style.opacity = "0";
+            el.style.pointerEvents = "none";
+            continue;
+          }
+
+          const style = getCardStyle(visualOffset);
+          const abs = Math.abs(visualOffset);
+          const zIndex = 320 - Math.round(abs * 52);
+          const opacity = abs <= 3 ? 1 : Math.max(0.75, 1 - (abs - 3) * 0.8);
+          const blur = abs < 2.6 ? 0 : (abs - 2.6) * 0.5;
+
+          el.style.opacity = String(opacity);
+          el.style.zIndex = String(zIndex);
+          el.style.pointerEvents = abs < 0.6 ? "auto" : "none";
+          el.style.filter = `blur(${blur.toFixed(2)}px)`;
+          el.style.transform =
+            `translateX(-50%) ` +
+            `translate(${style.x.toFixed(2)}px, ${style.y.toFixed(2)}px) ` +
+            `scale(${style.scale.toFixed(4)}) ` +
+            `rotate(${style.rotate.toFixed(2)}deg)`;
+        }
+      }
+
+      function requestRender() {
+        if (rafId !== null) return;
+        rafId = requestAnimationFrame(renderLoop);
+      }
+
+      // requestAnimationFrame 기반 부드러운 렌더 루프
+      function renderLoop() {
+        rafId = null;
+        const smoothing = isSnapping ? 0.22 : 0.34;
+        displayProgress = lerp(displayProgress, targetProgress, smoothing);
+        updateCards(displayProgress);
+
+        if (Math.abs(targetProgress - displayProgress) > 0.001) {
+          requestRender();
+        } else {
+          displayProgress = targetProgress;
+          updateCards(displayProgress);
+        }
+      }
+
+      function onPointerDown(e) {
+        // 멈추지 않은 상태에서 터치하면 즉시 정지
+        if (snapRafId !== null) {
+          cancelAnimationFrame(snapRafId);
+          snapRafId = null;
+          isSnapping = false;
+          targetProgress = displayProgress;
+          updateCards(displayProgress);
+        }
+
+        isDragging = true;
+        pointerId = e.pointerId;
+        startX = e.clientX;
+        lastX = e.clientX;
+        lastT = performance.now();
+        velocity = 0;
+        deckArea.setPointerCapture(pointerId);
+      }
+
+      function onPointerMove(e) {
+        if (!isDragging || e.pointerId !== pointerId) return;
+        const dx = e.clientX - startX;
+        targetProgress = clamp(dx / dragWidth, -1, 1);
+
+        // pointermove 동안 계속 업데이트
+        requestRender();
+
+        const now = performance.now();
+        const dt = now - lastT;
+        if (dt > 0) velocity = (e.clientX - lastX) / dt;
+        lastX = e.clientX;
+        lastT = now;
+      }
+
+      function onPointerUp(e) {
+        if (!isDragging || e.pointerId !== pointerId) return;
+        isDragging = false;
+        deckArea.releasePointerCapture(pointerId);
+        pointerId = null;
+
+        // progress + 속도 기반 멀티 카드 관성 스텝 계산
+        const absProgress = Math.abs(targetProgress);
+        const absVelocity = Math.abs(velocity);
+
+        // 손가락 방향 판단: 왼쪽(-)이면 다음 카드(+step), 오른쪽(+)이면 이전 카드(-step)
+        const intent = absVelocity > 0.15 ? velocity : targetProgress;
+        const direction = intent < 0 ? 1 : -1;
+
+        // 속도가 빠를수록 여러 장 넘어가도록 카드 단위 투사값 증가
+        const projectedCards = absProgress * 1.55 + absVelocity * 7.8;
+        let stepCount = Math.floor(projectedCards + 0.08);
+
+        // 아주 작은 제스처는 제자리 스냅, 임계 이상이면 최소 1장 이동
+        if (stepCount === 0 && (absProgress > 0.2 || absVelocity > 0.18)) {
+          stepCount = 1;
+        }
+
+        stepCount = clamp(stepCount, 0, 12);
+        const step = direction * stepCount;
+        snapToNearest(step);
+      }
+
+      function easeOutLongTail(t) {
+        // 앞 80%는 빠르게 진행, 마지막 20%는 길게 감속
+        if (t < 0.8) {
+          const p = t / 0.8;
+          return 0.88 * (1 - Math.pow(1 - p, 3));
+        }
+        const p = (t - 0.8) / 0.2;
+        return 0.88 + 0.12 * (1 - Math.pow(1 - p, 5));
+      }
+
+      // 필수 함수 3: 중앙 카드로 스냅
+      function snapToNearest(step = 0) {
+        if (snapRafId !== null) cancelAnimationFrame(snapRafId);
+        isSnapping = true;
+
+        const from = displayProgress;
+        const to = step === 0 ? 0 : -step;
+        const duration = clamp(980 + Math.abs(step) * 140, 980, 2400);
+        const start = performance.now();
+
+        function tick(now) {
+          const t = clamp((now - start) / duration, 0, 1);
+          // 초반은 빠르게, 후반은 길게 감속
+          const eased = easeOutLongTail(t);
+          let p = lerp(from, to, eased);
+
+          // p가 +/-1을 넘을 때마다 인덱스를 넘겨 연속 카드 이동 구현
+          while (p <= -1) {
+            currentIndex = wrapIndex(currentIndex + 1);
+            p += 1;
+          }
+          while (p >= 1) {
+            currentIndex = wrapIndex(currentIndex - 1);
+            p -= 1;
+          }
+
+          targetProgress = p;
+          displayProgress = p;
+          updateCards(p);
+
+          if (t < 1) {
+            snapRafId = requestAnimationFrame(tick);
+            return;
+          }
+
+          targetProgress = 0;
+          displayProgress = 0;
+          updateCards(0);
+          isSnapping = false;
+          snapRafId = null;
+        }
+
+        snapRafId = requestAnimationFrame(tick);
+      }
+
+      function bindEvents() {
+        deckArea.addEventListener("pointerdown", onPointerDown);
+        deckArea.addEventListener("pointermove", onPointerMove);
+        deckArea.addEventListener("pointerup", onPointerUp);
+        deckArea.addEventListener("pointercancel", onPointerUp);
+      }
+
+      function init() {
+        createCards();
+        bindEvents();
+      }
+
+      init();
+    </script>
+  </body>
+  </html>
