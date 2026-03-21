@@ -48,8 +48,9 @@ export default function Page01MastersList1() {
   const currentProfile = current
     ? ((masterProfiles as Record<string, ProfilePopupData>)[current.id] ?? null)
     : null;
+  const popupType = currentProfile?.type ?? current?.type ?? "";
   const popupTitle = currentProfile?.job
-    ? `${currentProfile.job} / ${currentProfile?.type ?? current.type}`
+    ? `${currentProfile.job} / ${popupType}`
     : current?.profileTitle ?? "";
   const popupTendency = currentProfile?.tendencyLines?.length
     ? currentProfile.tendencyLines.join(" ")
