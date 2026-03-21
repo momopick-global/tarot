@@ -27,6 +27,7 @@
 
 | 증상 | 조치 |
 |------|------|
+| 로그: `HttpError: Not Found` / `Failed to create deployment (status: 404)` / `Ensure GitHub Pages has been enabled` | **Settings → Pages**에서 Pages를 켜고 **Source = GitHub Actions** 로 저장한 뒤 워크플로 **Re-run** |
 | build는 성공, deploy만 실패 | Pages 소스가 **GitHub Actions**인지 다시 확인 |
 | 조직(Org) 저장소 | Org **Settings → Actions → General**에서 Pages/워크플로 정책 허용 여부 |
 | `github-pages` 환경 보호 규칙 | **Settings → Environments → github-pages**에서 필수 리뷰어가 있으면 배포 전 **승인** 필요 |
