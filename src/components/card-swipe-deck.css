@@ -18,15 +18,41 @@
   height: 198px;
   border-radius: 14px;
   border: 1px solid rgba(197, 172, 255, 0.72);
-  background: linear-gradient(165deg, #6f3bff, #2f1a7d);
-  box-shadow: 0 16px 36px rgba(4, 3, 14, 0.52);
+  background-image:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.02) 28%, rgba(0, 0, 0, 0.2) 100%),
+    url("/assets/card-back-page04.png");
+  background-size: cover;
+  background-position: center;
+  box-shadow:
+    0 16px 36px rgba(4, 3, 14, 0.52),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   color: #ffffff;
-  font-size: 18px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.06em;
   transform-origin: center bottom;
   will-change: transform, opacity, filter;
+  overflow: hidden;
+}
+
+.card-swipe-deck .card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at 16% 12%, rgba(255, 255, 255, 0.28), transparent 34%);
+  pointer-events: none;
+}
+
+.card-swipe-deck .card span {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 10px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(7, 6, 20, 0.65);
+  border: 1px solid rgba(210, 186, 255, 0.55);
 }

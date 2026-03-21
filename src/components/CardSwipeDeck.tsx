@@ -269,8 +269,10 @@ export function CardSwipeDeck({
       cardElements.length = 0;
       for (let i = 0; i < TOTAL_CARDS; i += 1) {
         const el = document.createElement("div");
+        const label = document.createElement("span");
         el.className = "card";
-        el.textContent = CARD_LABELS[i];
+        label.textContent = CARD_LABELS[i];
+        el.appendChild(label);
         el.dataset.index = String(i);
         deckArea.appendChild(el);
         cardElements.push(el);
