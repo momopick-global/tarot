@@ -1,0 +1,32 @@
+/* Card swipe deck — scoped to avoid leaking into the rest of the app */
+.card-swipe-deck .deck-area {
+  position: relative;
+  width: 100%;
+  height: min(72vh, 560px);
+  min-height: 280px;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  overflow: hidden;
+}
+
+.card-swipe-deck .card {
+  position: absolute;
+  left: 50%;
+  bottom: 44px;
+  width: 128px;
+  height: 198px;
+  border-radius: 14px;
+  border: 1px solid rgba(197, 172, 255, 0.72);
+  background: linear-gradient(165deg, #6f3bff, #2f1a7d);
+  box-shadow: 0 16px 36px rgba(4, 3, 14, 0.52);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transform-origin: center bottom;
+  will-change: transform, opacity, filter;
+}

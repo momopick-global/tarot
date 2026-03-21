@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { CardGuidePopup } from "@/components/CardGuidePopup";
-import { CardSwipeDemoEmbed } from "@/components/CardSwipeDemoEmbed";
+import { CardSwipeDeck } from "@/components/CardSwipeDeck";
 import { FlowScene } from "@/components/FlowScene";
 import { MasterIntroPopup } from "@/components/MasterIntroPopup";
 import { FLOW_MASTERS } from "@/lib/flowData";
@@ -29,7 +29,7 @@ export default function Page03CardSelection1() {
         backImageSrc="/assets/btn-back-page03.png"
       >
         <div className="mx-auto min-h-[744px] w-full max-w-[350px]">
-          {isCardStage ? <CardSwipeDemoEmbed masterId={current.id} /> : null}
+          {isCardStage ? <CardSwipeDeck masterId={current.id} /> : null}
         </div>
         {!isCardStage ? (
           <MasterIntroPopup
