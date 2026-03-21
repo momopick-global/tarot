@@ -7,9 +7,10 @@ import { FlowScene } from "@/components/FlowScene";
 import { HomeShareSection } from "@/components/HomeShareSection";
 import { FLOW_MASTERS } from "@/lib/flowData";
 import masterProfiles from "@/data/master-profiles.json";
+import { withAssetBase } from "@/lib/publicPath";
 
-/** JSON에 diagramSrc 없을 때 — 프로필 페이지와 동일 */
-const FALLBACK_DIAGRAM_SRC = "/assets/master-diagrams/01_Cassian.svg";
+/** JSON `diagramSrc`는 `/assets/...` 원본 문자열 — 표시 시 withAssetBase 적용 */
+const DIAGRAM_FALLBACK_PATH = "/assets/master-diagrams/01_Cassian.svg";
 
 type ProfilePopupData = {
   diagramSrc?: string;
@@ -49,9 +50,9 @@ export default function Page01MastersList1() {
   const popupTags = currentProfile?.tags?.length
     ? currentProfile.tags.join(" ")
     : "🔮 미래형 🌕 분석형 ♍ 객관형 🌙 신비형 🔮 고전형";
-  const popupDiagramSrc = current
-    ? (currentProfile?.diagramSrc ?? FALLBACK_DIAGRAM_SRC)
-    : FALLBACK_DIAGRAM_SRC;
+  const popupDiagramSrc = withAssetBase(
+    current ? (currentProfile?.diagramSrc ?? DIAGRAM_FALLBACK_PATH) : DIAGRAM_FALLBACK_PATH,
+  );
 
   return (
     <main className="w-full">

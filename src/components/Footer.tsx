@@ -1,10 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
+import { withAssetBase } from "@/lib/publicPath";
 
-const ICON_EYE = "/assets/svg-logo-yourtarot.svg-699577b6-cedf-4beb-8082-e9fc60a6227c.png";
-const ICON_INSTAGRAM =
-  "/assets/svg-ic-social-instagram.svg-2aa4e1f6-9ec8-47a4-8c99-29d5317dd055.png";
-const ICON_TALK = "/assets/svg-ic-social-kakao.svg-20eca7d6-4d65-40b8-954f-17463d423b00.png";
+const ICON_EYE = withAssetBase("/assets/svg-logo-yourtarot.svg-699577b6-cedf-4beb-8082-e9fc60a6227c.png");
+const ICON_INSTAGRAM = withAssetBase(
+  "/assets/svg-ic-social-instagram.svg-2aa4e1f6-9ec8-47a4-8c99-29d5317dd055.png",
+);
+const ICON_TALK = withAssetBase("/assets/svg-ic-social-kakao.svg-20eca7d6-4d65-40b8-954f-17463d423b00.png");
 
 export function Footer() {
   return (

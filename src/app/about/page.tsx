@@ -1,6 +1,7 @@
 import Image from "next/image";
+import { withAssetBase } from "@/lib/publicPath";
 
-const ABOUT_TOP_LOGO = "/assets/about-logo-frame214.png";
+const ABOUT_TOP_LOGO = withAssetBase("/assets/about-logo-frame214.png");
 
 export default function AboutPage() {
   return (

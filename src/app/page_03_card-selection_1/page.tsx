@@ -9,6 +9,7 @@ import { FlowScene } from "@/components/FlowScene";
 import { MasterIntroPopup } from "@/components/MasterIntroPopup";
 import { FLOW_MASTERS } from "@/lib/flowData";
 import { getMasterBackgroundSrc } from "@/lib/masterCardAssets";
+import { withAssetBase } from "@/lib/publicPath";
 
 function Page03CardSelection1Inner() {
   const searchParams = useSearchParams();
@@ -31,7 +32,7 @@ function Page03CardSelection1Inner() {
             : getMasterBackgroundSrc(current.id, 1)
         }
         sceneClassName="h-[844px] min-h-[844px]"
-        backImageSrc="/assets/btn-back-page03.png"
+        backImageSrc={withAssetBase("/assets/btn-back-page03.png")}
       >
         <div className="pointer-events-none mb-2 text-right text-[10px] text-[#d7c8ff]/80">
           DBG BG: {debugBgLabel}

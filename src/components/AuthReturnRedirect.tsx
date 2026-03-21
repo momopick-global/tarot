@@ -2,7 +2,11 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { consumeAuthReturnPath, OAUTH_PENDING_KEY } from "@/lib/authReturnPath";
+import {
+  consumeAuthReturnPath,
+  DEFAULT_AFTER_LOGIN_PATH,
+  OAUTH_PENDING_KEY,
+} from "@/lib/authReturnPath";
 import { getSupabaseClient } from "@/lib/supabase";
 
 /**
@@ -23,9 +27,7 @@ export function AuthReturnRedirect() {
 
       sessionStorage.removeItem(OAUTH_PENDING_KEY);
       const next = consumeAuthReturnPath();
-      if (next) {
-        router.replace(next);
-      }
+      router.replace(next ?? DEFAULT_AFTER_LOGIN_PATH);
     });
 
     return () => {

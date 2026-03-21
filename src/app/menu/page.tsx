@@ -1,6 +1,13 @@
+"use client";
+
 import Link from "next/link";
+import { useUser } from "@/hooks/useUser";
+import { loginUrlWithReturnTo, MYPAGE_PATH } from "@/lib/authReturnPath";
 
 export default function MenuPage() {
+  const { user } = useUser();
+  const mypageHref = user ? MYPAGE_PATH : loginUrlWithReturnTo(MYPAGE_PATH);
+
   return (
     <main className="flex-1">
       <section className="mx-auto w-full max-w-[390px] px-0 pt-6">
@@ -61,10 +68,7 @@ export default function MenuPage() {
               로그인
             </Link>
 
-            <Link
-              href="/mypage"
-              className="flex items-center gap-3 text-[18px] font-semibold"
-            >
+            <Link href={mypageHref} className="flex items-center gap-3 text-[18px] font-semibold">
               <span aria-hidden>🦄</span>
               마이페이지
             </Link>
@@ -86,7 +90,7 @@ export default function MenuPage() {
 
           <div className="mt-16 text-[16px]">
             <div className="text-neutral-60">😄</div>
-            <Link href="/mypage" className="mt-1 inline-block">
+            <Link href={mypageHref} className="mt-1 inline-block">
               탈퇴하기
             </Link>
           </div>
@@ -95,4 +99,3 @@ export default function MenuPage() {
     </main>
   );
 }
-

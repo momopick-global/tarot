@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { HomeShareSection } from "@/components/HomeShareSection";
+import { withAssetBase } from "@/lib/publicPath";
 
-const IMG_CRYSTAL_BALL = "/assets/img-visual-crystal-ball-v2.png";
+const IMG_CRYSTAL_BALL = withAssetBase("/assets/img-visual-crystal-ball-v2.png");
 
 export default function Home() {
   return (

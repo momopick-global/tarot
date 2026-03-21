@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useUser } from "@/hooks/useUser";
+import { loginUrlWithReturnTo, MYPAGE_PATH, saveAuthReturnPath } from "@/lib/authReturnPath";
 import { requestTarotResultCloudSave } from "@/lib/tarotCloudInsertOnce";
 import { buildTarotReadingId, upsertTarotResult } from "@/lib/tarotResultsDb";
 import { readSavedReadings, removeSavedReading, upsertSavedReading } from "@/lib/savedReadings";
@@ -36,6 +37,7 @@ export function ResultActionButtons({
   const [savedLocal, setSavedLocal] = useState(false);
   const [toast, setToast] = useState("");
   const [cloudUi, setCloudUi] = useState<CloudUiState>("idle");
+  const [saveLoginDialogOpen, setSaveLoginDialogOpen] = useState(false);
 
   const localReadingKey = useMemo(() => `${masterId}-${cardIndex}`, [masterId, cardIndex]);
   const hasSupabase = Boolean(
@@ -54,7 +56,6 @@ export function ResultActionButtons({
     if (!toast) return;
     let ms = 2000;
     if (toast.includes("마이페이지에 저장했어요")) ms = 2800;
-    if (toast.includes("로그인 후 저장")) ms = 2400;
     const t = window.setTimeout(() => setToast(""), ms);
     return () => window.clearTimeout(t);
   }, [toast]);
@@ -77,15 +78,19 @@ export function ResultActionButtons({
     setCloudUi((prev) => (prev === "saving" ? prev : "idle"));
   }, [authLoading, hasSupabase, tarotReadingId, user]);
 
-  const onGuestSaveClick = useCallback(() => {
-    setToast("로그인 후 저장할 수 있어요");
+  const openGuestSaveDialog = useCallback(() => {
+    setSaveLoginDialogOpen(true);
+  }, []);
+
+  const confirmGuestLoginForSave = useCallback(() => {
+    setSaveLoginDialogOpen(false);
     const returnTo =
       typeof window !== "undefined"
         ? `${window.location.pathname}${window.location.search}` || "/"
         : "/";
-    window.setTimeout(() => {
-      router.push(`/login?returnTo=${encodeURIComponent(returnTo)}`);
-    }, 650);
+    /** 1) sessionStorage에 현재 경로 저장 2) 로그인 URL에도 returnTo 전달 (OAuth 후 복귀용) */
+    saveAuthReturnPath(returnTo);
+    router.push(loginUrlWithReturnTo(returnTo));
   }, [router]);
 
   const onCloudSave = useCallback(() => {
@@ -166,9 +171,10 @@ export function ResultActionButtons({
         </p>
       );
     }
+    const recordsHref = user ? MYPAGE_PATH : loginUrlWithReturnTo(MYPAGE_PATH);
     return (
       <p className="mt-2 text-center text-[11px] text-[#aa9dce]">
-        <Link href="/mypage" className="text-[#d8ccff] underline underline-offset-2">
+        <Link href={recordsHref} className="text-[#d8ccff] underline underline-offset-2">
           마이페이지에서 기록 보기
         </Link>
       </p>
@@ -194,7 +200,7 @@ export function ResultActionButtons({
       return (
         <button
           type="button"
-          onClick={onGuestSaveClick}
+          onClick={openGuestSaveDialog}
           className="rounded-xl border border-primary bg-[rgba(12,10,36,0.92)] px-4 py-3 text-center text-[15px] font-semibold text-[#d8ccff]"
         >
           저장하기
@@ -262,6 +268,38 @@ export function ResultActionButtons({
       {toast ? (
         <div className="pointer-events-none fixed inset-x-0 bottom-6 z-[700] mx-auto w-[calc(100%-32px)] max-w-[358px] rounded-xl border border-[#8d6cd8]/70 bg-[rgba(22,16,48,0.94)] px-3 py-2 text-center text-[12px] text-[#efe7ff] shadow-[0_10px_30px_rgba(0,0,0,0.35)] animate-[toastIn_160ms_ease-out]">
           {toast}
+        </div>
+      ) : null}
+
+      {saveLoginDialogOpen ? (
+        <div
+          className="fixed inset-0 z-[800] flex items-center justify-center bg-[rgba(2,1,10,0.65)] px-5 backdrop-blur-[2px]"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="save-login-dialog-title"
+        >
+          <div className="w-full max-w-[320px] rounded-2xl border border-[#6b4aa8] bg-[rgba(14,12,36,0.98)] p-5 text-center shadow-[0_20px_50px_rgba(0,0,0,0.45)]">
+            <p id="save-login-dialog-title" className="text-[15px] font-semibold leading-snug text-white">
+              로그인하면 테스트한 결과를 저장할 수 있습니다.
+            </p>
+            <p className="mt-2 text-[13px] leading-relaxed text-[#d8ccff]">로그인 하시겠습니까?</p>
+            <div className="mt-5 grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setSaveLoginDialogOpen(false)}
+                className="rounded-xl border border-white/25 bg-transparent px-3 py-2.5 text-[14px] font-medium text-[#e8e0ff]"
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                onClick={confirmGuestLoginForSave}
+                className="rounded-xl bg-[#6422AB] px-3 py-2.5 text-[14px] font-semibold text-white"
+              >
+                로그인하기
+              </button>
+            </div>
+          </div>
         </div>
       ) : null}
     </div>

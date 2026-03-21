@@ -7,7 +7,9 @@ import { getMasterBackgroundSrc } from "@/lib/masterCardAssets";
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-const LOADING_ICON = "/assets/Frame_154-26dc58c4-a9ad-4649-b973-c08847b7f089.png";
+import { withAssetBase } from "@/lib/publicPath";
+
+const LOADING_ICON = withAssetBase("/assets/Frame_154-26dc58c4-a9ad-4649-b973-c08847b7f089.png");
 
 function Page06AnalyzingInner() {
   const router = useRouter();

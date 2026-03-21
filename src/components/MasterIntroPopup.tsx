@@ -17,12 +17,8 @@ export function MasterIntroPopup({
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center px-5" role="dialog" aria-modal="true">
-      <button
-        type="button"
-        onClick={() => setOpen(false)}
-        className="absolute inset-0 bg-[rgba(2,1,10,0.55)] backdrop-blur-[3px]"
-        aria-label="마스터 상세 닫기"
-      />
+      {/* 배경 탭으로 닫히지 않음 — 카드받기 / 마스터 선택으로만 진행 */}
+      <div className="absolute inset-0 bg-[rgba(2,1,10,0.55)] backdrop-blur-[3px]" aria-hidden />
       <div className="relative z-10 w-full max-w-[350px] rounded-xl border border-primary bg-[rgba(9,7,28,0.94)] p-4 text-white shadow-2xl">
         <div className="min-w-0 text-[14px] leading-[1.6] text-white">
           별들은 이미 답을 알고 있습니다.

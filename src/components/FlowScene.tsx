@@ -2,9 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { DEFAULT_FLOW_BACKGROUND_SRC } from "@/lib/masterCardAssets";
+import { withAssetBase } from "@/lib/publicPath";
 
 const BG = DEFAULT_FLOW_BACKGROUND_SRC;
-const BACK = "/assets/btn_back-de2e4927-d11f-4301-b319-3dee0a48266a.png";
+const BACK = withAssetBase("/assets/btn_back-de2e4927-d11f-4301-b319-3dee0a48266a.png");
 
 export function FlowScene({
   children,

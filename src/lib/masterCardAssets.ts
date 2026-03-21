@@ -1,3 +1,5 @@
+import { withAssetBase } from "./publicPath";
+
 /**
  * 마스터 id ↔ 폴더명 (01_Cassian … 09_Pipi)
  * 앞면: /images/cards/{folder}/{0-77}.png
@@ -16,7 +18,7 @@ export const MASTER_CARD_FOLDER: Record<string, string> = {
 };
 
 /** 폴더 밖 기본 뒷면 (UI 폴백) */
-export const DEFAULT_CARD_BACK_SRC = "/assets/card-back-page04.png";
+export const DEFAULT_CARD_BACK_SRC = withAssetBase("/assets/card-back-page04.png");
 
 export function getMasterCardFolder(masterId: string): string {
   return MASTER_CARD_FOLDER[masterId] ?? MASTER_CARD_FOLDER.cassian;
@@ -26,13 +28,13 @@ export function getMasterCardFolder(masterId: string): string {
 export function getMasterCardFrontSrc(masterId: string, cardIndex: number): string {
   const folder = getMasterCardFolder(masterId);
   const n = Math.min(77, Math.max(0, Math.floor(cardIndex)));
-  return `/images/cards/${folder}/${n}.png`;
+  return withAssetBase(`/images/cards/${folder}/${n}.png`);
 }
 
 /** 카드 뒷면 — 마스터별 card-back.png (`public/images/masters/{folder}/`) */
 export function getMasterCardBackSrc(masterId: string): string {
   const folder = getMasterCardFolder(masterId);
-  return `/images/masters/${folder}/card-back.png`;
+  return withAssetBase(`/images/masters/${folder}/card-back.png`);
 }
 
 /**
@@ -43,16 +45,16 @@ export function getMasterCardBackSrc(masterId: string): string {
  */
 export function getMasterBackgroundSrc(masterId: string, slot: 1 | 2 | 3): string {
   const folder = getMasterCardFolder(masterId);
-  return `/images/masters/${folder}/bg_0${slot}.png`;
+  return withAssetBase(`/images/masters/${folder}/bg_0${slot}.png`);
 }
 
 /** FlowScene 등에서 master 미지정 시 기본 배경 */
-export const DEFAULT_FLOW_BACKGROUND_SRC = "/images/masters/01_Cassian/bg_02.png";
+export const DEFAULT_FLOW_BACKGROUND_SRC = withAssetBase("/images/masters/01_Cassian/bg_02.png");
 
 /** 마스터 리스트/프로필 등 썸네일 — public/images/masters/{folder}/thumb.png */
 export function getMasterThumbSrc(masterId: string): string {
   const folder = getMasterCardFolder(masterId);
-  return `/images/masters/${folder}/thumb.png`;
+  return withAssetBase(`/images/masters/${folder}/thumb.png`);
 }
 
 export function clampCardIndex(raw: string | undefined, fallback = 0): number {

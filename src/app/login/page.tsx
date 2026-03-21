@@ -10,10 +10,12 @@ import {
   sanitizeAuthReturnPath,
   setAuthReturnPathFromQuery,
 } from "@/lib/authReturnPath";
+import { withAssetBase } from "@/lib/publicPath";
 
-const ICON_TALK = "/assets/svg-ic-social-kakao.svg-20eca7d6-4d65-40b8-954f-17463d423b00.png";
-const ICON_FACEBOOK =
-  "/assets/svg-ic-share-facebook.svg-527221c9-1874-4fae-83ed-579ce7d4210b.png";
+const ICON_TALK = withAssetBase("/assets/svg-ic-social-kakao.svg-20eca7d6-4d65-40b8-954f-17463d423b00.png");
+const ICON_FACEBOOK = withAssetBase(
+  "/assets/svg-ic-share-facebook.svg-527221c9-1874-4fae-83ed-579ce7d4210b.png",
+);
 
 function parseReturnToParam(raw: string | null): string | null {
   if (raw == null || raw === "") return null;

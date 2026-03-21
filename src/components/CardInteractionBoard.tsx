@@ -4,7 +4,9 @@ import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { useRouter } from "next/navigation";
 
-const CARD_BACK = "/assets/card-back-page04.png";
+import { withAssetBase } from "@/lib/publicPath";
+
+const CARD_BACK = withAssetBase("/assets/card-back-page04.png");
 const TOTAL_CARDS = 78;
 const VISIBLE_CARDS = 7;
 const MAX_VISIBLE_OFFSET = Math.floor(VISIBLE_CARDS / 2);

@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import { withAssetBase } from "@/lib/publicPath";
 
-const ICON_EYE = "/assets/svg-logo-yourtarot.svg-699577b6-cedf-4beb-8082-e9fc60a6227c.png";
+const ICON_EYE = withAssetBase("/assets/svg-logo-yourtarot.svg-699577b6-cedf-4beb-8082-e9fc60a6227c.png");
 
 export default function RecommendedPage() {
   return (

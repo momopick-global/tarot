@@ -4,6 +4,8 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AuthReturnRedirect } from "@/components/AuthReturnRedirect";
+import { useUser } from "@/hooks/useUser";
+import { loginUrlWithReturnTo, MYPAGE_PATH } from "@/lib/authReturnPath";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 
@@ -15,7 +17,9 @@ export function SiteFrame({
   hideFooter?: boolean;
 }>) {
   const pathname = usePathname();
+  const { user } = useUser();
   const hideHeader = pathname?.startsWith("/page_07_reading-result_typea");
+  const mypageHref = user ? MYPAGE_PATH : loginUrlWithReturnTo(MYPAGE_PATH);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isMenuMounted, setIsMenuMounted] = React.useState(false);
   const [isMenuActive, setIsMenuActive] = React.useState(false);
@@ -106,7 +110,7 @@ export function SiteFrame({
                   <Link href="/login" onClick={closeMenu} className="block">
                     로그인
                   </Link>
-                  <Link href="/mypage" onClick={closeMenu} className="block">
+                  <Link href={mypageHref} onClick={closeMenu} className="block">
                     마이페이지
                   </Link>
                 </nav>

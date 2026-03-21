@@ -8,9 +8,10 @@ import { FlowScene } from "@/components/FlowScene";
 import { FLOW_MASTERS } from "@/lib/flowData";
 import { getMasterBackgroundSrc } from "@/lib/masterCardAssets";
 import masterProfiles from "@/data/master-profiles.json";
+import { withAssetBase } from "@/lib/publicPath";
 
-/** JSON에 diagramSrc가 없을 때(구버전) 카시안 차트를 기본으로 사용 */
-const FALLBACK_DIAGRAM_SRC = "/assets/master-diagrams/01_Cassian.svg";
+/** JSON `diagramSrc`는 `/assets/...` 원본 — Image에 넣을 때 withAssetBase */
+const DIAGRAM_FALLBACK_PATH = "/assets/master-diagrams/01_Cassian.svg";
 
 type ProfileDetail = {
   name: string;
@@ -42,7 +43,7 @@ function PageMasterProfile01Inner() {
     );
   }
 
-  const diagramSrc = detail.diagramSrc ?? FALLBACK_DIAGRAM_SRC;
+  const diagramSrc = withAssetBase(detail.diagramSrc ?? DIAGRAM_FALLBACK_PATH);
 
   return (
     <main className="w-full">

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useUser } from "@/hooks/useUser";
+import { loginUrlWithReturnTo, MYPAGE_PATH } from "@/lib/authReturnPath";
 import { FLOW_MASTERS } from "@/lib/flowData";
 import { getMasterCardFrontSrc } from "@/lib/masterCardAssets";
 import {
@@ -87,10 +88,28 @@ export default function MyPage() {
     void refreshCloud();
   }, [supabaseConfigured, authLoading, user, refreshCloud]);
 
+  /** Supabase 사용 시 비로그인이 /mypage 로 직접 들어오면 로그인으로 */
+  useEffect(() => {
+    if (!supabaseConfigured || authLoading) return;
+    if (!user) {
+      router.replace(loginUrlWithReturnTo(MYPAGE_PATH));
+    }
+  }, [supabaseConfigured, authLoading, user, router]);
+
   const onLogout = async () => {
     await logout();
     router.push("/");
   };
+
+  if (supabaseConfigured && !authLoading && !user) {
+    return (
+      <main className="flex-1">
+        <section className="mx-auto w-full max-w-[390px] px-5 pt-14 text-center text-[14px] text-[#d8ccff]">
+          로그인 페이지로 이동 중…
+        </section>
+      </main>
+    );
+  }
 
   const onDeleteOneLocal = (id: string) => {
     setSavedLocal(removeSavedReading(id));

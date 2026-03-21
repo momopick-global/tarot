@@ -10,11 +10,12 @@ import { clampCardIndex, getMasterCardFrontSrc } from "@/lib/masterCardAssets";
 import { resolveCardReading } from "@/lib/resolveCardReading";
 import { buildInterpretationText } from "@/lib/tarotResultsDb";
 import { FLOW_MASTERS } from "@/lib/flowData";
+import { withAssetBase } from "@/lib/publicPath";
 
-const SHARE_LINK = "/assets/svg-ic-share-link.svg-26940f47-d010-498b-b1e1-68303b31e59e.png";
-const SHARE_KAKAO = "/assets/svg-ic-social-kakao.svg-20eca7d6-4d65-40b8-954f-17463d423b00.png";
-const SHARE_FB = "/assets/svg-ic-share-facebook.svg-527221c9-1874-4fae-83ed-579ce7d4210b.png";
-const SHARE_X = "/assets/svg-ic-share-x.svg-4ef9a083-7b44-439e-bfa4-3c305b5bf580.png";
+const SHARE_LINK = withAssetBase("/assets/svg-ic-share-link.svg-26940f47-d010-498b-b1e1-68303b31e59e.png");
+const SHARE_KAKAO = withAssetBase("/assets/svg-ic-social-kakao.svg-20eca7d6-4d65-40b8-954f-17463d423b00.png");
+const SHARE_FB = withAssetBase("/assets/svg-ic-share-facebook.svg-527221c9-1874-4fae-83ed-579ce7d4210b.png");
+const SHARE_X = withAssetBase("/assets/svg-ic-share-x.svg-4ef9a083-7b44-439e-bfa4-3c305b5bf580.png");
 
 function formatBoldSegments(text: string): ReactNode {
   const parts = text.split(/(\*\*.+?\*\*)/g);

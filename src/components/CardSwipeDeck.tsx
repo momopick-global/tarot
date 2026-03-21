@@ -29,13 +29,13 @@ export function CardSwipeDeck({
 }>) {
   const router = useRouter();
   const deckAreaRef = useRef<HTMLDivElement | null>(null);
+  /** 스냅 애니메이션 중에도 최신 값 — 「카드열기」 클릭 시 화면 중앙 카드와 일치 */
+  const liveSelectedCardRef = useRef(0);
   const [deckIndex, setDeckIndex] = useState(0);
   const [resetKey, setResetKey] = useState(0);
   const [isRevealed, setIsRevealed] = useState(false);
   const [isShuffling, setIsShuffling] = useState(false);
-  const [deckOrder, setDeckOrder] = useState(() =>
-    Array.from({ length: TOTAL_CARDS }, (_, i) => i),
-  );
+  const [deckOrder, setDeckOrder] = useState(() => makeShuffledOrder());
 
   useEffect(() => {
     onRevealChange?.(isRevealed);
@@ -67,9 +67,24 @@ export function CardSwipeDeck({
     let isSnapping = false;
     const cardElements: HTMLDivElement[] = [];
 
+    /** 스와이프 progress(−1~1)를 반영해 화면 정중앙에 가장 가까운 덱 슬롯의 카드 ID(0~77) */
+    function syncLiveSelectedCardFromVisual(prog: number) {
+      const p = clamp(prog, -1, 1);
+      let bestI = currentIndex;
+      let bestAbs = Infinity;
+      for (let i = 0; i < TOTAL_CARDS; i += 1) {
+        const vo = wrapOffset(i - currentIndex) + p;
+        const abs = Math.abs(vo);
+        if (abs < bestAbs) {
+          bestAbs = abs;
+          bestI = i;
+        }
+      }
+      liveSelectedCardRef.current = deckOrder[bestI] ?? 0;
+    }
+
     function notifyDeckIndex() {
-      const normalizedIndex = Math.max(0, Math.min(77, currentIndex));
-      setDeckIndex(deckOrder[normalizedIndex] ?? 0);
+      setDeckIndex(liveSelectedCardRef.current);
     }
 
     function clamp(value: number, min: number, max: number) {
@@ -187,6 +202,8 @@ export function CardSwipeDeck({
           `scale(${scale.toFixed(4)}) ` +
           `rotate(${style.rotate.toFixed(2)}deg)`;
       }
+
+      syncLiveSelectedCardFromVisual(progress);
     }
 
     function requestRender() {
@@ -209,6 +226,7 @@ export function CardSwipeDeck({
     }
 
     function onPointerDown(e: PointerEvent) {
+      if (isRevealed) return;
       if (snapRafId !== null) {
         cancelAnimationFrame(snapRafId);
         snapRafId = null;
@@ -296,6 +314,7 @@ export function CardSwipeDeck({
         targetProgress = p;
         displayProgress = p;
         updateCards(p);
+        setDeckIndex(liveSelectedCardRef.current);
 
         if (t < 1) {
           snapRafId = requestAnimationFrame(tick);
@@ -356,7 +375,6 @@ export function CardSwipeDeck({
     };
   }, [isRevealed, resetKey, deckOrder]);
 
-  const cardParam = String(deckIndex);
   const cardBackUrl = `url("${getMasterCardBackSrc(masterId)}")`;
 
   return (
@@ -364,12 +382,19 @@ export function CardSwipeDeck({
       className="card-swipe-deck page-fade mx-auto w-full max-w-[390px] [color-scheme:dark]"
       style={{ "--card-back-url": cardBackUrl } as CSSProperties}
     >
-      <div ref={deckAreaRef} className="deck-area" />
+      <div
+        ref={deckAreaRef}
+        className={`deck-area${isRevealed ? " pointer-events-none" : ""}`}
+        aria-disabled={isRevealed}
+      />
 
       <div className="pb-1 pt-1 text-center text-[24px] text-[#e5ddff]">⟷</div>
       <div className="pb-2 text-center text-[12px] text-[#d7ccff]">당신에게 끌리는 카드를 골라보세요</div>
       <div className="pb-6 text-center text-[11px] text-[#b9abdf]">
         선택 카드: #{String(deckIndex + 1).padStart(2, "0")}
+        <span className="mt-1 block text-[10px] text-[#9a8ec4]">
+          뒷면 숫자는 위와 같은 실제 카드 번호(1~78)입니다.
+        </span>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
@@ -381,7 +406,10 @@ export function CardSwipeDeck({
               setIsRevealed(true);
               return;
             }
-            router.push(`/page_06_analyzing?master=${encodeURIComponent(masterId)}&card=${encodeURIComponent(cardParam)}`);
+            const chosen = String(liveSelectedCardRef.current);
+            router.push(
+              `/page_06_analyzing?master=${encodeURIComponent(masterId)}&card=${encodeURIComponent(chosen)}`,
+            );
           }}
           disabled={isShuffling}
           className="rounded-2xl bg-[#6422AB] px-3 py-3 text-center text-[20px] font-semibold text-white disabled:opacity-70"
