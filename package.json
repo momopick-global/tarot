@@ -4,10 +4,18 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:3037": "next dev --port 3037 --hostname 127.0.0.1",
+    "dev:3037": "WATCHPACK_POLLING=true next dev --port 3037 --hostname 127.0.0.1",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "cards:tint-test": "node scripts/adjust-master-card-saturation.mjs",
+    "cards:resize": "node scripts/resize-master-card-images.mjs",
+    "cards:resize-390": "MAX_WIDTH=390 node scripts/resize-master-card-images.mjs",
+    "cards:strong-tint": "node scripts/strong-tint-master-cards.mjs",
+    "cards:tint-backs": "node scripts/tint-master-card-backs.mjs",
+    "masters:boost-morgana-yellow": "node scripts/boost-morgana-card-back-yellow.mjs",
+    "masters:tint-backgrounds": "node scripts/tint-master-backgrounds.mjs",
+    "readings:seed-templates": "node scripts/seed-reading-templates.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.99.3",
@@ -24,6 +32,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.0",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

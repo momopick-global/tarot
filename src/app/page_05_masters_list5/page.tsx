@@ -2,23 +2,21 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FlowScene } from "@/components/FlowScene";
 import { FLOW_MASTERS } from "@/lib/flowData";
+import {
+  getMasterBackgroundSrc,
+  getMasterCardBackSrc,
+  getMasterCardFrontSrc,
+} from "@/lib/masterCardAssets";
 import { useMemo, useState } from "react";
-
-const CARD_BACK = "/assets/card-back-page04.png";
 
 export default function Page05MastersList5() {
   const router = useRouter();
-  const [masterId] = useState(() => {
-    if (typeof window === "undefined") return "cassian";
-    return new URL(window.location.href).searchParams.get("master") ?? "cassian";
-  });
-  const [card] = useState(() => {
-    if (typeof window === "undefined") return "40";
-    return new URL(window.location.href).searchParams.get("card") ?? "40";
-  });
+  const searchParams = useSearchParams();
+  const masterId = (searchParams?.get("master") ?? "cassian").toLowerCase();
+  const card = searchParams?.get("card") ?? "40";
   const [isOpening, setIsOpening] = useState(false);
   const current = useMemo(
     () => FLOW_MASTERS.find((m) => m.id === masterId) ?? FLOW_MASTERS[0],
@@ -29,7 +27,8 @@ export default function Page05MastersList5() {
     if (!Number.isFinite(n)) return 40;
     return Math.min(77, Math.max(0, n));
   }, [card]);
-  const frontCardSrc = `/images/cards/01_Cassian/${cardIndex}.png`;
+  const frontCardSrc = getMasterCardFrontSrc(current.id, cardIndex);
+  const backCardSrc = getMasterCardBackSrc(current.id);
 
   const onOpenCard = () => {
     if (isOpening) return;
@@ -41,7 +40,10 @@ export default function Page05MastersList5() {
 
   return (
     <main className="w-full">
-      <FlowScene backHref={`/page_03_card-selection_1?master=${current.id}`}>
+      <FlowScene
+        backHref={`/page_03_card-selection_1?master=${current.id}`}
+        backgroundSrc={getMasterBackgroundSrc(current.id, 2)}
+      >
         <div className="mt-10 flex min-h-[300px] items-center justify-center">
           <div className="relative h-[244px] w-[156px] [perspective:1200px]">
             <div
@@ -53,10 +55,10 @@ export default function Page05MastersList5() {
               }}
             >
               <div className="absolute inset-0 overflow-hidden rounded-[14px] border border-[#a992e2] shadow-[0_18px_32px_rgba(4,3,14,0.55)] [backface-visibility:hidden]">
-                <Image src={CARD_BACK} alt="카드 뒷면" fill className="object-cover" />
+                <Image src={backCardSrc} alt="카드 뒷면" fill className="object-cover" sizes="156px" />
               </div>
               <div className="absolute inset-0 overflow-hidden rounded-[14px] border border-[#a992e2] shadow-[0_18px_32px_rgba(4,3,14,0.55)] [transform:rotateY(180deg)] [backface-visibility:hidden]">
-                <Image src={frontCardSrc} alt="카드 앞면" fill className="object-cover" />
+                <Image src={frontCardSrc} alt="카드 앞면" fill className="object-cover" sizes="156px" />
               </div>
             </div>
           </div>

@@ -6,8 +6,27 @@ import { useMemo, useState } from "react";
 import { FlowScene } from "@/components/FlowScene";
 import { HomeShareSection } from "@/components/HomeShareSection";
 import { FLOW_MASTERS } from "@/lib/flowData";
+import masterProfiles from "@/data/master-profiles.json";
 
 const DETAIL_DIAGRAM = "/assets/diagram-master-detail.png";
+const POPUP_DIAGRAM_BY_MASTER_ID: Record<string, string> = {
+  cassian: "/assets/master-diagrams/01_Cassian.svg",
+  kaien: "/assets/master-diagrams/02_Aiden.svg",
+  morgana: "/assets/master-diagrams/03_Morgana.svg",
+  noa: "/assets/master-diagrams/04_Noa.svg",
+  erebus: "/assets/master-diagrams/05_Erebus.svg",
+  serina: "/assets/master-diagrams/06_Serena.svg",
+  nyx: "/assets/master-diagrams/07_Nyx.svg",
+  clotho: "/assets/master-diagrams/08_Clotho.svg",
+  pipi: "/assets/master-diagrams/09_Pipi.svg",
+};
+
+type ProfilePopupData = {
+  type?: string;
+  job?: string;
+  tags?: string[];
+  tendencyLines?: string[];
+};
 
 export default function Page01MastersList1() {
   const [selected, setSelected] = useState<string | null>(null);
@@ -26,6 +45,19 @@ export default function Page01MastersList1() {
   const current = selected
     ? FLOW_MASTERS.find((m) => m.id === selected) ?? null
     : null;
+  const currentProfile = current
+    ? ((masterProfiles as Record<string, ProfilePopupData>)[current.id] ?? null)
+    : null;
+  const popupTitle = currentProfile?.job
+    ? `${currentProfile.job} / ${currentProfile?.type ?? current.type}`
+    : current?.profileTitle ?? "";
+  const popupTendency = currentProfile?.tendencyLines?.length
+    ? currentProfile.tendencyLines.join(" ")
+    : current?.desc ?? "";
+  const popupTags = currentProfile?.tags?.length
+    ? currentProfile.tags.join(" ")
+    : "🔮 미래형 🌕 분석형 ♍ 객관형 🌙 신비형 🔮 고전형";
+  const popupDiagramSrc = current ? (POPUP_DIAGRAM_BY_MASTER_ID[current.id] ?? DETAIL_DIAGRAM) : DETAIL_DIAGRAM;
 
   return (
     <main className="w-full">
@@ -126,13 +158,30 @@ export default function Page01MastersList1() {
               </div>
               <div className="flex items-start gap-3">
                 <div className="relative h-[98px] w-[98px] shrink-0 overflow-hidden rounded-md">
-                  <Image src={DETAIL_DIAGRAM} alt="마스터 다이어그램" fill className="object-cover" />
+                  <Image src={popupDiagramSrc} alt="마스터 다이어그램" fill className="object-cover" />
                 </div>
                 <div className="min-w-0 text-[12px] leading-[1.45]">
-                  <div className="font-semibold">{current.profileTitle}</div>
-                  <div className="mt-1 text-[#d6cbff]">{current.desc}</div>
-                  <div className="mt-2 text-[#d6cbff]">🔮 미래형 🌕 분석형 ♍ 객관형</div>
-                  <div className="mt-1 text-[#d6cbff]">🌙 신비형 🔮 고전형</div>
+                  <div className="font-semibold">{popupTitle}</div>
+                  <div
+                    className="mt-1 overflow-hidden text-[#d6cbff]"
+                    style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                    }}
+                  >
+                    {popupTendency}
+                  </div>
+                  <div
+                    className="mt-2 overflow-hidden text-[#d6cbff]"
+                    style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                    }}
+                  >
+                    {popupTags}
+                  </div>
                 </div>
               </div>
               <div className="mt-3 grid grid-cols-2 gap-2">

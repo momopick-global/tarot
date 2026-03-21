@@ -1,42 +1,57 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { CardGuidePopup } from "@/components/CardGuidePopup";
 import { CardSwipeDeck } from "@/components/CardSwipeDeck";
 import { FlowScene } from "@/components/FlowScene";
 import { MasterIntroPopup } from "@/components/MasterIntroPopup";
 import { FLOW_MASTERS } from "@/lib/flowData";
-
-const BG_PAGE03 = "/assets/bg-page03-master.png";
-const BG_CARD_OPEN = "/assets/bg2-a5c33368-f273-48af-8ec7-f18f1bc4e4f2.png";
+import { getMasterBackgroundSrc } from "@/lib/masterCardAssets";
 
 export default function Page03CardSelection1() {
-  const [master] = useState(() => {
-    if (typeof window === "undefined") return "cassian";
-    const m = new URL(window.location.href).searchParams.get("master");
-    return m ?? "cassian";
-  });
+  const searchParams = useSearchParams();
+  const master = (searchParams?.get("master") ?? "cassian").toLowerCase();
   const [isCardStage, setIsCardStage] = useState(false);
   const [isCardGuidePopupOpen, setIsCardGuidePopupOpen] = useState(false);
+  const [isCardOpened, setIsCardOpened] = useState(false);
   const current = FLOW_MASTERS.find((m) => m.id === master) ?? FLOW_MASTERS[0];
+  const debugBgLabel = !isCardStage ? "01" : isCardOpened ? "03" : "02";
 
   return (
     <main className="w-full">
       <FlowScene
         backHref="/page_01_masters_list_1"
-        backgroundSrc={isCardStage ? BG_CARD_OPEN : BG_PAGE03}
+        backgroundSrc={
+          isCardStage
+            ? isCardOpened
+              ? getMasterBackgroundSrc(current.id, 3)
+              : getMasterBackgroundSrc(current.id, 2)
+            : getMasterBackgroundSrc(current.id, 1)
+        }
         sceneClassName="h-[844px] min-h-[844px]"
         backImageSrc="/assets/btn-back-page03.png"
       >
-        <div className="relative z-0 mx-auto min-h-[744px] w-full max-w-[390px]">
+        <div className="pointer-events-none mb-2 text-right text-[10px] text-[#d7c8ff]/80">
+          DBG BG: {debugBgLabel}
+        </div>
+        <div className="relative z-0 left-1/2 min-h-[744px] w-screen max-w-[390px] -translate-x-1/2">
           {/* 덱은 카드 단계에서 항상 렌더 — 가이드 팝업은 z-index로 위에 덮음 */}
-          {isCardStage ? <CardSwipeDeck masterId={current.id} /> : null}
+          {isCardStage ? (
+            <CardSwipeDeck
+              masterId={current.id}
+              onRevealChange={(revealed) => {
+                setIsCardOpened(revealed);
+              }}
+            />
+          ) : null}
         </div>
         {!isCardStage ? (
           <MasterIntroPopup
             master={current}
             onCardReceive={() => {
               setIsCardStage(true);
+              setIsCardOpened(false);
               setIsCardGuidePopupOpen(true);
             }}
           />

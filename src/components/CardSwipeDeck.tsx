@@ -1,7 +1,8 @@
 "use client";
 
+import { getMasterCardBackSrc } from "@/lib/masterCardAssets";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import "./card-swipe-deck.css";
 
 const TOTAL_CARDS = 78;
@@ -9,17 +10,41 @@ const CARD_LABELS = Array.from({ length: TOTAL_CARDS }, (_, i) =>
   `${String(i + 1).padStart(2, "0")}`,
 );
 
+const makeShuffledOrder = () => {
+  const order = Array.from({ length: TOTAL_CARDS }, (_, i) => i);
+  for (let i = order.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return order;
+};
+
 /** `public/card_swipe_mobile_demo.html` 과 동일한 스와이프 덱 (iframe 없음) */
 export function CardSwipeDeck({
   masterId,
+  onRevealChange,
 }: Readonly<{
   masterId: string;
+  onRevealChange?: (isRevealed: boolean) => void;
 }>) {
   const router = useRouter();
   const deckAreaRef = useRef<HTMLDivElement | null>(null);
   const [deckIndex, setDeckIndex] = useState(0);
   const [resetKey, setResetKey] = useState(0);
-  const [isOpening, setIsOpening] = useState(false);
+  const [isRevealed, setIsRevealed] = useState(false);
+  const [isShuffling, setIsShuffling] = useState(false);
+  const [deckOrder, setDeckOrder] = useState(() =>
+    Array.from({ length: TOTAL_CARDS }, (_, i) => i),
+  );
+
+  useEffect(() => {
+    onRevealChange?.(isRevealed);
+  }, [isRevealed, onRevealChange]);
+
+  const wait = (ms: number) =>
+    new Promise<void>((resolve) => {
+      window.setTimeout(resolve, ms);
+    });
 
   useEffect(() => {
     const root = deckAreaRef.current;
@@ -43,7 +68,8 @@ export function CardSwipeDeck({
     const cardElements: HTMLDivElement[] = [];
 
     function notifyDeckIndex() {
-      setDeckIndex(Math.max(0, Math.min(77, currentIndex)));
+      const normalizedIndex = Math.max(0, Math.min(77, currentIndex));
+      setDeckIndex(deckOrder[normalizedIndex] ?? 0);
     }
 
     function clamp(value: number, min: number, max: number) {
@@ -71,9 +97,10 @@ export function CardSwipeDeck({
       const abs = Math.abs(offset);
 
       const center = { x: 0, y: -6, scale: 1.12, rotate: 0 };
-      const near = { x: 102, y: 26, scale: 0.95, rotate: 10 };
-      const far = { x: 168, y: 58, scale: 0.85, rotate: 18 };
-      const outer = { x: 184, y: 84, scale: 0.79, rotate: 16 };
+      const near = { x: 72, y: 24, scale: 0.95, rotate: 10 };
+      const far = { x: 104, y: 48, scale: 0.87, rotate: 15 };
+      const outer = { x: 130, y: 66, scale: 0.81, rotate: 13 };
+      const outer2 = { x: 150, y: 78, scale: 0.75, rotate: 11 };
 
       let x = 0;
       let y = 0;
@@ -98,11 +125,17 @@ export function CardSwipeDeck({
         y = lerp(far.y, outer.y, t);
         scale = lerp(far.scale, outer.scale, t);
         rotate = lerp(far.rotate, outer.rotate, t) * side;
+      } else if (abs <= 4) {
+        const t = clamp(abs - 3, 0, 1);
+        x = lerp(outer.x, outer2.x, t) * side;
+        y = lerp(outer.y, outer2.y, t);
+        scale = lerp(outer.scale, outer2.scale, t);
+        rotate = lerp(outer.rotate, outer2.rotate, t) * side;
       } else {
-        x = outer.x * side;
-        y = outer.y;
-        scale = outer.scale;
-        rotate = outer.rotate * side;
+        x = outer2.x * side;
+        y = outer2.y;
+        scale = outer2.scale;
+        rotate = outer2.rotate * side;
       }
 
       return { x, y, scale, rotate };
@@ -116,7 +149,7 @@ export function CardSwipeDeck({
         const rawOffset = wrapOffset(i - currentIndex);
         const visualOffset = rawOffset + progress;
 
-        if (Math.abs(visualOffset) > 3.1) {
+        if (Math.abs(visualOffset) > 4.1) {
           el.style.opacity = "0";
           el.style.pointerEvents = "none";
           continue;
@@ -124,18 +157,34 @@ export function CardSwipeDeck({
 
         const style = getCardStyle(visualOffset);
         const abs = Math.abs(visualOffset);
-        const zIndex = 320 - Math.round(abs * 52);
-        const opacity = abs <= 3 ? 1 : Math.max(0.75, 1 - (abs - 3) * 0.8);
-        const blur = abs < 2.6 ? 0 : (abs - 2.6) * 0.5;
+        const zIndex = 360 - Math.round(abs * 44);
+        let opacity = abs <= 4 ? 1 : Math.max(0.72, 1 - (abs - 4) * 0.9);
+        const blur = abs < 3.2 ? 0 : (abs - 3.2) * 0.55;
+        let x = style.x;
+        let y = style.y;
+        let scale = style.scale;
+
+        // "카드열기" 이후: 중앙 카드만 남기고 양옆 카드는 바깥으로 이탈/페이드아웃
+        if (isRevealed) {
+          if (abs < 0.6) {
+            scale = style.scale * 1.04;
+            y = style.y - 8;
+          } else {
+            const side = visualOffset >= 0 ? 1 : -1;
+            x = style.x + side * 220;
+            y = style.y + Math.min(24, abs * 8);
+            opacity = 0;
+          }
+        }
 
         el.style.opacity = String(opacity);
         el.style.zIndex = String(zIndex);
-        el.style.pointerEvents = abs < 0.6 ? "auto" : "none";
+        el.style.pointerEvents = !isRevealed && abs < 0.6 ? "auto" : "none";
         el.style.filter = `blur(${blur.toFixed(2)}px)`;
         el.style.transform =
           `translateX(-50%) ` +
-          `translate(${style.x.toFixed(2)}px, ${style.y.toFixed(2)}px) ` +
-          `scale(${style.scale.toFixed(4)}) ` +
+          `translate(${x.toFixed(2)}px, ${y.toFixed(2)}px) ` +
+          `scale(${scale.toFixed(4)}) ` +
           `rotate(${style.rotate.toFixed(2)}deg)`;
       }
     }
@@ -271,7 +320,7 @@ export function CardSwipeDeck({
         const el = document.createElement("div");
         const label = document.createElement("span");
         el.className = "card";
-        label.textContent = CARD_LABELS[i];
+        label.textContent = CARD_LABELS[deckOrder[i] ?? i];
         el.appendChild(label);
         el.dataset.index = String(i);
         deckArea.appendChild(el);
@@ -305,12 +354,16 @@ export function CardSwipeDeck({
       deckArea.innerHTML = "";
       cardElements.length = 0;
     };
-  }, [resetKey]);
+  }, [isRevealed, resetKey, deckOrder]);
 
   const cardParam = String(deckIndex);
+  const cardBackUrl = `url("${getMasterCardBackSrc(masterId)}")`;
 
   return (
-    <div className="card-swipe-deck page-fade mx-auto w-full max-w-[390px] [color-scheme:dark]">
+    <div
+      className="card-swipe-deck page-fade mx-auto w-full max-w-[390px] [color-scheme:dark]"
+      style={{ "--card-back-url": cardBackUrl } as CSSProperties}
+    >
       <div ref={deckAreaRef} className="deck-area" />
 
       <div className="pb-1 pt-1 text-center text-[24px] text-[#e5ddff]">⟷</div>
@@ -323,24 +376,69 @@ export function CardSwipeDeck({
         <button
           type="button"
           onClick={() => {
-            if (isOpening) return;
-            setIsOpening(true);
-            window.setTimeout(() => {
-              router.push(`/page_05_masters_list5?master=${masterId}&card=${cardParam}`);
-            }, 320);
+            if (isShuffling) return;
+            if (!isRevealed) {
+              setIsRevealed(true);
+              return;
+            }
+            router.push(`/page_06_analyzing?master=${encodeURIComponent(masterId)}&card=${encodeURIComponent(cardParam)}`);
           }}
-          disabled={isOpening}
+          disabled={isShuffling}
           className="rounded-2xl bg-[#6422AB] px-3 py-3 text-center text-[20px] font-semibold text-white disabled:opacity-70"
         >
-          {isOpening ? "카드 여는 중..." : "카드 열기"}
+          {isRevealed ? "카드해석" : "카드열기"}
         </button>
         <button
           type="button"
-          onClick={() => setResetKey((k) => k + 1)}
-          disabled={isOpening}
+          onClick={async () => {
+            if (isShuffling) return;
+            setIsShuffling(true);
+            const deck = deckAreaRef.current;
+            if (!deck) {
+              setIsShuffling(false);
+              return;
+            }
+
+            const cards = Array.from(deck.querySelectorAll<HTMLDivElement>(".card"));
+            cards.forEach((el, idx) => {
+              const delay = (idx % 10) * 12;
+              el.style.transition = `translate 220ms cubic-bezier(0.2, 0.8, 0.2, 1) ${delay}ms`;
+            });
+
+            // 1) 카드가 오른쪽으로 겹쳐 쌓임
+            cards.forEach((el, idx) => {
+              const y = Math.min(26, idx * 1.4);
+              el.style.translate = `72px ${y}px`;
+            });
+            await wait(260);
+
+            // 2) 카드가 왼쪽으로 겹쳐 쌓임
+            cards.forEach((el, idx) => {
+              const y = Math.min(22, idx * 1.2);
+              el.style.translate = `-68px ${y}px`;
+            });
+            await wait(260);
+
+            // 3) 원위치로 복귀 후 덱 재배치(리셋)
+            cards.forEach((el) => {
+              el.style.translate = "0 0";
+            });
+            await wait(180);
+
+            cards.forEach((el) => {
+              el.style.transition = "";
+              el.style.translate = "";
+            });
+
+            setDeckOrder(makeShuffledOrder());
+            setResetKey((k) => k + 1);
+            setIsRevealed(false);
+            setIsShuffling(false);
+          }}
+          disabled={isShuffling}
           className="rounded-2xl border border-primary bg-[rgba(12,10,36,0.92)] px-3 py-3 text-center text-[16px] text-[#d8ccff] disabled:opacity-70"
         >
-          카드섞기
+          {isShuffling ? "카드 섞는 중..." : "카드섞기"}
         </button>
       </div>
     </div>

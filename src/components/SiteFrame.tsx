@@ -14,18 +14,10 @@ export function SiteFrame({
   hideFooter?: boolean;
 }>) {
   const pathname = usePathname();
+  const hideHeader = pathname?.startsWith("/page_07_reading-result_typea");
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isMenuMounted, setIsMenuMounted] = React.useState(false);
   const [isMenuActive, setIsMenuActive] = React.useState(false);
-  const hideHeaderOn = [
-    "/page_03_card-selection_1",
-    "/page_05_masters_list5",
-    "/page_06_analyzing",
-    "/page_07_reading-result_typea",
-    "/page-master-profile_01",
-  ];
-  const normalizedPathname = (pathname ?? "").replace(/\/+$/, "") || "/";
-  const shouldHideHeader = hideHeaderOn.includes(normalizedPathname);
   const closeMenu = () => setIsMenuOpen(false);
 
   React.useEffect(() => {
@@ -51,7 +43,7 @@ export function SiteFrame({
 
   return (
     <div className="min-h-screen w-full bg-[#202139] text-neutral-10">
-      {!shouldHideHeader ? <Header onMenuClick={() => setIsMenuOpen(true)} /> : null}
+      {!hideHeader ? <Header onMenuClick={() => setIsMenuOpen(true)} /> : null}
       <div className="min-h-[1px]">{children}</div>
       {!hideFooter ? (
         <>
@@ -60,7 +52,7 @@ export function SiteFrame({
         </>
       ) : null}
 
-      {!shouldHideHeader && isMenuMounted ? (
+      {isMenuMounted ? (
         <div
           className="fixed inset-0 z-50"
           aria-hidden={!isMenuOpen}
@@ -94,6 +86,9 @@ export function SiteFrame({
                 </div>
 
                 <nav className="mt-8 space-y-5 text-[18px] font-semibold">
+                  <Link href="/page_01_masters_list_1" onClick={closeMenu} className="block">
+                    오늘의 운세 보기
+                  </Link>
                   <Link href="/about" onClick={closeMenu} className="block">
                     서비스 소개
                   </Link>

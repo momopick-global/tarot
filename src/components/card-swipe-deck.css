@@ -13,19 +13,20 @@
 .card-swipe-deck .card {
   position: absolute;
   left: 50%;
-  bottom: 44px;
+  bottom: 98px;
   width: 128px;
   height: 198px;
   border-radius: 14px;
-  border: 1px solid rgba(197, 172, 255, 0.72);
+  border: 1px solid rgba(255, 233, 160, 0.86);
   background-image:
     linear-gradient(145deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.02) 28%, rgba(0, 0, 0, 0.2) 100%),
-    url("/assets/card-back-page04.png");
+    var(--card-back-url, url("/assets/card-back-page04.png"));
   background-size: cover;
   background-position: center;
   box-shadow:
     0 16px 36px rgba(4, 3, 14, 0.52),
-    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+    0 0 0 1px rgba(255, 228, 142, 0.22),
+    inset 0 1px 0 rgba(255, 249, 214, 0.35);
   display: flex;
   align-items: flex-end;
   justify-content: center;

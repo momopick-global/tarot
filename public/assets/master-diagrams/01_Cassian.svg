@@ -1,0 +1,219 @@
+<svg width="720" height="720" viewBox="0 0 720 720" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="dataFill" cx="50%" cy="44%" r="62%">
+      <stop offset="0%" stop-color="#C7A8FF" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#9B6BFF" stop-opacity="0.16" />
+    </radialGradient>
+    <linearGradient id="axisStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#B992FF" />
+      <stop offset="100%" stop-color="#8E5AF3" />
+    </linearGradient>
+    <filter id="dataGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <filter id="coreGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="b" />
+      <feMerge>
+        <feMergeNode in="b" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <filter id="ringGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="1.5" />
+    </filter>
+    <filter id="starGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="1.4" />
+    </filter>
+    <style>
+      :root {
+        --accent: #9B6BFF;
+        --gold: #D3B264;
+        --label: #F0E9FF;
+      }
+
+      text {
+        font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+        fill: var(--label);
+      }
+
+      .outer-ring {
+        transform-origin: 360px 360px;
+        animation: rotateSlow 84s linear infinite;
+      }
+
+      .outer-ring.reverse {
+        animation-direction: reverse;
+        animation-duration: 102s;
+      }
+
+      .data-shape {
+        animation: breatheData 9.5s ease-in-out infinite;
+      }
+
+      .core {
+        transform-origin: 360px 360px;
+        animation: pulseCore 6.4s ease-in-out infinite;
+      }
+
+      .sigil {
+        transform-origin: 360px 360px;
+        animation: rotateSlow 140s linear infinite;
+      }
+
+      .axis {
+        animation: axisPulse 8.5s ease-in-out infinite;
+      }
+
+      .data-outline {
+        stroke-dasharray: 18 9;
+        animation: dashFlow 14s linear infinite;
+      }
+
+      .stars {
+        animation: twinkle 5.8s ease-in-out infinite;
+      }
+
+      .sheen {
+        animation: sheenMove 6.6s ease-in-out infinite;
+      }
+
+      @keyframes rotateSlow {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+
+      @keyframes pulseCore {
+        0%, 100% { opacity: 0.78; transform: scale(1); }
+        50% { opacity: 0.96; transform: scale(1.045); }
+      }
+
+      @keyframes breatheData {
+        0%, 100% { opacity: 0.9; }
+        50% { opacity: 0.98; }
+      }
+
+      @keyframes axisPulse {
+        0%, 100% { opacity: 0.72; }
+        50% { opacity: 0.94; }
+      }
+
+      @keyframes dashFlow {
+        from { stroke-dashoffset: 0; }
+        to { stroke-dashoffset: -180; }
+      }
+
+      @keyframes twinkle {
+        0%, 100% { opacity: 0.35; }
+        50% { opacity: 0.95; }
+      }
+
+      @keyframes sheenMove {
+        0%, 100% { transform: translateX(-12px); opacity: 0.16; }
+        50% { transform: translateX(14px); opacity: 0.36; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .outer-ring, .data-shape, .core, .sigil, .axis, .data-outline, .stars, .sheen {
+          animation: none !important;
+        }
+      }
+    </style>
+  </defs>
+
+  <!-- gold ornaments -->
+  <g class="outer-ring" opacity="0.52">
+    <circle cx="360" cy="360" r="286" fill="none" stroke="var(--gold)" stroke-width="1.4" stroke-dasharray="2 9" filter="url(#ringGlow)" />
+    <circle cx="360" cy="360" r="272" fill="none" stroke="var(--gold)" stroke-width="1" stroke-dasharray="1.5 12" />
+  </g>
+  <g class="outer-ring reverse" opacity="0.45">
+    <circle cx="360" cy="360" r="254" fill="none" stroke="var(--gold)" stroke-width="1.2" stroke-dasharray="3 14" />
+  </g>
+  <g class="sigil" opacity="0.42">
+    <circle cx="360" cy="74" r="3.2" fill="var(--gold)" />
+    <circle cx="607.7" cy="217" r="3.2" fill="var(--gold)" />
+    <circle cx="607.7" cy="503" r="3.2" fill="var(--gold)" />
+    <circle cx="360" cy="646" r="3.2" fill="var(--gold)" />
+    <circle cx="112.3" cy="503" r="3.2" fill="var(--gold)" />
+    <circle cx="112.3" cy="217" r="3.2" fill="var(--gold)" />
+  </g>
+
+  <!-- hex grid -->
+  <g fill="none" stroke="var(--accent)" stroke-opacity="0.5">
+    <polygon points="360,316 398.1,338 398.1,382 360,404 321.9,382 321.9,338" stroke-width="2.4"/>
+    <polygon points="360,272 436.2,316 436.2,404 360,448 283.8,404 283.8,316" stroke-width="2.4"/>
+    <polygon points="360,228 474.3,294 474.3,426 360,492 245.7,426 245.7,294" stroke-width="2.4"/>
+    <polygon points="360,184 512.4,272 512.4,448 360,536 207.6,448 207.6,272" stroke-width="2.4"/>
+    <polygon points="360,140 550.5,250 550.5,470 360,580 169.5,470 169.5,250" stroke-width="4.2"/>
+  </g>
+
+  <!-- radial axis -->
+  <g class="axis" stroke="url(#axisStroke)" stroke-opacity="0.8" stroke-width="2.4">
+    <line x1="360" y1="360" x2="360" y2="140" />
+    <line x1="360" y1="360" x2="550.5" y2="250" />
+    <line x1="360" y1="360" x2="550.5" y2="470" />
+    <line x1="360" y1="360" x2="360" y2="580" />
+    <line x1="360" y1="360" x2="169.5" y2="470" />
+    <line x1="360" y1="360" x2="169.5" y2="250" />
+  </g>
+
+  <!-- data polygon: 직관력 4, 미래예측 5, 신비감 5, 직설화법 3, 감성공감 2, 현실조언 4 -->
+  <g class="data-shape" filter="url(#dataGlow)">
+    <polygon
+      points="360,184 550.5,250 550.5,470 360,492 283.8,404 207.6,272"
+      fill="url(#dataFill)"
+      stroke="#9B6BFF"
+      stroke-width="3.4"
+      stroke-opacity="0.95"
+    />
+    <polygon
+      class="data-outline"
+      points="360,184 550.5,250 550.5,470 360,492 283.8,404 207.6,272"
+      fill="none"
+      stroke="#E4D4FF"
+      stroke-opacity="0.76"
+      stroke-width="1.5"
+    />
+    <polygon
+      class="sheen"
+      points="360,210 520,268 488,430 360,468 300,396 236,286"
+      fill="#FFFFFF"
+      fill-opacity="0.08"
+      stroke="none"
+    />
+    <circle cx="360" cy="184" r="6.2" fill="#9B6BFF"/>
+    <circle cx="550.5" cy="250" r="6.2" fill="#9B6BFF"/>
+    <circle cx="550.5" cy="470" r="6.2" fill="#9B6BFF"/>
+    <circle cx="360" cy="492" r="6.2" fill="#9B6BFF"/>
+    <circle cx="283.8" cy="404" r="6.2" fill="#9B6BFF"/>
+    <circle cx="207.6" cy="272" r="6.2" fill="#9B6BFF"/>
+  </g>
+
+  <!-- center core -->
+  <g class="core" filter="url(#coreGlow)">
+    <circle cx="360" cy="360" r="22" fill="#9B6BFF" fill-opacity="0.2" />
+    <circle cx="360" cy="360" r="8.5" fill="#C8A8FF" fill-opacity="0.96" />
+  </g>
+
+  <g class="stars" filter="url(#starGlow)">
+    <circle cx="306" cy="206" r="1.8" fill="#E9DFFF" />
+    <circle cx="454" cy="236" r="1.6" fill="#E9DFFF" />
+    <circle cx="500" cy="392" r="1.7" fill="#E9DFFF" />
+    <circle cx="406" cy="514" r="1.5" fill="#E9DFFF" />
+    <circle cx="248" cy="462" r="1.7" fill="#E9DFFF" />
+    <circle cx="222" cy="316" r="1.6" fill="#E9DFFF" />
+  </g>
+
+  <!-- labels as live text -->
+  <g font-size="28" font-weight="600" letter-spacing="0.2">
+    <text x="360" y="94" text-anchor="middle">직관력</text>
+    <text x="598" y="232" text-anchor="start">미래예측</text>
+    <text x="598" y="498" text-anchor="start">신비감</text>
+    <text x="360" y="648" text-anchor="middle">직설화법</text>
+    <text x="122" y="498" text-anchor="end">감성공감</text>
+    <text x="122" y="232" text-anchor="end">현실조언</text>
+  </g>
+</svg>

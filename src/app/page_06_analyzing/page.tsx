@@ -3,21 +3,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FlowScene } from "@/components/FlowScene";
+import { getMasterBackgroundSrc } from "@/lib/masterCardAssets";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const LOADING_ICON = "/assets/Frame_154-26dc58c4-a9ad-4649-b973-c08847b7f089.png";
 
 export default function Page06Analyzing() {
   const router = useRouter();
-  const [master] = useState(() => {
-    if (typeof window === "undefined") return "cassian";
-    return new URL(window.location.href).searchParams.get("master") ?? "cassian";
-  });
-  const [card] = useState(() => {
-    if (typeof window === "undefined") return "05";
-    return new URL(window.location.href).searchParams.get("card") ?? "05";
-  });
+  const searchParams = useSearchParams();
+  const master = (searchParams?.get("master") ?? "cassian").toLowerCase();
+  const card = searchParams?.get("card") ?? "05";
   const [progress, setProgress] = useState(15);
 
   useEffect(() => {
@@ -37,7 +33,10 @@ export default function Page06Analyzing() {
 
   return (
     <main className="w-full">
-      <FlowScene>
+      <FlowScene backgroundSrc={getMasterBackgroundSrc(master, 3)}>
+        <div className="pointer-events-none mb-2 text-right text-[10px] text-[#d7c8ff]/80">
+          DBG BG: 03
+        </div>
         <div className="flex min-h-[460px] flex-col items-center justify-center">
           <Image src={LOADING_ICON} alt="loading" width={180} height={120} />
           <div className="mt-5 h-[18px] w-[320px] rounded-full bg-[#5a4414]">

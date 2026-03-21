@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import { DEFAULT_FLOW_BACKGROUND_SRC } from "@/lib/masterCardAssets";
 
-const BG = "/assets/bg2-a5c33368-f273-48af-8ec7-f18f1bc4e4f2.png";
+const BG = DEFAULT_FLOW_BACKGROUND_SRC;
 const BACK = "/assets/btn_back-de2e4927-d11f-4301-b319-3dee0a48266a.png";
 
 export function FlowScene({
@@ -10,6 +11,10 @@ export function FlowScene({
   backHref,
   hideBackgroundImage = false,
   backgroundSrc,
+  backgroundFit = "cover",
+  bottomFadeToBody = false,
+  allowOverflow = false,
+  hideDimOverlay = false,
   sceneClassName,
   backStyle = "image",
   backImageSrc,
@@ -18,16 +23,37 @@ export function FlowScene({
   backHref?: string;
   hideBackgroundImage?: boolean;
   backgroundSrc?: string;
+  backgroundFit?: "cover" | "contain";
+  bottomFadeToBody?: boolean;
+  allowOverflow?: boolean;
+  hideDimOverlay?: boolean;
   sceneClassName?: string;
   backStyle?: "image" | "custom";
   backImageSrc?: string;
 }>) {
   return (
-    <section className={`page-fade relative mx-auto min-h-[560px] w-full max-w-[390px] overflow-hidden ${sceneClassName ?? ""}`}>
+    <section
+      className={`page-fade relative mx-auto min-h-[560px] w-full max-w-[390px] ${
+        allowOverflow ? "overflow-visible" : "overflow-hidden"
+      } ${
+        hideBackgroundImage ? "bg-[#07051c]" : ""
+      } ${sceneClassName ?? ""}`}
+    >
       {!hideBackgroundImage ? (
-        <Image src={backgroundSrc ?? BG} alt="" fill className="object-cover object-top" priority />
+        <Image
+          src={backgroundSrc ?? BG}
+          alt=""
+          fill
+          className={backgroundFit === "contain" ? "object-contain object-top" : "object-cover object-top"}
+          priority
+        />
       ) : null}
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,3,20,0.35)_0%,rgba(10,8,30,0.85)_100%)]" />
+      {!hideDimOverlay ? (
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,3,20,0.35)_0%,rgba(10,8,30,0.85)_100%)]" />
+      ) : null}
+      {bottomFadeToBody ? (
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[80px] bg-gradient-to-b from-transparent to-[#202139]" />
+      ) : null}
 
       <div className="relative z-10 mx-auto w-full max-w-[390px] px-4 pt-4">
         {backHref ? (

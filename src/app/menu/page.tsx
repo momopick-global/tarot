@@ -14,6 +14,14 @@ export default function MenuPage() {
 
           <div className="mt-10 space-y-7">
             <Link
+              href="/page_01_masters_list_1"
+              className="flex items-center gap-3 text-[18px] font-semibold"
+            >
+              <span aria-hidden>🔮</span>
+              오늘의 운세 보기
+            </Link>
+
+            <Link
               href="/about"
               className="flex items-center gap-3 text-[18px] font-semibold"
             >
