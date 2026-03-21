@@ -5,12 +5,19 @@ import { getSupabaseClient } from "@/lib/supabase";
 export type TarotResultRow = {
   id: number | string;
   user_id: string;
+  reading_id: string;
   card_name: string;
   master_name: string;
   card_image: string;
   interpretation: string | null;
   created_at: string;
 };
+
+/** DB upsert용 — (user_id, reading_id) 유니크와 동일 규칙 */
+export function buildTarotReadingId(masterId: string, cardIndex: number): string {
+  const n = Math.min(77, Math.max(0, Math.floor(cardIndex)));
+  return `v1:${masterId}:${n}`;
+}
 
 function normalizeId(id: number | string): string {
   return String(id);
@@ -39,8 +46,13 @@ export function buildInterpretationText(reading: CardReadingJson): string {
   return lines.join("\n");
 }
 
-export async function insertTarotResult(input: {
+/**
+ * (user_id, reading_id) 충돌 시 해석·카드 메타를 갱신(upsert).
+ * 마이그레이션 전 DB에는 reading_id/유니크가 없을 수 있음 → 그때는 에러가 나므로 SQL 마이그레이션을 먼저 적용하세요.
+ */
+export async function upsertTarotResult(input: {
   userId: string;
+  readingId: string;
   cardName: string;
   masterName: string;
   cardImage: string;
@@ -51,15 +63,18 @@ export async function insertTarotResult(input: {
     return { data: null, error: new Error("Supabase가 설정되지 않았습니다.") };
   }
 
+  const row = {
+    user_id: input.userId,
+    reading_id: input.readingId,
+    card_name: input.cardName,
+    master_name: input.masterName,
+    card_image: input.cardImage,
+    interpretation: input.interpretation,
+  };
+
   const { data, error } = await supabase
     .from("tarot_results")
-    .insert({
-      user_id: input.userId,
-      card_name: input.cardName,
-      master_name: input.masterName,
-      card_image: input.cardImage,
-      interpretation: input.interpretation,
-    })
+    .upsert(row, { onConflict: "user_id,reading_id" })
     .select("id")
     .single();
 
@@ -80,8 +95,10 @@ export async function fetchTarotResultsForUser(userId: string): Promise<{
 
   const { data, error } = await supabase
     .from("tarot_results")
-    .select("id,user_id,card_name,master_name,card_image,interpretation,created_at")
+    .select("id,user_id,reading_id,card_name,master_name,card_image,interpretation,created_at")
     .eq("user_id", userId)
+    /** 결과 페이지 「저장하기」로 쌓인 행만 (`v1:{masterId}:{card}`). 마이그레이션 백필 `migrated:*` 등 제외 */
+    .like("reading_id", "v1:%")
     .order("created_at", { ascending: false });
 
   if (error) {
