@@ -1,6 +1,7 @@
 {
   "cassian": {
     "name": "카시안",
+    "diagramSrc": "/assets/master-diagrams/01_Cassian.svg",
     "type": "분석형",
     "gender": "남자",
     "job": "천문학자",
@@ -23,6 +24,7 @@
   },
   "kaien": {
     "name": "카이언",
+    "diagramSrc": "/assets/master-diagrams/01_Cassian.svg",
     "type": "상담형",
     "gender": "더미",
     "job": "더미 직업",
@@ -33,6 +35,7 @@
   },
   "morgana": {
     "name": "모르가나",
+    "diagramSrc": "/assets/master-diagrams/01_Cassian.svg",
     "type": "직설형",
     "gender": "더미",
     "job": "더미 직업",
@@ -43,6 +46,7 @@
   },
   "noa": {
     "name": "노아",
+    "diagramSrc": "/assets/master-diagrams/01_Cassian.svg",
     "type": "구원형",
     "gender": "더미",
     "job": "더미 직업",
@@ -53,6 +57,7 @@
   },
   "erebus": {
     "name": "에레비스",
+    "diagramSrc": "/assets/master-diagrams/01_Cassian.svg",
     "type": "현실형",
     "gender": "더미",
     "job": "더미 직업",
@@ -63,6 +68,7 @@
   },
   "serina": {
     "name": "세리나",
+    "diagramSrc": "/assets/master-diagrams/01_Cassian.svg",
     "type": "행운형",
     "gender": "더미",
     "job": "더미 직업",
@@ -73,6 +79,7 @@
   },
   "nyx": {
     "name": "닉스",
+    "diagramSrc": "/assets/master-diagrams/01_Cassian.svg",
     "type": "초월형",
     "gender": "더미",
     "job": "더미 직업",
@@ -83,6 +90,7 @@
   },
   "clotho": {
     "name": "클로토",
+    "diagramSrc": "/assets/master-diagrams/01_Cassian.svg",
     "type": "시형",
     "gender": "더미",
     "job": "더미 직업",
@@ -93,6 +101,7 @@
   },
   "pipi": {
     "name": "피피",
+    "diagramSrc": "/assets/master-diagrams/01_Cassian.svg",
     "type": "감성형",
     "gender": "더미",
     "job": "더미 직업",

@@ -8,6 +8,7 @@ import { FlowScene } from "@/components/FlowScene";
 import { ResultActionButtons } from "@/components/ResultActionButtons";
 import { clampCardIndex, getMasterCardFrontSrc } from "@/lib/masterCardAssets";
 import { resolveCardReading } from "@/lib/resolveCardReading";
+import { buildInterpretationText } from "@/lib/tarotResultsDb";
 import { FLOW_MASTERS } from "@/lib/flowData";
 
 const SHARE_LINK = "/assets/svg-ic-share-link.svg-26940f47-d010-498b-b1e1-68303b31e59e.png";
@@ -64,6 +65,7 @@ function Page07ReadingResultTypeAInner() {
   const cardIndex = clampCardIndex(card, 5);
   const frontCardSrc = getMasterCardFrontSrc(current.id, cardIndex);
   const reading = resolveCardReading(current.id, cardIndex);
+  const interpretationText = buildInterpretationText(reading);
   const kw = reading.keywords.length ? reading.keywords.join(" · ") : "—";
 
   return (
@@ -155,6 +157,9 @@ function Page07ReadingResultTypeAInner() {
           cardIndex={cardIndex}
           titleEn={reading.titleEn}
           titleKo={reading.titleKo}
+          masterName={current.name}
+          cardImagePath={frontCardSrc}
+          interpretation={interpretationText}
         />
 
         <div className="mt-6 text-center text-[18px] text-[#d8ccff]">🧿 친구에게 공유하기</div>
