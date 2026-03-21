@@ -15,11 +15,21 @@
 - 빌드 시 `NEXT_PUBLIC_BASE_PATH=/<저장소이름>` 이 자동 설정됩니다 (예: 저장소가 `your_tarot`이면 `/your_tarot`).
 - `next.config.ts`의 `basePath`와 동일한 값을 쓰며, 이미지·배경 URL은 `src/lib/publicPath.ts`의 `withAssetBase()`로 맞춥니다.
 
-## 한 번만 해 줄 설정 (GitHub 웹)
+## 한 번만 해 줄 설정 (GitHub 웹) — **deploy 실패 시 필수**
 
 1. 저장소 **Settings → Pages**
-2. **Build and deployment** → Source: **GitHub Actions** 선택
-3. `main`(또는 사용 중인 기본 브랜치)에 이 워크플로가 포함된 커밋을 **push**
+2. **Build and deployment** → **Source**를 반드시 **GitHub Actions**로 선택  
+   - `Deploy from a branch`(예: `gh-pages`)로 되어 있으면 `deploy` 잡이 **몇 초 만에 실패**합니다.  
+   - **GitHub Actions**로 바꾼 뒤 다시 워크플로를 실행하세요.
+3. `main`에 워크플로가 있으면 **push** 또는 **Actions → 실패한 워크플로 → Re-run jobs**
+
+### deploy만 빨간 X일 때 확인할 것
+
+| 증상 | 조치 |
+|------|------|
+| build는 성공, deploy만 실패 | Pages 소스가 **GitHub Actions**인지 다시 확인 |
+| 조직(Org) 저장소 | Org **Settings → Actions → General**에서 Pages/워크플로 정책 허용 여부 |
+| `github-pages` 환경 보호 규칙 | **Settings → Environments → github-pages**에서 필수 리뷰어가 있으면 배포 전 **승인** 필요 |
 
 배포가 끝나면 주소 형식은 다음과 같습니다.
 
