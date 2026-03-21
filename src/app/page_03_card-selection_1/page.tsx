@@ -28,7 +28,8 @@ export default function Page03CardSelection1() {
         sceneClassName="h-[844px] min-h-[844px]"
         backImageSrc="/assets/btn-back-page03.png"
       >
-        <div className="mx-auto min-h-[744px] w-full max-w-[350px]">
+        <div className="relative z-0 mx-auto min-h-[744px] w-full max-w-[350px]">
+          {/* 덱은 카드 단계에서 항상 렌더 — 가이드 팝업은 z-index로 위에 덮음 */}
           {isCardStage ? <CardSwipeDeck masterId={current.id} /> : null}
         </div>
         {!isCardStage ? (

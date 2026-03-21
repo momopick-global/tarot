@@ -6,7 +6,11 @@ type CardGuidePopupProps = {
 
 export function CardGuidePopup({ onClose }: Readonly<CardGuidePopupProps>) {
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center px-5" role="dialog" aria-modal="true">
+    <div
+      className="fixed inset-0 z-[500] flex items-center justify-center px-5"
+      role="dialog"
+      aria-modal="true"
+    >
       <button
         type="button"
         onClick={onClose}
