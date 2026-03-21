@@ -23,12 +23,15 @@ export function CardInteractionBoard({
   const [displayIndex, setDisplayIndex] = useState(39); // fractional deck position
   const [isFlowing, setIsFlowing] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
+  /** 드래그 중에는 CSS transition 끔 → 모바일에서 손가락과 1:1로 따라옴 */
+  const [isDeckDragging, setIsDeckDragging] = useState(false);
   const dragStartX = useRef<number | null>(null);
   const dragStartDisplayIndex = useRef(0);
   const dragStartAt = useRef<number>(0);
   const lastMoveX = useRef<number | null>(null);
   const lastMoveTime = useRef<number | null>(null);
-  const swipeVelocity = useRef(0); // px/ms
+  const swipeVelocity = useRef(0); // px/ms (instant)
+  const swipeVelocitySmooth = useRef(0); // px/ms (smoothed, 터치 노이즈 완화)
   const displayIndexRef = useRef(39);
   const flowVelocity = useRef(0); // cards / frame(16.7ms 기준)
   const flowStopRequested = useRef(false);
@@ -53,6 +56,19 @@ export function CardInteractionBoard({
   }, []);
 
   const cardId = useMemo(() => `${selectedCard + 1}`.padStart(2, "0"), [selectedCard]);
+
+  const [dragSensitivityPx, setDragSensitivityPx] = useState(58);
+  useEffect(() => {
+    try {
+      const mq = window.matchMedia("(pointer: coarse)");
+      const apply = () => setDragSensitivityPx(mq.matches ? 44 : 58);
+      apply();
+      mq.addEventListener?.("change", apply);
+      return () => mq.removeEventListener?.("change", apply);
+    } catch {
+      /* noop */
+    }
+  }, []);
   const animateToIndex = (
     target: number,
     onDone?: () => void,
@@ -192,7 +208,9 @@ export function CardInteractionBoard({
     lastMoveX.current = e.clientX;
     lastMoveTime.current = performance.now();
     swipeVelocity.current = 0;
+    swipeVelocitySmooth.current = 0;
     draggedEnough.current = false;
+    setIsDeckDragging(true);
     e.currentTarget.setPointerCapture(e.pointerId);
   };
 
@@ -202,8 +220,7 @@ export function CardInteractionBoard({
     if (dragStartX.current === null) return;
     const delta = e.clientX - dragStartX.current;
     if (Math.abs(delta) > 8) draggedEnough.current = true;
-    const dragSensitivity = 58;
-    const nextDisplay = dragStartDisplayIndex.current + delta / dragSensitivity;
+    const nextDisplay = dragStartDisplayIndex.current + delta / dragSensitivityPx;
     setDisplayIndex(nextDisplay);
     displayIndexRef.current = nextDisplay;
     const rounded = mod(Math.round(nextDisplay), TOTAL_CARDS);
@@ -212,7 +229,13 @@ export function CardInteractionBoard({
     const now = performance.now();
     if (lastMoveX.current !== null && lastMoveTime.current !== null) {
       const dt = now - lastMoveTime.current;
-      if (dt > 0) swipeVelocity.current = (e.clientX - lastMoveX.current) / dt;
+      if (dt > 0) {
+        const instant = (e.clientX - lastMoveX.current) / dt;
+        swipeVelocity.current = instant;
+        const alpha = 0.35;
+        swipeVelocitySmooth.current =
+          swipeVelocitySmooth.current * (1 - alpha) + instant * alpha;
+      }
     }
     lastMoveX.current = e.clientX;
     lastMoveTime.current = now;
@@ -225,7 +248,10 @@ export function CardInteractionBoard({
       const delta = e.clientX - dragStartX.current;
       const elapsed = Math.max(1, performance.now() - dragStartAt.current);
       const avgVelocity = delta / elapsed; // px/ms
-      const velocity = Math.abs(swipeVelocity.current) > Math.abs(avgVelocity) ? swipeVelocity.current : avgVelocity;
+      const smooth = swipeVelocitySmooth.current;
+      const pick =
+        Math.abs(smooth) > Math.abs(swipeVelocity.current) * 0.85 ? smooth : swipeVelocity.current;
+      const velocity = Math.abs(pick) > Math.abs(avgVelocity) ? pick : avgVelocity;
       const absVelocity = Math.abs(velocity);
 
       // Swipe carousel: continuous drag -> short inertia -> snap (demo-like).
@@ -257,6 +283,8 @@ export function CardInteractionBoard({
     lastMoveX.current = null;
     lastMoveTime.current = null;
     swipeVelocity.current = 0;
+    swipeVelocitySmooth.current = 0;
+    setIsDeckDragging(false);
     e.currentTarget.releasePointerCapture(e.pointerId);
   };
 
@@ -282,9 +310,10 @@ export function CardInteractionBoard({
   return (
     <div className="page-fade">
       <div
-        className={`relative left-1/2 mt-10 h-[310px] w-[390px] -translate-x-1/2 touch-pan-y overflow-visible ${
+        className={`relative left-1/2 mt-10 h-[310px] w-[390px] -translate-x-1/2 touch-none overflow-visible ${
           isOpening ? "pointer-events-none" : ""
         }`}
+        style={{ touchAction: "none" }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -362,9 +391,11 @@ export function CardInteractionBoard({
                 setSelectedCard(cardIdx);
                 animateToIndex(base + relative, undefined, 320);
               }}
-              className={`absolute bottom-0 left-1/2 overflow-hidden rounded-[14px] border bg-[#0f0a24] shadow-[0_14px_26px_rgba(4,3,14,0.5)] transition-[transform,filter,opacity] duration-500 ease-out ${
-                absClamped < 0.55 ? "border-[#8F55FF]" : "border-[#7A5BC6]"
-              }`}
+              className={`absolute bottom-0 left-1/2 overflow-hidden rounded-[14px] border bg-[#0f0a24] shadow-[0_14px_26px_rgba(4,3,14,0.5)] ${
+                isDeckDragging
+                  ? ""
+                  : "transition-[transform,filter,opacity] duration-500 ease-out"
+              } ${absClamped < 0.55 ? "border-[#8F55FF]" : "border-[#7A5BC6]"}`}
               style={{
                 width,
                 height,
@@ -373,6 +404,7 @@ export function CardInteractionBoard({
                 opacity: opacity * exitOpacity,
                 filter: `blur(${blur + exitBlur}px)`,
                 pointerEvents: isVisibleCard ? "auto" : "none",
+                willChange: isDeckDragging ? "transform, filter, opacity" : "auto",
               }}
             >
               <Image src={CARD_BACK} alt="카드 뒷면" fill className="object-cover" />
