@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { CardGuidePopup } from "@/components/CardGuidePopup";
 import { CardSwipeDeck } from "@/components/CardSwipeDeck";
 import { FlowScene } from "@/components/FlowScene";
@@ -9,7 +10,7 @@ import { MasterIntroPopup } from "@/components/MasterIntroPopup";
 import { FLOW_MASTERS } from "@/lib/flowData";
 import { getMasterBackgroundSrc } from "@/lib/masterCardAssets";
 
-export default function Page03CardSelection1() {
+function Page03CardSelection1Inner() {
   const searchParams = useSearchParams();
   const master = (searchParams?.get("master") ?? "cassian").toLowerCase();
   const [isCardStage, setIsCardStage] = useState(false);
@@ -62,5 +63,13 @@ export default function Page03CardSelection1() {
       </FlowScene>
       <div className="mx-auto h-[20px] w-full max-w-[390px] bg-[#17182E]" />
     </main>
+  );
+}
+
+export default function Page03CardSelection1() {
+  return (
+    <Suspense fallback={null}>
+      <Page03CardSelection1Inner />
+    </Suspense>
   );
 }

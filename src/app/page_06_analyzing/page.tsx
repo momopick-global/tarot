@@ -4,12 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { FlowScene } from "@/components/FlowScene";
 import { getMasterBackgroundSrc } from "@/lib/masterCardAssets";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const LOADING_ICON = "/assets/Frame_154-26dc58c4-a9ad-4649-b973-c08847b7f089.png";
 
-export default function Page06Analyzing() {
+function Page06AnalyzingInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const master = (searchParams?.get("master") ?? "cassian").toLowerCase();
@@ -60,6 +60,14 @@ export default function Page06Analyzing() {
         </Link>
       </div>
     </main>
+  );
+}
+
+export default function Page06Analyzing() {
+  return (
+    <Suspense fallback={null}>
+      <Page06AnalyzingInner />
+    </Suspense>
   );
 }
 

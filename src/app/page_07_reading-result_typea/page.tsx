@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import { FlowScene } from "@/components/FlowScene";
 import { ResultActionButtons } from "@/components/ResultActionButtons";
 import { clampCardIndex, getMasterCardFrontSrc } from "@/lib/masterCardAssets";
@@ -52,7 +52,7 @@ function Section({
   );
 }
 
-export default function Page07ReadingResultTypeA() {
+function Page07ReadingResultTypeAInner() {
   const searchParams = useSearchParams();
   const params = {
     master: searchParams?.get("master") ?? undefined,
@@ -201,5 +201,13 @@ export default function Page07ReadingResultTypeA() {
         </Link>
       </div>
     </main>
+  );
+}
+
+export default function Page07ReadingResultTypeA() {
+  return (
+    <Suspense fallback={null}>
+      <Page07ReadingResultTypeAInner />
+    </Suspense>
   );
 }

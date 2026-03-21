@@ -10,9 +10,9 @@ import {
   getMasterCardBackSrc,
   getMasterCardFrontSrc,
 } from "@/lib/masterCardAssets";
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 
-export default function Page05MastersList5() {
+function Page05MastersList5Inner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const masterId = (searchParams?.get("master") ?? "cassian").toLowerCase();
@@ -91,6 +91,14 @@ export default function Page05MastersList5() {
         </Link>
       </div>
     </main>
+  );
+}
+
+export default function Page05MastersList5() {
+  return (
+    <Suspense fallback={null}>
+      <Page05MastersList5Inner />
+    </Suspense>
   );
 }
 

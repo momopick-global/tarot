@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { FlowScene } from "@/components/FlowScene";
 import { FLOW_MASTERS } from "@/lib/flowData";
 import { getMasterBackgroundSrc } from "@/lib/masterCardAssets";
@@ -32,7 +33,7 @@ type ProfileDetail = {
   recommendedUsers: string[];
 };
 
-export default function PageMasterProfile01() {
+function PageMasterProfile01Inner() {
   const searchParams = useSearchParams();
   const currentId = (searchParams?.get("master") ?? "cassian").toLowerCase();
   const current = FLOW_MASTERS.find((m) => m.id === currentId) ?? FLOW_MASTERS[0];
@@ -100,6 +101,14 @@ export default function PageMasterProfile01() {
         </Link>
       </div>
     </main>
+  );
+}
+
+export default function PageMasterProfile01() {
+  return (
+    <Suspense fallback={null}>
+      <PageMasterProfile01Inner />
+    </Suspense>
   );
 }
 
