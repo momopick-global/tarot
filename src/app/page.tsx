@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { HomeParticipantCount } from "@/components/HomeParticipantCount";
 import { HomeShareSection } from "@/components/HomeShareSection";
 import { withAssetBase } from "@/lib/publicPath";
 
@@ -39,9 +40,7 @@ export default function Home() {
           </Link>
         </div>
 
-        <p className="mb-[40px] mt-5 text-center text-[16px] text-white">
-          지금까지 123명이 테스트했어요.
-        </p>
+        <HomeParticipantCount />
 
       </section>
       <HomeShareSection />
