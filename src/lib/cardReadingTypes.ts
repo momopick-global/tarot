@@ -18,6 +18,12 @@ export type CardReadingJson = {
     love: string;
     /** 금전 */
     money: string;
+    /** 인간관계 */
+    relationship: string;
+    /** 건강 */
+    health: string;
+    /** 기회/행운 */
+    luck: string;
   };
   advice: {
     /** 오늘의 조언 (인용 문장) */

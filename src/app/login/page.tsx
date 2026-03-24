@@ -80,8 +80,7 @@ function LoginPageInner() {
           <button
             type="button"
             onClick={() => onSocialLogin("google")}
-            disabled={!authReady}
-            className="flex h-14 w-full items-center justify-center gap-3 rounded-xl bg-neutral-10 text-[16px] font-semibold text-neutral-90"
+            className="flex h-14 w-full cursor-pointer items-center justify-center gap-3 rounded-xl bg-neutral-10 text-[16px] font-semibold text-neutral-90"
           >
             <span className="grid h-8 w-8 place-items-center rounded-full bg-[#ffffff] text-[18px] font-bold">
               G
@@ -92,8 +91,7 @@ function LoginPageInner() {
           <button
             type="button"
             onClick={() => onSocialLogin("kakao")}
-            disabled={!authReady}
-            className="flex h-14 w-full items-center justify-center gap-3 rounded-xl bg-accent text-[16px] font-semibold text-neutral-90"
+            className="flex h-14 w-full cursor-pointer items-center justify-center gap-3 rounded-xl bg-accent text-[16px] font-semibold text-neutral-90"
           >
             <Image src={ICON_TALK} alt="" width={26} height={26} />
             카카오톡 로그인
@@ -102,8 +100,7 @@ function LoginPageInner() {
           <button
             type="button"
             onClick={() => onSocialLogin("facebook")}
-            disabled={!authReady}
-            className="flex h-14 w-full items-center justify-center gap-3 rounded-xl bg-[#3b72ff] text-[16px] font-semibold text-neutral-10"
+            className="flex h-14 w-full cursor-pointer items-center justify-center gap-3 rounded-xl bg-[#3b72ff] text-[16px] font-semibold text-neutral-10"
           >
             <Image src={ICON_FACEBOOK} alt="" width={26} height={26} />
             페이스북 로그인
@@ -118,12 +115,6 @@ function LoginPageInner() {
             동의하게 됩니다.
           </p>
         </div>
-
-        {!authReady ? (
-          <div className="mt-10 text-center text-[12px] text-neutral-60">
-            Supabase 환경변수가 없어서 로그인 버튼이 비활성화되었습니다.
-          </div>
-        ) : null}
 
         <div className="mt-6 text-center text-[13px]">
           <Link href="/" className="text-primary">

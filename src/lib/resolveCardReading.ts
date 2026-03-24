@@ -52,6 +52,9 @@ export function resolveCardReading(masterId: string, cardIndex: number): CardRea
       work: partial.categories?.work ?? leg.career,
       love: partial.categories?.love ?? leg.love,
       money: partial.categories?.money ?? leg.money,
+      relationship: partial.categories?.relationship ?? "",
+      health: partial.categories?.health ?? "",
+      luck: partial.categories?.luck ?? "",
     },
     advice: {
       quote: partial.advice?.quote ?? "",

@@ -1,6 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import { usePathname } from "next/navigation";
 import { DEFAULT_FLOW_BACKGROUND_SRC } from "@/lib/masterCardAssets";
 import { withAssetBase } from "@/lib/publicPath";
 
@@ -32,8 +35,11 @@ export function FlowScene({
   backStyle?: "image" | "custom";
   backImageSrc?: string;
 }>) {
+  const pathname = usePathname() ?? "";
+
   return (
     <section
+      key={pathname}
       className={`page-fade relative mx-auto min-h-[560px] w-full max-w-[390px] ${
         allowOverflow ? "overflow-visible" : "overflow-hidden"
       } ${
