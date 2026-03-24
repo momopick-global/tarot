@@ -388,8 +388,6 @@ export function CardSwipeDeck({
         aria-disabled={isRevealed}
       />
 
-      <div className="pb-1 pt-1 text-center text-[24px] text-[#e5ddff]">⟷</div>
-      <div className="pb-2 text-center text-[12px] text-[#d7ccff]">당신에게 끌리는 카드를 골라보세요</div>
       <div className="pb-6 text-center text-[11px] text-[#b9abdf]">
         선택 카드: #{String(deckIndex + 1).padStart(2, "0")}
         <span className="mt-1 block text-[10px] text-[#9a8ec4]">

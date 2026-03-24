@@ -22,6 +22,7 @@ export function FlowScene({
   sceneClassName,
   backStyle = "image",
   backImageSrc,
+  backImageSize = 52,
 }: Readonly<{
   children: React.ReactNode;
   backHref?: string;
@@ -34,6 +35,7 @@ export function FlowScene({
   sceneClassName?: string;
   backStyle?: "image" | "custom";
   backImageSrc?: string;
+  backImageSize?: number;
 }>) {
   const pathname = usePathname() ?? "";
 
@@ -76,7 +78,7 @@ export function FlowScene({
             {backStyle === "custom" ? (
               <span className="text-[22px] font-semibold leading-none text-[#BFA8FF]">←</span>
             ) : (
-              <Image src={backImageSrc ?? BACK} alt="뒤로가기" width={52} height={52} />
+              <Image src={backImageSrc ?? BACK} alt="뒤로가기" width={backImageSize} height={backImageSize} />
             )}
           </Link>
         ) : null}

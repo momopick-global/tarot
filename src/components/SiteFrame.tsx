@@ -16,7 +16,9 @@ export function SiteFrame({
   hideFooter?: boolean;
 }>) {
   const pathname = usePathname();
-  const hideHeader = pathname?.startsWith("/page_07_reading-result_typea");
+  const hideHeader =
+    pathname?.startsWith("/page_07_reading-result_typea") ||
+    pathname?.startsWith("/page_03_card-selection_1");
   const mypageHref = MYPAGE_PATH;
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isMenuMounted, setIsMenuMounted] = React.useState(false);

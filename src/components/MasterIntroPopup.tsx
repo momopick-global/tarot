@@ -8,7 +8,7 @@ export function MasterIntroPopup({
   master,
   onCardReceive,
   /** 진입 후 팝업을 보이기까지 대기 (ms). 0이면 즉시 */
-  openDelayMs = 1000,
+  openDelayMs = 0,
 }: Readonly<{
   master: Master;
   onCardReceive?: () => void;

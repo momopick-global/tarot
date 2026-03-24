@@ -33,11 +33,12 @@ function Page03CardSelection1Inner() {
         }
         sceneClassName="h-[844px] min-h-[844px]"
         backImageSrc={withAssetBase("/assets/btn-back-page03.png")}
+        backImageSize={42}
       >
         <div className="pointer-events-none mb-2 text-right text-[10px] text-[#d7c8ff]/80">
           DBG BG: {debugBgLabel}
         </div>
-        <div className="relative z-0 left-1/2 min-h-[744px] w-screen max-w-[390px] -translate-x-1/2">
+        <div className="relative z-0 left-1/2 -mt-[30px] min-h-[744px] w-screen max-w-[390px] -translate-x-1/2">
           {/* 덱은 카드 단계에서 항상 렌더 — 가이드 팝업은 z-index로 위에 덮음 */}
           {isCardStage ? (
             <CardSwipeDeck
