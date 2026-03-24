@@ -389,7 +389,7 @@ export function CardSwipeDeck({
       />
 
       {/* UI 영역: 카드 영역과 분리된 패딩 레이어 */}
-      <div className="mt-auto px-4 pb-[calc(env(safe-area-inset-bottom)+16px)] pt-2">
+      <div className="mt-auto px-0 pb-[calc(env(safe-area-inset-bottom)+16px)] pt-2">
         <div className="pb-3 text-center text-[11px] text-[#b9abdf]">
           선택 카드: #{String(deckIndex + 1).padStart(2, "0")}
         </div>

@@ -25,6 +25,7 @@ export function FlowScene({
   backStyle = "image",
   backImageSrc,
   backImageSize = 52,
+  backLinkClassName,
 }: Readonly<{
   children: React.ReactNode;
   backHref?: string;
@@ -40,6 +41,8 @@ export function FlowScene({
   backStyle?: "image" | "custom";
   backImageSrc?: string;
   backImageSize?: number;
+  /** 뒤로가기 링크에만 적용 (예: page_03에서 왼쪽 20px 간격) */
+  backLinkClassName?: string;
 }>) {
   const pathname = usePathname() ?? "";
 
@@ -68,14 +71,16 @@ export function FlowScene({
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[80px] bg-gradient-to-b from-transparent to-[#202139]" />
       ) : null}
 
-      <div className={`relative z-10 mx-auto w-full max-w-[390px] px-4 pt-4 ${contentClassName ?? ""}`}>
+      <div
+        className={`relative z-10 mx-auto w-full max-w-[390px] pt-4 ${contentClassName ?? "px-4"}`}
+      >
         {backHref ? (
           <Link
             href={backHref}
             className={
               backStyle === "custom"
-                ? "inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#8E63FF] bg-[rgba(14,10,35,0.88)]"
-                : "inline-flex"
+                ? `inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#8E63FF] bg-[rgba(14,10,35,0.88)] ${backLinkClassName ?? ""}`
+                : `inline-flex ${backLinkClassName ?? ""}`
             }
             aria-label="뒤로가기"
           >
