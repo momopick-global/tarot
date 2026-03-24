@@ -49,19 +49,22 @@ function Page03CardSelection1Inner() {
         backImageSize={42}
         hideDimOverlay={isCardStage}
       >
-        <div className="relative z-0 flex h-[calc(100dvh-68px)] min-h-0 w-full flex-col overflow-hidden">
-          <div className="relative left-1/2 flex min-h-0 flex-1 w-screen max-w-[390px] -translate-x-1/2 flex-col">
-            {/* 가이드 팝업이 닫힌 뒤에만 카드 덱 표시 */}
-            {isCardStage && !isCardGuidePopupOpen ? (
-              <div className={`flex min-h-0 flex-1 flex-col ${isCardDropAnimating ? "card-drop-in" : ""}`}>
-                <CardSwipeDeck
-                  masterId={current.id}
-                  onRevealChange={(revealed) => {
-                    setIsCardOpened(revealed);
-                  }}
-                />
-              </div>
-            ) : null}
+        <div className="relative z-0 h-[calc(100dvh-68px)] min-h-0 w-full overflow-hidden">
+          {/* 카드 컨테이너를 상위 포지션 레이어로 분리 */}
+          <div className="absolute inset-0 z-20">
+            <div className="relative left-1/2 flex h-full w-screen max-w-[390px] -translate-x-1/2 flex-col">
+              {/* 가이드 팝업이 닫힌 뒤에만 카드 덱 표시 */}
+              {isCardStage && !isCardGuidePopupOpen ? (
+                <div className={`flex min-h-0 flex-1 flex-col ${isCardDropAnimating ? "card-drop-in" : ""}`}>
+                  <CardSwipeDeck
+                    masterId={current.id}
+                    onRevealChange={(revealed) => {
+                      setIsCardOpened(revealed);
+                    }}
+                  />
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
         {!isCardStage ? (

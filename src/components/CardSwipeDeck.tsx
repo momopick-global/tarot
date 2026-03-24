@@ -379,7 +379,7 @@ export function CardSwipeDeck({
 
   return (
     <div
-      className="card-swipe-deck page-fade mx-auto flex h-full min-h-0 w-full max-w-[390px] flex-col [color-scheme:dark]"
+      className="card-swipe-deck page-fade flex h-full min-h-0 w-full flex-col [color-scheme:dark]"
       style={{ "--card-back-url": cardBackUrl } as CSSProperties}
     >
       <div
@@ -388,81 +388,84 @@ export function CardSwipeDeck({
         aria-disabled={isRevealed}
       />
 
-      <div className="pb-3 pt-2 text-center text-[11px] text-[#b9abdf]">
-        선택 카드: #{String(deckIndex + 1).padStart(2, "0")}
-      </div>
+      {/* UI 영역: 카드 영역과 분리된 패딩 레이어 */}
+      <div className="mt-auto px-4 pb-[calc(env(safe-area-inset-bottom)+16px)] pt-2">
+        <div className="pb-3 text-center text-[11px] text-[#b9abdf]">
+          선택 카드: #{String(deckIndex + 1).padStart(2, "0")}
+        </div>
 
-      <div className="mt-auto mx-auto grid w-full max-w-[350px] grid-cols-2 gap-3 pb-[calc(env(safe-area-inset-bottom)+16px)]">
-        <button
-          type="button"
-          onClick={() => {
-            if (isShuffling) return;
-            if (!isRevealed) {
-              setIsRevealed(true);
-              return;
-            }
-            const chosen = String(liveSelectedCardRef.current);
-            router.push(
-              `/page_06_analyzing?master=${encodeURIComponent(masterId)}&card=${encodeURIComponent(chosen)}`,
-            );
-          }}
-          disabled={isShuffling}
-          className="rounded-2xl bg-[#6422AB] px-3 py-3 text-center text-[20px] font-semibold text-white disabled:opacity-70"
-        >
-          {isRevealed ? "카드해석" : "카드열기"}
-        </button>
-        <button
-          type="button"
-          onClick={async () => {
-            if (isShuffling) return;
-            setIsShuffling(true);
-            const deck = deckAreaRef.current;
-            if (!deck) {
+        <div className="mx-auto grid w-full max-w-[350px] grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => {
+              if (isShuffling) return;
+              if (!isRevealed) {
+                setIsRevealed(true);
+                return;
+              }
+              const chosen = String(liveSelectedCardRef.current);
+              router.push(
+                `/page_06_analyzing?master=${encodeURIComponent(masterId)}&card=${encodeURIComponent(chosen)}`,
+              );
+            }}
+            disabled={isShuffling}
+            className="rounded-2xl bg-[#6422AB] px-3 py-3 text-center text-[20px] font-semibold text-white disabled:opacity-70"
+          >
+            {isRevealed ? "카드해석" : "카드열기"}
+          </button>
+          <button
+            type="button"
+            onClick={async () => {
+              if (isShuffling) return;
+              setIsShuffling(true);
+              const deck = deckAreaRef.current;
+              if (!deck) {
+                setIsShuffling(false);
+                return;
+              }
+
+              const cards = Array.from(deck.querySelectorAll<HTMLDivElement>(".card"));
+              cards.forEach((el, idx) => {
+                const delay = (idx % 10) * 12;
+                el.style.transition = `translate 220ms cubic-bezier(0.2, 0.8, 0.2, 1) ${delay}ms`;
+              });
+
+              // 1) 카드가 오른쪽으로 겹쳐 쌓임
+              cards.forEach((el, idx) => {
+                const y = Math.min(26, idx * 1.4);
+                el.style.translate = `72px ${y}px`;
+              });
+              await wait(260);
+
+              // 2) 카드가 왼쪽으로 겹쳐 쌓임
+              cards.forEach((el, idx) => {
+                const y = Math.min(22, idx * 1.2);
+                el.style.translate = `-68px ${y}px`;
+              });
+              await wait(260);
+
+              // 3) 원위치로 복귀 후 덱 재배치(리셋)
+              cards.forEach((el) => {
+                el.style.translate = "0 0";
+              });
+              await wait(180);
+
+              cards.forEach((el) => {
+                el.style.transition = "";
+                el.style.translate = "";
+              });
+
+              setDeckOrder(makeShuffledOrder());
+              setResetKey((k) => k + 1);
+              setIsRevealed(false);
               setIsShuffling(false);
-              return;
-            }
-
-            const cards = Array.from(deck.querySelectorAll<HTMLDivElement>(".card"));
-            cards.forEach((el, idx) => {
-              const delay = (idx % 10) * 12;
-              el.style.transition = `translate 220ms cubic-bezier(0.2, 0.8, 0.2, 1) ${delay}ms`;
-            });
-
-            // 1) 카드가 오른쪽으로 겹쳐 쌓임
-            cards.forEach((el, idx) => {
-              const y = Math.min(26, idx * 1.4);
-              el.style.translate = `72px ${y}px`;
-            });
-            await wait(260);
-
-            // 2) 카드가 왼쪽으로 겹쳐 쌓임
-            cards.forEach((el, idx) => {
-              const y = Math.min(22, idx * 1.2);
-              el.style.translate = `-68px ${y}px`;
-            });
-            await wait(260);
-
-            // 3) 원위치로 복귀 후 덱 재배치(리셋)
-            cards.forEach((el) => {
-              el.style.translate = "0 0";
-            });
-            await wait(180);
-
-            cards.forEach((el) => {
-              el.style.transition = "";
-              el.style.translate = "";
-            });
-
-            setDeckOrder(makeShuffledOrder());
-            setResetKey((k) => k + 1);
-            setIsRevealed(false);
-            setIsShuffling(false);
-          }}
-          disabled={isShuffling}
-          className="rounded-2xl border border-primary bg-[rgba(12,10,36,0.92)] px-3 py-3 text-center text-[16px] text-[#d8ccff] disabled:opacity-70"
-        >
-          {isShuffling ? "카드 섞는 중..." : "카드섞기"}
-        </button>
+            }}
+            disabled={isShuffling}
+            className="rounded-2xl border border-primary bg-[rgba(12,10,36,0.92)] px-3 py-3 text-center text-[16px] text-[#d8ccff] disabled:opacity-70"
+          >
+            {isShuffling ? "카드 섞는 중..." : "카드섞기"}
+          </button>
+        </div>
       </div>
     </div>
   );

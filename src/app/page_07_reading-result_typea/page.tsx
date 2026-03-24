@@ -86,9 +86,9 @@ function Page07ReadingResultTypeAInner() {
             <Image
               src={frontCardSrc}
               alt={`${reading.titleEn} 카드`}
-              width={260}
-              height={303}
-              className="h-auto w-[260px] rounded-[12px] shadow-[0_20px_48px_rgba(0,0,0,0.45)]"
+              width={300}
+              height={349}
+              className="h-auto w-[300px] rounded-[12px] shadow-[0_20px_48px_rgba(0,0,0,0.45)]"
               priority
             />
           </div>
