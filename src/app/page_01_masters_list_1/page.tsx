@@ -9,8 +9,6 @@ import { FLOW_MASTERS } from "@/lib/flowData";
 import masterProfiles from "@/data/master-profiles.json";
 import { withAssetBase } from "@/lib/publicPath";
 
-/** JSON `diagramSrc`는 `/assets/...` 원본 문자열 — 표시 시 withAssetBase 적용 */
-const DIAGRAM_FALLBACK_PATH = "/assets/master-diagrams/01_Cassian.svg";
 const GUIDE_POPUP_IMAGE_PATH = "/images/ch.png";
 
 const MASTER_DETAIL_OPEN_DELAY_MS = 1000;
@@ -62,10 +60,6 @@ export default function Page01MastersList1() {
   const popupTags = currentProfile?.tags?.length
     ? currentProfile.tags.join(" ")
     : "🔮 미래형 🌕 분석형 ♍ 객관형 🌙 신비형 🔮 고전형";
-  const popupDiagramSrc = withAssetBase(
-    current ? (currentProfile?.diagramSrc ?? DIAGRAM_FALLBACK_PATH) : DIAGRAM_FALLBACK_PATH,
-  );
-
   return (
     <main className="w-full">
       <FlowScene hideBackgroundImage>
@@ -201,7 +195,7 @@ export default function Page01MastersList1() {
               </div>
               <div className="flex items-start gap-3">
                 <div className="relative h-[98px] w-[98px] shrink-0 overflow-hidden rounded-md">
-                  <Image src={popupDiagramSrc} alt="마스터 다이어그램" fill className="object-cover" />
+                  <Image src={current.image} alt={`${current.name} 썸네일`} fill className="object-cover" />
                 </div>
                 <div className="min-w-0 text-[12px] leading-[1.45]">
                   <div className="font-semibold">{popupTitle}</div>
@@ -228,13 +222,12 @@ export default function Page01MastersList1() {
                 </div>
               </div>
               <div className="mt-3 grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsDetailOpen(false)}
+                <Link
+                  href={`/page_03_card-selection_1?master=${current.id}`}
                   className="rounded-lg bg-[#6422AB] px-3 py-2 text-center text-[16px] font-semibold text-white"
                 >
                   캐릭터 선택
-                </button>
+                </Link>
                 <Link
                   href={`/page-master-profile_01?master=${current.id}`}
                   className="rounded-lg border border-primary px-3 py-2 text-center text-[16px] text-[#d6cbff]"

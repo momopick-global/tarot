@@ -44,12 +44,12 @@ function Section({
 }>) {
   return (
     <div>
-      <div className="mb-2 flex items-center gap-2 text-[15px] font-semibold text-white">
+      <div className="mb-2 flex items-center gap-2 text-[17px] font-semibold text-white">
         <span aria-hidden>{icon}</span>
         {title}
       </div>
       <div className="rounded-xl border border-[#5c4a8a]/60 bg-[rgba(10,8,28,0.88)] px-3 py-3">
-        <div className="text-[13px] leading-[1.65] text-[#e8e0ff]">{children}</div>
+        <div className="text-[15px] leading-[1.65] text-[#e8e0ff]">{children}</div>
       </div>
     </div>
   );
@@ -135,15 +135,39 @@ function Page07ReadingResultTypeAInner() {
                   {formatBoldSegments(reading.categories.money)}
                 </span>
               </p>
+              <p className="mt-2 mb-2 flex gap-2">
+                <span aria-hidden>👥</span>
+                <span>
+                  <span className="font-semibold text-[#f0e8ff]">인간관계</span>
+                  <br />
+                  {formatBoldSegments(reading.categories.relationship || "—")}
+                </span>
+              </p>
+              <p className="mb-2 flex gap-2">
+                <span aria-hidden>🏥</span>
+                <span>
+                  <span className="font-semibold text-[#f0e8ff]">건강</span>
+                  <br />
+                  {formatBoldSegments(reading.categories.health || "—")}
+                </span>
+              </p>
+              <p className="flex gap-2">
+                <span aria-hidden>🍀</span>
+                <span>
+                  <span className="font-semibold text-[#f0e8ff]">기회/행운</span>
+                  <br />
+                  {formatBoldSegments(reading.categories.luck || "—")}
+                </span>
+              </p>
             </Section>
 
             <Section icon="💡" title="오늘의 조언">
               {reading.advice.quote ? (
-                <p className="mb-3 border-b border-white/10 pb-3 text-[13px] font-medium leading-relaxed text-[#f2ecff] underline decoration-[#9b7dff]/50 underline-offset-4">
+                <p className="mb-3 border-b border-white/10 pb-3 text-[15px] font-medium leading-relaxed text-[#f2ecff] underline decoration-[#9b7dff]/50 underline-offset-4">
                   {reading.advice.quote}
                 </p>
               ) : null}
-              <ul className="list-none space-y-2 text-[13px]">
+              <ul className="list-none space-y-2 text-[15px]">
                 <li>
                   <span className="font-semibold text-[#d8ccff]">행운의 아이템</span>
                   <br />
