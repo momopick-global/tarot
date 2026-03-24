@@ -27,6 +27,7 @@ export default function Home() {
             width={350}
             height={174}
             className="h-[174px] w-[350px] max-w-full object-contain"
+            style={{ height: "auto" }}
             priority
           />
         </div>

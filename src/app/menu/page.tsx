@@ -19,59 +19,67 @@ export default function MenuPage() {
             <div className="text-[22px] font-semibold">YourTarot</div>
           </div>
 
-          <div className="mt-10 space-y-7">
-            <Link
-              href="/page_01_masters_list_1"
-              className="flex items-center gap-3 text-[18px] font-semibold"
-            >
-              <span aria-hidden>🔮</span>
-              오늘의 운세 보기
-            </Link>
+          <div className="mt-10">
+            <div className="space-y-4">
+              <Link
+                href="/page_01_masters_list_1"
+                className="flex items-center gap-3 text-[18px] font-semibold"
+              >
+                <span aria-hidden>🔮</span>
+                오늘의 운세 보기
+              </Link>
+            </div>
 
-            <Link
-              href="/about"
-              className="flex items-center gap-3 text-[18px] font-semibold"
-            >
-              <span aria-hidden>✨</span>
-              서비스 소개
-            </Link>
+            <div className="mt-6 space-y-4">
+              <Link
+                href="/about"
+                className="flex items-center gap-3 text-[18px] font-semibold"
+              >
+                <span aria-hidden>✨</span>
+                서비스 소개
+              </Link>
 
-            <Link
-              href="/masters"
-              className="flex items-center gap-3 text-[18px] font-semibold"
-            >
-              <span aria-hidden>👤</span>
-              타로 마스터 소개
-            </Link>
+              <Link
+                href="/masters"
+                className="flex items-center gap-3 text-[18px] font-semibold"
+              >
+                <span aria-hidden>👤</span>
+                타로 마스터 소개
+              </Link>
+            </div>
 
-            <Link
-              href="/recommended"
-              className="flex items-center gap-3 text-[18px] font-semibold"
-            >
-              <span aria-hidden>📦</span>
-              의견 받아요
-            </Link>
+            <div className="mt-6 space-y-4">
+              <Link
+                href="/recommended"
+                className="flex items-center gap-3 text-[18px] font-semibold"
+              >
+                <span aria-hidden>💬</span>
+                의견 받아요
+              </Link>
 
-            <Link
-              href="/partner"
-              className="flex items-center gap-3 text-[18px] font-semibold"
-            >
-              <span aria-hidden>🚀</span>
-              제휴 문의
-            </Link>
+              <Link
+                href="/partner"
+                className="flex items-center gap-3 text-[18px] font-semibold"
+              >
+                <span aria-hidden>🤝</span>
+                제휴 문의
+              </Link>
+            </div>
 
-            <Link
-              href="/login"
-              className="flex items-center gap-3 text-[18px] font-semibold"
-            >
-              <span aria-hidden>🔐</span>
-              로그인
-            </Link>
+            <div className="mt-6 space-y-4">
+              <Link
+                href="/login"
+                className="flex items-center gap-3 text-[18px] font-semibold"
+              >
+                <span aria-hidden>🔑</span>
+                로그인
+              </Link>
 
-            <Link href={mypageHref} className="flex items-center gap-3 text-[18px] font-semibold">
-              <span aria-hidden>🦄</span>
-              마이페이지
-            </Link>
+              <Link href={mypageHref} className="flex items-center gap-3 text-[18px] font-semibold">
+                <span aria-hidden>🏠</span>
+                마이페이지
+              </Link>
+            </div>
 
             <div className="pt-2 text-[16px] text-neutral-60">
               <Link href="/terms" className="hover:underline">

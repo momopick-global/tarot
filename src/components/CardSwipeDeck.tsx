@@ -390,9 +390,6 @@ export function CardSwipeDeck({
 
       <div className="pb-6 text-center text-[11px] text-[#b9abdf]">
         선택 카드: #{String(deckIndex + 1).padStart(2, "0")}
-        <span className="mt-1 block text-[10px] text-[#9a8ec4]">
-          뒷면 숫자는 위와 같은 실제 카드 번호(1~78)입니다.
-        </span>
       </div>
 
       <div className="grid grid-cols-2 gap-3">

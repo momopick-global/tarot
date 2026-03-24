@@ -9,7 +9,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { withAssetBase } from "@/lib/publicPath";
 
-const LOADING_ICON = withAssetBase("/assets/Frame_154-26dc58c4-a9ad-4649-b973-c08847b7f089.png");
+const POPUP_IMAGE_PATH = withAssetBase("/images/ch.png");
 
 function Page06AnalyzingInner() {
   const router = useRouter();
@@ -40,27 +40,30 @@ function Page06AnalyzingInner() {
           DBG BG: 03
         </div>
         <div className="flex min-h-[460px] flex-col items-center justify-center">
-          <Image src={LOADING_ICON} alt="loading" width={180} height={120} />
-          <div className="mt-5 h-[18px] w-[320px] rounded-full bg-[#5a4414]">
-            <div
-              className="h-full rounded-full bg-[#d8b86a] transition-all duration-200"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-          <div className="mt-7 w-full rounded-xl border border-white/60 bg-[rgba(8,8,12,0.7)] px-4 py-4 text-[16px] text-white">
-            카드 마스터가 카드의 의미를 해석하고 있습니다.
+          <div className="mt-7 w-full max-w-[350px] rounded-xl border border-primary bg-[rgba(9,7,28,0.94)] p-4 text-white shadow-2xl">
+            <div className="mb-3 flex justify-center">
+              <div className="relative h-[124px] w-[124px] overflow-hidden rounded-full">
+                <Image src={POPUP_IMAGE_PATH} alt="가이드 마스터 이미지" fill className="object-cover" />
+              </div>
+            </div>
+            <div className="text-center text-[16px] leading-[1.6] text-white">
+              카드 마스터가 카드의 의미를 해석하고 있습니다.
+            </div>
+            <div className="mt-4 h-[14px] w-full rounded-full bg-[#3b2a66]">
+              <div
+                className="h-full rounded-full bg-[#8e63ff] transition-all duration-200"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <Link
+              href={`/page_07_reading-result_typea?master=${master}&card=${card}`}
+              className="mt-4 block rounded-lg bg-[#6422AB] px-4 py-2.5 text-center text-[16px] font-semibold text-white"
+            >
+              결과화면보기
+            </Link>
           </div>
         </div>
       </FlowScene>
-      <div className="mx-auto h-2 w-full max-w-[390px]" />
-      <div className="mx-auto w-full max-w-[390px] px-4">
-        <Link
-          href={`/page_07_reading-result_typea?master=${master}&card=${card}`}
-          className="block rounded-xl bg-[#6422AB] px-4 py-3 text-center text-sm font-semibold text-white"
-        >
-          다음: 결과 화면 보기
-        </Link>
-      </div>
     </main>
   );
 }

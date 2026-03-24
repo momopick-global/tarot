@@ -20,6 +20,7 @@ export function FlowScene({
   allowOverflow = false,
   hideDimOverlay = false,
   sceneClassName,
+  backgroundImageClassName,
   backStyle = "image",
   backImageSrc,
   backImageSize = 52,
@@ -33,6 +34,7 @@ export function FlowScene({
   allowOverflow?: boolean;
   hideDimOverlay?: boolean;
   sceneClassName?: string;
+  backgroundImageClassName?: string;
   backStyle?: "image" | "custom";
   backImageSrc?: string;
   backImageSize?: number;
@@ -53,7 +55,7 @@ export function FlowScene({
           src={backgroundSrc ?? BG}
           alt=""
           fill
-          className={backgroundFit === "contain" ? "object-contain object-top" : "object-cover object-top"}
+          className={`${backgroundFit === "contain" ? "object-contain object-top" : "object-cover object-top"} ${backgroundImageClassName ?? ""}`}
           priority
         />
       ) : null}

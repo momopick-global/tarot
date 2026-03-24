@@ -86,9 +86,9 @@ function Page07ReadingResultTypeAInner() {
             <Image
               src={frontCardSrc}
               alt={`${reading.titleEn} 카드`}
-              width={280}
-              height={372}
-              className="h-auto w-[280px] rounded-[12px] shadow-[0_20px_48px_rgba(0,0,0,0.45)]"
+              width={260}
+              height={303}
+              className="h-auto w-[260px] rounded-[12px] shadow-[0_20px_48px_rgba(0,0,0,0.45)]"
               priority
             />
           </div>
@@ -238,10 +238,10 @@ function Page07ReadingResultTypeAInner() {
 
         <div className="mx-auto w-full max-w-[350px] pb-6 pt-6">
           <Link
-            href={`/page_01_masters_list_1?from=${card}`}
-            className="block rounded-xl border border-primary bg-[rgba(16,12,44,0.95)] px-4 py-3 text-center text-sm font-semibold text-[#d8ccff]"
+            href="/"
+            className="mx-auto block w-[350px] max-w-full rounded-xl bg-[#6422AB] px-4 py-3 text-center text-[15px] font-semibold text-white"
           >
-            처음으로 돌아가기
+            메인으로 돌아가기
           </Link>
         </div>
       </div>

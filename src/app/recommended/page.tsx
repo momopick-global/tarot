@@ -17,7 +17,7 @@ export default function RecommendedPage() {
         </p>
 
         <div className="mt-8 flex items-center justify-center">
-          <Image src={ICON_EYE} alt="" width={26} height={26} />
+          <Image src={ICON_EYE} alt="" width={26} height={26} style={{ height: "auto" }} />
         </div>
 
         <div className="mt-6 space-y-6">
