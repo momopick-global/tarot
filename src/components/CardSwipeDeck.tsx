@@ -379,7 +379,7 @@ export function CardSwipeDeck({
 
   return (
     <div
-      className="card-swipe-deck page-fade mx-auto w-full max-w-[390px] [color-scheme:dark]"
+      className="card-swipe-deck page-fade mx-auto flex h-full min-h-0 w-full max-w-[390px] flex-col [color-scheme:dark]"
       style={{ "--card-back-url": cardBackUrl } as CSSProperties}
     >
       <div
@@ -388,11 +388,11 @@ export function CardSwipeDeck({
         aria-disabled={isRevealed}
       />
 
-      <div className="pb-6 text-center text-[11px] text-[#b9abdf]">
+      <div className="pb-3 pt-2 text-center text-[11px] text-[#b9abdf]">
         선택 카드: #{String(deckIndex + 1).padStart(2, "0")}
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="mt-auto grid grid-cols-2 gap-3 pb-[calc(env(safe-area-inset-bottom)+16px)]">
         <button
           type="button"
           onClick={() => {

@@ -39,6 +39,11 @@ body {
     Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
 }
 
+html,
+body {
+  height: 100%;
+}
+
 /* Prevent the browser default focus glow from clashing with brand focus color. */
 :focus-visible {
   outline: 2px solid var(--ds-primary-light);

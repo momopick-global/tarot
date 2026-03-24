@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { CardGuidePopup } from "@/components/CardGuidePopup";
@@ -20,8 +20,19 @@ function Page03CardSelection1Inner() {
   const [isCardDropAnimating, setIsCardDropAnimating] = useState(false);
   const current = FLOW_MASTERS.find((m) => m.id === master) ?? FLOW_MASTERS[0];
 
+  useEffect(() => {
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevBodyOverflow = document.body.style.overflow;
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.body.style.overflow = prevBodyOverflow;
+    };
+  }, []);
+
   return (
-    <main className="w-full">
+    <main className="h-[100dvh] w-full overflow-hidden">
       <FlowScene
         backHref="/page_01_masters_list_1"
         backgroundSrc={
@@ -31,24 +42,26 @@ function Page03CardSelection1Inner() {
               : getMasterBackgroundSrc(current.id, 2)
             : getMasterBackgroundSrc(current.id, 1)
         }
-        sceneClassName="h-[844px] min-h-[844px]"
+        sceneClassName="h-[100dvh] min-h-[100dvh] overflow-hidden"
         backgroundImageClassName={isCardStage ? "brightness-[1.08] contrast-[1.08]" : ""}
         backImageSrc={withAssetBase("/assets/btn-back-page03.png")}
         backImageSize={42}
         hideDimOverlay={isCardStage}
       >
-        <div className="relative z-0 left-1/2 -mt-[30px] min-h-[744px] w-screen max-w-[390px] -translate-x-1/2">
-          {/* 가이드 팝업이 닫힌 뒤에만 카드 덱 표시 */}
-          {isCardStage && !isCardGuidePopupOpen ? (
-            <div className={isCardDropAnimating ? "card-drop-in" : ""}>
-              <CardSwipeDeck
-                masterId={current.id}
-                onRevealChange={(revealed) => {
-                  setIsCardOpened(revealed);
-                }}
-              />
-            </div>
-          ) : null}
+        <div className="relative z-0 flex h-[calc(100dvh-68px)] min-h-0 w-full flex-col overflow-hidden">
+          <div className="relative left-1/2 flex min-h-0 flex-1 w-screen max-w-[390px] -translate-x-1/2 flex-col">
+            {/* 가이드 팝업이 닫힌 뒤에만 카드 덱 표시 */}
+            {isCardStage && !isCardGuidePopupOpen ? (
+              <div className={`flex min-h-0 flex-1 flex-col ${isCardDropAnimating ? "card-drop-in" : ""}`}>
+                <CardSwipeDeck
+                  masterId={current.id}
+                  onRevealChange={(revealed) => {
+                    setIsCardOpened(revealed);
+                  }}
+                />
+              </div>
+            ) : null}
+          </div>
         </div>
         {!isCardStage ? (
           <MasterIntroPopup
@@ -70,7 +83,6 @@ function Page03CardSelection1Inner() {
           />
         ) : null}
       </FlowScene>
-      <div className="mx-auto h-[20px] w-full max-w-[390px] bg-[#17182E]" />
     </main>
   );
 }

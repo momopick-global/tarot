@@ -2,8 +2,8 @@
 .card-swipe-deck .deck-area {
   position: relative;
   width: 100%;
-  height: min(72vh, 560px);
-  min-height: 280px;
+  flex: 1 1 auto;
+  min-height: 0;
   touch-action: pan-y;
   user-select: none;
   -webkit-user-select: none;

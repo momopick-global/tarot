@@ -26,7 +26,7 @@ export default function MenuPage() {
                 className="flex items-center gap-3 text-[18px] font-semibold"
               >
                 <span aria-hidden>🔮</span>
-                오늘의 운세 보기
+                🔮 오늘의 운세 보기
               </Link>
             </div>
 

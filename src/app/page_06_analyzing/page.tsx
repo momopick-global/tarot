@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FlowScene } from "@/components/FlowScene";
-import { getMasterBackgroundSrc } from "@/lib/masterCardAssets";
+import { clampCardIndex, getMasterBackgroundSrc, getMasterCardFrontSrc } from "@/lib/masterCardAssets";
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -16,22 +16,31 @@ function Page06AnalyzingInner() {
   const searchParams = useSearchParams();
   const master = (searchParams?.get("master") ?? "cassian").toLowerCase();
   const card = searchParams?.get("card") ?? "05";
+  const cardIndex = clampCardIndex(card, 5);
+  const frontCardSrc = getMasterCardFrontSrc(master, cardIndex);
+  const resultHref = `/page_07_reading-result_typea?master=${master}&card=${card}`;
   const [progress, setProgress] = useState(15);
 
   useEffect(() => {
+    router.prefetch(resultHref);
+
+    // 결과 화면 진입 전에 카드 이미지를 미리 받아 첫 노출 지연을 줄인다.
+    const preloadImg = new window.Image();
+    preloadImg.src = frontCardSrc;
+
     const timer = setInterval(() => {
       setProgress((p) => (p >= 100 ? 100 : p + 7));
     }, 220);
 
     const move = setTimeout(() => {
-      router.push(`/page_07_reading-result_typea?master=${master}&card=${card}`);
+      router.push(resultHref);
     }, 2600);
 
     return () => {
       clearInterval(timer);
       clearTimeout(move);
     };
-  }, [router, master, card]);
+  }, [router, resultHref, frontCardSrc]);
 
   return (
     <main className="w-full">
@@ -53,7 +62,7 @@ function Page06AnalyzingInner() {
               />
             </div>
             <Link
-              href={`/page_07_reading-result_typea?master=${master}&card=${card}`}
+              href={resultHref}
               className="mt-4 block rounded-lg bg-[#6422AB] px-4 py-2.5 text-center text-[16px] font-semibold text-white"
             >
               결과화면보기
