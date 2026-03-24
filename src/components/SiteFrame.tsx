@@ -19,6 +19,9 @@ export function SiteFrame({
   const hideHeader =
     pathname?.startsWith("/page_07_reading-result_typea") ||
     pathname?.startsWith("/page_03_card-selection_1");
+  const hideFooterByPath =
+    pathname?.startsWith("/page_03_card-selection_1") ||
+    pathname?.startsWith("/page_06_analyzing");
   const mypageHref = MYPAGE_PATH;
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isMenuMounted, setIsMenuMounted] = React.useState(false);
@@ -51,7 +54,7 @@ export function SiteFrame({
       <AuthReturnRedirect />
       {!hideHeader ? <Header onMenuClick={() => setIsMenuOpen(true)} /> : null}
       <div className="min-h-[1px]">{children}</div>
-      {!hideFooter ? (
+      {!hideFooter && !hideFooterByPath ? (
         <>
           <div className="mx-auto h-[20px] w-full max-w-[390px] bg-[#17182E]" />
           <Footer />

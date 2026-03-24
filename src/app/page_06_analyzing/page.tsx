@@ -36,9 +36,6 @@ function Page06AnalyzingInner() {
   return (
     <main className="w-full">
       <FlowScene backgroundSrc={getMasterBackgroundSrc(master, 3)}>
-        <div className="pointer-events-none mb-2 text-right text-[10px] text-[#d7c8ff]/80">
-          DBG BG: 03
-        </div>
         <div className="flex min-h-[460px] flex-col items-center justify-center">
           <div className="mt-7 w-full max-w-[350px] rounded-xl border border-primary bg-[rgba(9,7,28,0.94)] p-4 text-white shadow-2xl">
             <div className="mb-3 flex justify-center">

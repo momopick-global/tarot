@@ -19,7 +19,6 @@ function Page03CardSelection1Inner() {
   const [isCardOpened, setIsCardOpened] = useState(false);
   const [isCardDropAnimating, setIsCardDropAnimating] = useState(false);
   const current = FLOW_MASTERS.find((m) => m.id === master) ?? FLOW_MASTERS[0];
-  const debugBgLabel = !isCardStage ? "01" : isCardOpened ? "03" : "02";
 
   return (
     <main className="w-full">
@@ -38,9 +37,6 @@ function Page03CardSelection1Inner() {
         backImageSize={42}
         hideDimOverlay={isCardStage}
       >
-        <div className="pointer-events-none mb-2 text-right text-[10px] text-[#d7c8ff]/80">
-          DBG BG: {debugBgLabel}
-        </div>
         <div className="relative z-0 left-1/2 -mt-[30px] min-h-[744px] w-screen max-w-[390px] -translate-x-1/2">
           {/* 가이드 팝업이 닫힌 뒤에만 카드 덱 표시 */}
           {isCardStage && !isCardGuidePopupOpen ? (
