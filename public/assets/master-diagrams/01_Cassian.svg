@@ -1,15 +1,15 @@
 <svg
   width="320"
   height="320"
-  viewBox="-10 -10 340 340"
+  viewBox="-40 -20 400 360"
   xmlns="http://www.w3.org/2000/svg"
   role="img"
   aria-label="카시안 성향 레이더 차트"
 >
   <defs>
     <radialGradient id="cassianGlow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#9B6BFF" stop-opacity="0.22" />
-      <stop offset="60%" stop-color="#9B6BFF" stop-opacity="0.08" />
+      <stop offset="0%" stop-color="#9B6BFF" stop-opacity="0.20" />
+      <stop offset="60%" stop-color="#9B6BFF" stop-opacity="0.07" />
       <stop offset="100%" stop-color="#9B6BFF" stop-opacity="0" />
     </radialGradient>
 
@@ -58,7 +58,7 @@
 
       .radar-orbit {
         transform-origin: 160px 160px;
-        animation: slowRotate 24s linear infinite;
+        animation: slowRotate 32s linear infinite;
       }
 
       .radar-core {
@@ -67,12 +67,29 @@
       }
 
       .radar-shape {
-        animation: shapePulse 4.2s ease-in-out infinite;
+        transform-origin: 160px 160px;
+        animation:
+          shapeIntro 1.25s ease-out 1,
+          shapePulse 4.8s ease-in-out 1.25s infinite;
       }
 
       .radar-point {
-        animation: pointPulse 2.8s ease-in-out infinite;
+        animation:
+          pointIntro 0.9s ease-out 1,
+          pointPulse 3.6s ease-in-out infinite;
+        transform-origin: center;
       }
+
+      .point-ring {
+        animation: ringPulse 3.6s ease-in-out infinite;
+      }
+
+      .p1 { animation-delay: 0s, 0.15s; }
+      .p2 { animation-delay: 0.08s, 0.55s; }
+      .p3 { animation-delay: 0.16s, 0.95s; }
+      .p4 { animation-delay: 0.24s, 1.35s; }
+      .p5 { animation-delay: 0.32s, 1.75s; }
+      .p6 { animation-delay: 0.40s, 2.15s; }
 
       @keyframes slowRotate {
         0% { transform: rotate(0deg); }
@@ -85,22 +102,79 @@
         100% { opacity: 0.42; transform: scale(0.985); }
       }
 
+      @keyframes shapeIntro {
+        0% {
+          opacity: 0;
+          transform: scale(0.94);
+          stroke-dasharray: 620;
+          stroke-dashoffset: 620;
+        }
+        60% {
+          opacity: 1;
+          transform: scale(1.012);
+          stroke-dasharray: 620;
+          stroke-dashoffset: 0;
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+          stroke-dasharray: none;
+          stroke-dashoffset: 0;
+        }
+      }
+
       @keyframes shapePulse {
-        0% { opacity: 0.9; }
-        50% { opacity: 1; }
-        100% { opacity: 0.9; }
+        0%, 100% {
+          opacity: 0.9;
+          transform: scale(1);
+          filter: url(#cassianSoftGlow);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.015);
+          filter: url(#cassianSoftGlow);
+        }
+      }
+
+      @keyframes pointIntro {
+        0% {
+          opacity: 0;
+          transform: scale(0.6);
+        }
+        100% {
+          opacity: 0.96;
+          transform: scale(1);
+        }
       }
 
       @keyframes pointPulse {
-        0%, 100% { opacity: 0.88; }
-        50% { opacity: 1; }
+        0%, 100% {
+          opacity: 0.82;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.14);
+        }
+      }
+
+      @keyframes ringPulse {
+        0%, 100% {
+          opacity: 0.28;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.55;
+          transform: scale(1.08);
+        }
       }
 
       @media (prefers-reduced-motion: reduce) {
         .radar-orbit,
         .radar-core,
         .radar-shape,
-        .radar-point {
+        .radar-point,
+        .point-ring {
           animation: none;
         }
       }
@@ -111,7 +185,7 @@
     class="radar-core"
     cx="160"
     cy="160"
-    r="108"
+    r="100"
     fill="url(#cassianGlow)"
   />
 
@@ -119,7 +193,7 @@
     <circle
       cx="160"
       cy="160"
-      r="124"
+      r="116"
       fill="none"
       stroke="url(#cassianGold)"
       stroke-opacity="0.28"
@@ -128,7 +202,7 @@
     <circle
       cx="160"
       cy="160"
-      r="110"
+      r="102"
       fill="none"
       stroke="url(#cassianGold)"
       stroke-opacity="0.14"
@@ -179,37 +253,41 @@
     class="radar-shape"
     points="160,94 230,119 230,201 160,209 132,176 104,127"
     fill="#9B6BFF"
-    fill-opacity="0.24"
+    fill-opacity="0.20"
     stroke="#A56CFF"
     stroke-width="3"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+    stroke-dasharray="620"
+    stroke-dashoffset="620"
     filter="url(#cassianSoftGlow)"
   />
 
   <g filter="url(#cassianPointGlow)">
-    <circle class="radar-point" cx="160" cy="94" r="7" fill="#9B6BFF" />
-    <circle class="radar-point" cx="230" cy="119" r="7" fill="#9B6BFF" />
-    <circle class="radar-point" cx="230" cy="201" r="7" fill="#9B6BFF" />
-    <circle class="radar-point" cx="160" cy="209" r="7" fill="#9B6BFF" />
-    <circle class="radar-point" cx="132" cy="176" r="7" fill="#9B6BFF" />
-    <circle class="radar-point" cx="104" cy="127" r="7" fill="#9B6BFF" />
+    <circle class="radar-point p1" cx="160" cy="94" r="7" fill="#9B6BFF" />
+    <circle class="radar-point p2" cx="230" cy="119" r="7" fill="#9B6BFF" />
+    <circle class="radar-point p3" cx="230" cy="201" r="7" fill="#9B6BFF" />
+    <circle class="radar-point p4" cx="160" cy="209" r="7" fill="#9B6BFF" />
+    <circle class="radar-point p5" cx="132" cy="176" r="7" fill="#9B6BFF" />
+    <circle class="radar-point p6" cx="104" cy="127" r="7" fill="#9B6BFF" />
   </g>
 
   <g stroke="#B78CFF" stroke-opacity="0.45" fill="none">
-    <circle cx="160" cy="94" r="12" />
-    <circle cx="230" cy="119" r="12" />
-    <circle cx="230" cy="201" r="12" />
-    <circle cx="160" cy="209" r="12" />
-    <circle cx="132" cy="176" r="12" />
-    <circle cx="104" cy="127" r="12" />
+    <circle class="point-ring p1" cx="160" cy="94" r="10" />
+    <circle class="point-ring p2" cx="230" cy="119" r="10" />
+    <circle class="point-ring p3" cx="230" cy="201" r="10" />
+    <circle class="point-ring p4" cx="160" cy="209" r="10" />
+    <circle class="point-ring p5" cx="132" cy="176" r="10" />
+    <circle class="point-ring p6" cx="104" cy="127" r="10" />
   </g>
 
   <circle cx="160" cy="160" r="11" fill="#0F0B1C" stroke="url(#cassianGold)" stroke-width="2.2" />
   <circle cx="160" cy="160" r="4.5" fill="#9B6BFF" />
 
   <text class="radar-label" x="160" y="8" text-anchor="middle">직관력</text>
-  <text class="radar-label" x="292" y="104" text-anchor="start">미래예측</text>
-  <text class="radar-label" x="292" y="220" text-anchor="start">신비감</text>
-  <text class="radar-label" x="160" y="318" text-anchor="middle">직설화법</text>
-  <text class="radar-label" x="28" y="220" text-anchor="end">감성공감</text>
-  <text class="radar-label" x="28" y="104" text-anchor="end">현실조언</text>
+  <text class="radar-label" x="286" y="100" text-anchor="start">미래예측</text>
+  <text class="radar-label" x="286" y="224" text-anchor="start">신비감</text>
+  <text class="radar-label" x="160" y="316" text-anchor="middle">직설화법</text>
+  <text class="radar-label" x="34" y="224" text-anchor="end">감성공감</text>
+  <text class="radar-label" x="34" y="100" text-anchor="end">현실조언</text>
 </svg>

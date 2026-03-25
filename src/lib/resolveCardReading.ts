@@ -2,7 +2,7 @@ import type { CardReadingJson } from "@/lib/cardReadingTypes";
 import { getCardResultById } from "@/lib/flowData";
 
 import cassian from "@/data/readings/cassian.json";
-import kaien from "@/data/readings/kaien.json";
+import aiden from "@/data/readings/aiden.json";
 import morgana from "@/data/readings/morgana.json";
 import noa from "@/data/readings/noa.json";
 import erebus from "@/data/readings/erebus.json";
@@ -23,7 +23,7 @@ type PartialEntry = Partial<{
 
 const POOL: Record<string, Record<string, PartialEntry>> = {
   cassian: cassian as Record<string, PartialEntry>,
-  kaien: kaien as Record<string, PartialEntry>,
+  aiden: aiden as Record<string, PartialEntry>,
   morgana: morgana as Record<string, PartialEntry>,
   noa: noa as Record<string, PartialEntry>,
   erebus: erebus as Record<string, PartialEntry>,

@@ -47,7 +47,12 @@ function PageMasterProfile01Inner() {
 
   return (
     <main className="w-full">
-      <FlowScene backHref="/page_01_masters_list_1" backgroundSrc={getMasterBackgroundSrc(current.id, 2)}>
+      <FlowScene
+        backHref="/page_01_masters_list_1"
+        backgroundSrc={getMasterBackgroundSrc(current.id, 2)}
+        backVariant="page03"
+        backLinkClassName="ml-0"
+      >
         <div className="h-[170px]" />
         <div className="pt-3 text-center text-[28px] font-semibold text-white">{detail.name}</div>
 
@@ -93,8 +98,32 @@ function PageMasterProfile01Inner() {
           href={`/page_03_card-selection_1?master=${current.id}`}
           className="block rounded-xl bg-[#6422AB] px-4 py-3 text-center text-sm font-semibold text-white"
         >
-          다음: 카드 선택 1
+          캐릭터 선택
         </Link>
+
+        <div className="mt-4 rounded-xl border border-primary/40 bg-[rgba(8,7,22,0.72)] p-3 text-white">
+          <div className="text-[16px] font-semibold">✅ 다른 마스터 소개 보기</div>
+          <div className="mt-3 grid grid-cols-3 gap-2">
+            {FLOW_MASTERS.map((m) => (
+              <Link
+                key={m.id}
+                href={`/page-master-profile_01?master=${encodeURIComponent(m.id)}`}
+                className={`block overflow-hidden rounded-lg ring-offset-2 ring-offset-[rgba(8,7,22,0.72)] transition-opacity hover:opacity-95 ${
+                  m.id === current.id ? "ring-2 ring-[#c4a8ff]" : "ring-0"
+                }`}
+                aria-current={m.id === current.id ? "page" : undefined}
+              >
+                <Image
+                  src={m.image}
+                  alt={`${m.name} 소개 보기`}
+                  width={96}
+                  height={96}
+                  className="h-auto w-full rounded-lg"
+                />
+              </Link>
+            ))}
+          </div>
+        </div>
       </div>
     </main>
   );

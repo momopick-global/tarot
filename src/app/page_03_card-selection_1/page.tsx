@@ -45,9 +45,7 @@ function Page03CardSelection1Inner() {
         sceneClassName="h-[100dvh] min-h-[100dvh] overflow-hidden"
         contentClassName="px-0"
         backgroundImageClassName={isCardStage ? "brightness-[1.08] contrast-[1.08]" : ""}
-        backImageSrc={withAssetBase("/assets/btn-back-page03.png")}
-        backImageSize={42}
-        backLinkClassName="ml-[20px]"
+        backVariant="page03"
         hideDimOverlay={isCardStage}
       >
         <div className="relative z-0 h-[calc(100dvh-68px)] min-h-0 w-full overflow-hidden">

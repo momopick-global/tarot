@@ -7,7 +7,7 @@ import { withAssetBase } from "./publicPath";
  */
 export const MASTER_CARD_FOLDER: Record<string, string> = {
   cassian: "01_Cassian",
-  kaien: "02_Aiden",
+  aiden: "02_Aiden",
   morgana: "03_Morgana",
   noa: "04_Noa",
   erebus: "05_Erebus",

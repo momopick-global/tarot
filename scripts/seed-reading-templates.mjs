@@ -13,7 +13,7 @@ const dir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "src",
 
 const MASTER_FILES = [
   "cassian.json",
-  "kaien.json",
+  "aiden.json",
   "morgana.json",
   "noa.json",
   "erebus.json",

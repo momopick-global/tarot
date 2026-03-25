@@ -14,6 +14,7 @@ const GUIDE_POPUP_IMAGE_PATH = "/images/ch.png";
 const MASTER_DETAIL_OPEN_DELAY_MS = 1000;
 
 type ProfilePopupData = {
+  name?: string;
   diagramSrc?: string;
   type?: string;
   job?: string;
@@ -50,16 +51,11 @@ export default function Page01MastersList1() {
   const currentProfile = current
     ? ((masterProfiles as Record<string, ProfilePopupData>)[current.id] ?? null)
     : null;
-  const popupType = currentProfile?.type ?? current?.type ?? "";
-  const popupTitle = currentProfile?.job
-    ? `${currentProfile.job} / ${popupType}`
-    : current?.profileTitle ?? "";
+  const popupTitle = [currentProfile?.job, currentProfile?.type].filter(Boolean).join(" / ");
   const popupTendency = currentProfile?.tendencyLines?.length
     ? currentProfile.tendencyLines.join(" ")
-    : current?.desc ?? "";
-  const popupTags = currentProfile?.tags?.length
-    ? currentProfile.tags.join(" ")
-    : "🔮 미래형 🌕 분석형 ♍ 객관형 🌙 신비형 🔮 고전형";
+    : "마스터 소개가 준비 중입니다.";
+  const popupTags = currentProfile?.tags?.length ? currentProfile.tags.join(" ") : "";
   return (
     <main className="w-full">
       <FlowScene hideBackgroundImage>
@@ -195,10 +191,15 @@ export default function Page01MastersList1() {
               </div>
               <div className="flex items-start gap-3">
                 <div className="relative h-[98px] w-[98px] shrink-0 overflow-hidden rounded-md">
-                  <Image src={current.image} alt={`${current.name} 썸네일`} fill className="object-cover" />
+                  <Image
+                    src={current.image}
+                    alt={`${currentProfile?.name ?? current.name} 썸네일`}
+                    fill
+                    className="object-cover"
+                  />
                 </div>
                 <div className="min-w-0 text-[12px] leading-[1.45]">
-                  <div className="font-semibold">{popupTitle}</div>
+                  <div className="font-semibold">{popupTitle || "마스터"}</div>
                   <div
                     className="mt-1 overflow-hidden text-[#d6cbff]"
                     style={{
@@ -209,16 +210,18 @@ export default function Page01MastersList1() {
                   >
                     {popupTendency}
                   </div>
-                  <div
-                    className="mt-2 overflow-hidden text-[#d6cbff]"
-                    style={{
-                      display: "-webkit-box",
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: "vertical",
-                    }}
-                  >
-                    {popupTags}
-                  </div>
+                  {popupTags ? (
+                    <div
+                      className="mt-2 overflow-hidden text-[#d6cbff]"
+                      style={{
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                      }}
+                    >
+                      {popupTags}
+                    </div>
+                  ) : null}
                 </div>
               </div>
               <div className="mt-3 grid grid-cols-2 gap-2">

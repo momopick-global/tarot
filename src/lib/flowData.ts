@@ -25,11 +25,11 @@ export const FLOW_MASTERS: Master[] = [
     keywords: ["문제 정의", "선택", "균형", "실행"],
   },
   {
-    id: "kaien",
-    name: "카이언",
+    id: "aiden",
+    name: "에이든",
     type: "상담형",
     desc: "현실 공감과 따뜻한 말로 방향을 제시하는 조언가",
-    image: getMasterThumbSrc("kaien"),
+    image: getMasterThumbSrc("aiden"),
     profileTitle: "상담가 / 공감형",
     profileSummary: "감정을 세심하게 듣고, 지금 당장 실천 가능한 조언을 전합니다.",
     specialty: "관계 회복, 자존감, 일상 루틴",
@@ -93,7 +93,7 @@ export const FLOW_MASTERS: Master[] = [
   {
     id: "clotho",
     name: "클로토",
-    type: "시형",
+    type: "ai형",
     desc: "감성적인 문장과 상징으로 해석하는 서정형",
     image: getMasterThumbSrc("clotho"),
     profileTitle: "시인 / 서정형",

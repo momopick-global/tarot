@@ -1,6 +1,6 @@
 # 마스터별 카드 해석 JSON
 
-- 파일: `{masterId}.json` — `cassian`, `kaien`, `morgana`, `noa`, `erebus`, `serina`, `nyx`, `clotho`, `pipi`
+- 파일: `{masterId}.json` — `cassian`, `aiden`, `morgana`, `noa`, `erebus`, `serina`, `nyx`, `clotho`, `pipi`
 - 최상위 키: `"0"` … `"77"` (덱에서 쓰는 카드 인덱스와 동일)
 - 필드 스키마: `src/lib/cardReadingTypes.ts` 의 `CardReadingJson` 참고
 - **일괄 수정**: VS Code에서 폴더 검색·다중 커서, 또는 스프레드시트 →보내기 후 스크립트로 병합

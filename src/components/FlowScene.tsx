@@ -22,9 +22,10 @@ export function FlowScene({
   sceneClassName,
   contentClassName,
   backgroundImageClassName,
+  backVariant = "default",
   backStyle = "image",
   backImageSrc,
-  backImageSize = 52,
+  backImageSize,
   backLinkClassName,
 }: Readonly<{
   children: React.ReactNode;
@@ -38,6 +39,8 @@ export function FlowScene({
   sceneClassName?: string;
   contentClassName?: string;
   backgroundImageClassName?: string;
+  /** 공통 뒤로가기 버튼 프리셋 */
+  backVariant?: "default" | "page03";
   backStyle?: "image" | "custom";
   backImageSrc?: string;
   backImageSize?: number;
@@ -45,6 +48,12 @@ export function FlowScene({
   backLinkClassName?: string;
 }>) {
   const pathname = usePathname() ?? "";
+  const resolvedBackImageSrc =
+    backImageSrc ??
+    (backVariant === "page03" ? withAssetBase("/assets/btn-back-page03.png") : BACK);
+  const resolvedBackImageSize = backImageSize ?? (backVariant === "page03" ? 42 : 52);
+  const resolvedBackLinkClassName =
+    backLinkClassName ?? (backVariant === "page03" ? "ml-[20px]" : "");
 
   return (
     <section
@@ -79,15 +88,20 @@ export function FlowScene({
             href={backHref}
             className={
               backStyle === "custom"
-                ? `inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#8E63FF] bg-[rgba(14,10,35,0.88)] ${backLinkClassName ?? ""}`
-                : `inline-flex ${backLinkClassName ?? ""}`
+                ? `inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#8E63FF] bg-[rgba(14,10,35,0.88)] ${resolvedBackLinkClassName}`
+                : `inline-flex ${resolvedBackLinkClassName}`
             }
             aria-label="뒤로가기"
           >
             {backStyle === "custom" ? (
               <span className="text-[22px] font-semibold leading-none text-[#BFA8FF]">←</span>
             ) : (
-              <Image src={backImageSrc ?? BACK} alt="뒤로가기" width={backImageSize} height={backImageSize} />
+              <Image
+                src={resolvedBackImageSrc}
+                alt="뒤로가기"
+                width={resolvedBackImageSize}
+                height={resolvedBackImageSize}
+              />
             )}
           </Link>
         ) : null}

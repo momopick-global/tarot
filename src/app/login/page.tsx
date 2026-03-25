@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo } from "react";
 import { useUser } from "@/hooks/useUser";
@@ -116,11 +115,6 @@ function LoginPageInner() {
           </p>
         </div>
 
-        <div className="mt-6 text-center text-[13px]">
-          <Link href="/" className="text-primary">
-            메인으로 돌아가기
-          </Link>
-        </div>
       </section>
     </main>
   );
