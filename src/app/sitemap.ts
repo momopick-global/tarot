@@ -9,7 +9,7 @@ function siteOrigin(): string {
   if (fromEnv) return fromEnv;
   const vercel = process.env.VERCEL_URL?.replace(/\/$/, "");
   if (vercel) return `https://${vercel}`;
-  return "http://localhost:3000";
+  return "https://yourtarot.cc";
 }
 
 function basePathPrefix(): string {
