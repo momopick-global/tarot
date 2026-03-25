@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { Master } from "@/lib/flowData";
 import { withAssetBase } from "@/lib/publicPath";
+import { ROUTES, tarotRevealWith } from "@/lib/routes";
 
 const POPUP_IMAGE_PATH = withAssetBase("/images/ch.png");
 
@@ -54,14 +55,14 @@ export function MasterIntroPopup({
                   onCardReceive();
                   return;
                 }
-                window.location.href = `/page_05_masters_list5?master=${master.id}&card=40`;
+                window.location.href = tarotRevealWith(master.id, 40);
               }}
               className="rounded-lg bg-[#6422AB] px-3 py-2 text-center text-[16px] font-semibold"
             >
               카드받기
             </button>
             <Link
-              href="/page_01_masters_list_1"
+              href={ROUTES.tarotStart}
               className="rounded-lg border border-primary px-3 py-2 text-center text-[16px] text-[#d6cbff]"
             >
               마스터 선택

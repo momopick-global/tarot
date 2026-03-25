@@ -1,5 +1,31 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { pageMetadata } from "@/lib/seo/pageMeta";
+
+export function generateMetadata({
+  params,
+}: Readonly<{
+  params: { id: string };
+}>): Metadata {
+  const { id } = params;
+  const basePath = `/result/today/${id}`;
+  if (id !== "demo") {
+    return pageMetadata("오늘의 결과", "오늘의 타로 결과 화면입니다.", basePath, {
+      ogTitle: "오늘의 타로 결과 요약 | 유어타로",
+      ogDescription: "뽑은 카드와 마스터 기준으로 오늘의 흐름을 다시 확인해 보세요.",
+    });
+  }
+  return pageMetadata(
+    "오늘의 결과 (데모)",
+    "오늘 뽑은 카드와 마스터에 따른 타로 결과 요약을 확인합니다.",
+    basePath,
+    {
+      ogTitle: "오늘 뽑은 카드, 한 장에 담긴 메시지 | 유어타로",
+      ogDescription: "애정·일·금전·조언 흐름을 한 화면에 모았어요. 공유하기 좋은 요약이에요.",
+    },
+  );
+}
 
 export function generateStaticParams() {
   return [{ id: "demo" }];

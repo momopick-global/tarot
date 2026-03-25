@@ -1,6 +1,7 @@
 "use client";
 
 import { getMasterCardBackSrc } from "@/lib/masterCardAssets";
+import { tarotAnalyzeWith } from "@/lib/routes";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import "./card-swipe-deck.css";
@@ -404,9 +405,7 @@ export function CardSwipeDeck({
                 return;
               }
               const chosen = String(liveSelectedCardRef.current);
-              router.push(
-                `/page_06_analyzing?master=${encodeURIComponent(masterId)}&card=${encodeURIComponent(chosen)}`,
-              );
+              router.push(tarotAnalyzeWith(masterId, chosen));
             }}
             disabled={isShuffling}
             className="rounded-2xl bg-[#6422AB] px-3 py-3 text-center text-[20px] font-semibold text-white disabled:opacity-70"

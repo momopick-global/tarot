@@ -44,7 +44,7 @@ export function FlowScene({
   backStyle?: "image" | "custom";
   backImageSrc?: string;
   backImageSize?: number;
-  /** 뒤로가기 링크에만 적용 (예: page_03에서 왼쪽 20px 간격) */
+  /** 뒤로가기 링크에만 적용 (예: /tarot/draw 에서 왼쪽 20px 간격) */
   backLinkClassName?: string;
 }>) {
   const pathname = usePathname() ?? "";

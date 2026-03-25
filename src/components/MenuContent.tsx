@@ -17,7 +17,7 @@ export function MenuContent({
 
       <div className="mt-[30px] space-y-7">
         <div className="space-y-3">
-          <Link href="/page_01_masters_list_1" onClick={onLinkClick} className="flex items-center gap-3 text-[18px] font-semibold">
+          <Link href="/tarot/start" onClick={onLinkClick} className="flex items-center gap-3 text-[18px] font-semibold">
             <span aria-hidden>🔮</span>
             오늘의 운세 보기
           </Link>
@@ -37,7 +37,7 @@ export function MenuContent({
         <div className="space-y-3">
           <Link href="/recommended" onClick={onLinkClick} className="flex items-center gap-3 text-[18px] font-semibold">
             <span aria-hidden>💬</span>
-            의견 받아요
+            서비스 개선 의견 보내기
           </Link>
           <Link href="/partner" onClick={onLinkClick} className="flex items-center gap-3 text-[18px] font-semibold">
             <span aria-hidden>🤝</span>

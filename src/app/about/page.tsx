@@ -1,7 +1,15 @@
+import type { Metadata } from "next";
 import Image from "next/image";
+import { pageMetadata } from "@/lib/seo/pageMeta";
 import { withAssetBase } from "@/lib/publicPath";
 
 const ABOUT_TOP_LOGO = withAssetBase("/assets/about-logo-frame214.png");
+
+export const metadata: Metadata = pageMetadata(
+  "서비스 소개",
+  "유어타로는 타로 카드로 현재의 흐름과 운세를 확인할 수 있는 서비스입니다. 직관적이고 이해하기 쉬운 리딩을 제공합니다.",
+  "/about",
+);
 
 export default function AboutPage() {
   return (

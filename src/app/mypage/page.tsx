@@ -21,6 +21,7 @@ import {
   removeSavedReading,
   type SavedReading,
 } from "@/lib/savedReadings";
+import { tarotResultWith } from "@/lib/routes";
 
 function formatSavedAt(iso: string): string {
   const d = new Date(iso);
@@ -151,7 +152,7 @@ export default function MyPage() {
         <div className="space-y-2">
           {savedLocal.map((item) => {
             const master = masterMap.get(item.masterId) ?? FLOW_MASTERS[0];
-            const href = `/page_07_reading-result_typea?master=${item.masterId}&card=${item.card}`;
+            const href = tarotResultWith(item.masterId, item.card);
             return (
               <div
                 key={item.id}
@@ -220,7 +221,7 @@ export default function MyPage() {
         {cloudRows.map((row) => {
           const masterId = masterIdByName.get(row.master_name) ?? FLOW_MASTERS[0].id;
           const cardIdx = cardIndexFromStoredImagePath(row.card_image);
-          const href = `/page_07_reading-result_typea?master=${encodeURIComponent(masterId)}&card=${cardIdx}`;
+          const href = tarotResultWith(masterId, cardIdx);
           const imgSrc = row.card_image.startsWith("/") ? row.card_image : `/${row.card_image}`;
           const rawInterp = row.interpretation?.replace(/\s+/g, " ").trim() ?? "";
           const preview =

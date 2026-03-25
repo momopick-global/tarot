@@ -34,37 +34,55 @@ npm run dev -- --port 3025
 
 ## 현재 라우트 구조 (`src/app`)
 
+**정책·기타**
+
 - `/` 홈
 - `/about` 서비스 소개
 - `/login` 로그인
 - `/mypage` 마이페이지
 - `/menu` 메뉴
-- `/masters`, `/masters/[slug]` 마스터 목록/상세
-- `/draw/today` 오늘의 타로
-- `/result/today/[id]` 결과 페이지
+- `/masters` 마스터 목록
+- `/masters/[slug]` 마스터 상세(SSG)
+- `/masters/profile` 마스터 프로필(쿼리 `?master=`)
+- `/draw/today` → `/tarot/start`로 리다이렉트
+- `/result/today/[id]` 데모 결과 페이지
 - `/partner` 제휴 문의
 - `/disclaimer`, `/personal`, `/terms` 정책/약관
-- `/recommended` 추천 페이지
-- 플로우 화면:
-  - `/page_01_masters_list_1`
-  - `/page_02_masters_list_2`
-  - `/page_03_card-selection_1`
-  - `/page_04_card-selection_2`
-  - `/page_05_masters_list5`
-  - `/page_06_analyzing`
-  - `/page_07_reading-result_typea`
-  - `/page-master-profile_01`
+- `/recommended` 의견 보내기
+- `/robots.txt`, `/sitemap.xml` — `src/app/robots.ts`, `src/app/sitemap.ts`에서 정적 생성
+
+**타로 플로우(권장 URL, 짧은 영어 slug)**
+
+- `/tarot/start` 마스터 선택
+- `/tarot/draw` 카드 선택(덱) — `?master=`
+- `/tarot/reveal` 카드 오픈 — `?master=&card=`
+- `/tarot/analyze` 해석 중 — `?master=&card=`
+- `/tarot/result` 리딩 결과 — `?master=&card=`
+
+내부 링크·쿼리 조합은 `src/lib/routes.ts` 헬퍼(`tarotDrawWithMaster`, `tarotResultWith` 등) 사용.
+
+**구 URL 호환(리다이렉트 + `noindex`)**
+
+북마크·외부 링크용으로 예전 경로가 남아 있으며, 같은 쿼리를 붙여 새 경로로 `replace` 합니다.
+
+- `/page_01_masters_list_1` → `/tarot/start`
+- `/page_03_card-selection_1` → `/tarot/draw`
+- `/page_05_masters_list5` → `/tarot/reveal`
+- `/page_06_analyzing` → `/tarot/analyze`
+- `/page_07_reading-result_typea` → `/tarot/result`
+- `/page-master-profile_01` → `/masters/profile`
 
 ## 프로젝트 구조 요약
 
-- `src/app`: 페이지 라우트(App Router)
-- `src/components`: 공용 UI 컴포넌트 (`SiteFrame`, `FlowScene`, `MarkdownArticle` 등)
-- `src/lib`: 공통 유틸/상수/API 클라이언트
-- `src/data`: 정적 데이터(JSON)
-- `src/hooks`: 커스텀 훅
-- `src/context`: 전역 컨텍스트
+- `src/app`: 페이지 라우트(App Router), `globals.css`, `robots.ts`, `sitemap.ts`
+- `src/components`: 레이아웃·플로우·홈 UI (`SiteFrame`, `FlowScene`, `CardSwipeDeck`, `LegacyPathRedirect` 등 — 전체 표는 `docs/folder-structure.md`)
+- `src/lib`: 유틸·라우트·SEO·Supabase·리딩 (`routes.ts`, `siteUrl.ts`, `seo/pageMeta.ts` 등)
+- `src/data`: `master-profiles.json`, `readings/`, `translations/ko.json`
+- `src/hooks`: `useUser`(Supabase), `submitFeedback`(`useFeedback.ts`), `useCardData`/`useMasterData`(JSON 스텁 — 문서 참고)
+- `src/context`: `UserContext.tsx`(placeholder)
+- `src/styles`: `variables.css`(보조 변수)
 - `docs`: 설계/스펙 문서
-- `public/assets`: 디자인 에셋 이미지
+- `public`: 파비콘·이미지 등 정적 파일
 
 ## 문서
 
@@ -77,5 +95,5 @@ npm run dev -- --port 3025
 
 ## 참고 사항
 
-- 현재 프로젝트는 화면 구현 중심 단계이며, 문서의 API 스펙은 구현 목표 기준입니다.
-- 실제 API 핸들러(`src/app/api/**/route.ts`)는 아직 포함되어 있지 않습니다.
+- 화면·플로우 중심으로 확장 중이며, `docs/api-spec.md` 등은 목표/스펙과 실제 구현이 다를 수 있습니다.
+- API 라우트: `src/app/api/feedback/route.ts`, `src/app/api/partner/route.ts` (정적 export 빌드에서는 동작 방식이 호스팅 환경에 따름).

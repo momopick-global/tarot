@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as
 import { useRouter } from "next/navigation";
 
 import { withAssetBase } from "@/lib/publicPath";
+import { tarotRevealWith } from "@/lib/routes";
 
 const CARD_BACK = withAssetBase("/assets/card-back-page04.png");
 const TOTAL_CARDS = 78;
@@ -457,7 +458,7 @@ export function CardInteractionBoard({
     if (isOpening) return;
     setIsOpening(true);
     window.setTimeout(() => {
-      router.push(`/page_05_masters_list5?master=${masterId}&card=${cardId}`);
+      router.push(tarotRevealWith(masterId, cardId));
     }, 520);
   };
 

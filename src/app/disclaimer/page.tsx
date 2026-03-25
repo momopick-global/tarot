@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import { MarkdownArticle } from "@/components/MarkdownArticle";
+import { pageMetadata } from "@/lib/seo/pageMeta";
+
+export const metadata: Metadata = pageMetadata(
+  "면책조항",
+  "유어타로 면책조항입니다. 타로 해석 및 운세 콘텐츠는 엔터테인먼트·참고 목적이며 의사결정의 근거로 사용할 수 없습니다.",
+  "/disclaimer",
+);
 
 const MARKDOWN = `# 면책조항
 

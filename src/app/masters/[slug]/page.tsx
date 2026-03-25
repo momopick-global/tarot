@@ -1,20 +1,38 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-
-const ALLOWED = new Set([
-  "cassian",
-  "luna",
-  "elin",
-  "ari",
-  "mira",
-  "noah",
-  "soren",
-  "vivi",
-  "astra",
-]);
+import { FLOW_MASTERS } from "@/lib/flowData";
+import { MASTERS_DETAIL_SLUGS, MASTERS_DETAIL_SLUG_SET } from "@/lib/mastersDetailSlugs";
+import { pageMetadata } from "@/lib/seo/pageMeta";
 
 export function generateStaticParams() {
-  return Array.from(ALLOWED).map((slug) => ({ slug }));
+  return MASTERS_DETAIL_SLUGS.map((slug) => ({ slug }));
+}
+
+export function generateMetadata({
+  params,
+}: Readonly<{
+  params: { slug: string };
+}>): Metadata {
+  const { slug } = params;
+  const path = `/masters/${slug}`;
+  if (!MASTERS_DETAIL_SLUG_SET.has(slug)) {
+    return pageMetadata("마스터", "유어타로 마스터 상세 페이지입니다.", path, {
+      ogTitle: "타로 마스터 살펴보기 | 유어타로",
+      ogDescription: "마스터마다 리딩 톤이 달라요. 나에게 맞는 스타일을 골라 보세요.",
+    });
+  }
+  const master = FLOW_MASTERS.find((m) => m.id === slug);
+  const nameKo = master?.name ?? slug;
+  const title = `${nameKo} 마스터`;
+  const desc =
+    master?.profileSummary ??
+    `유어타로 타로 마스터「${nameKo}」의 리딩 성향과 소개를 확인합니다.`;
+  const hook = master?.desc ?? master?.profileSummary ?? desc;
+  return pageMetadata(title, desc, path, {
+    ogTitle: `${nameKo}와 함께하는 타로 — 지금 흐름 읽기 | 유어타로`,
+    ogDescription: hook,
+  });
 }
 
 export default function MasterDetailPage({
@@ -24,7 +42,7 @@ export default function MasterDetailPage({
 }>) {
   const { slug } = params;
 
-  if (!ALLOWED.has(slug)) notFound();
+  if (!MASTERS_DETAIL_SLUG_SET.has(slug)) notFound();
 
   return (
     <main className="flex-1">

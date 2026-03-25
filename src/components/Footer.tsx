@@ -20,6 +20,14 @@ export function Footer() {
           aria-label="푸터 링크"
           className="flex flex-wrap items-center justify-center gap-2 text-center text-[13px] text-neutral-60"
         >
+          <Link className="text-[16px] text-white hover:text-neutral-10" href="/masters">
+            타로 마스터 소개
+          </Link>
+          <span className="text-[#666666]">|</span>
+          <Link className="text-[16px] text-white hover:text-neutral-10" href="/about">
+            서비스 소개
+          </Link>
+          <span className="text-[#666666]">|</span>
           <Link className="text-[16px] text-white hover:text-neutral-10" href="/terms">
             이용약관
           </Link>

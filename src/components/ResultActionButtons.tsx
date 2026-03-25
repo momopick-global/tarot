@@ -8,6 +8,7 @@ import { loginUrlWithReturnTo, MYPAGE_PATH, saveAuthReturnPath } from "@/lib/aut
 import { requestTarotResultCloudSave } from "@/lib/tarotCloudInsertOnce";
 import { buildTarotReadingId, upsertTarotResult } from "@/lib/tarotResultsDb";
 import { readSavedReadings, removeSavedReading, upsertSavedReading } from "@/lib/savedReadings";
+import { tarotDrawWithMaster } from "@/lib/routes";
 
 /** Supabase 사용 시: 비로그인(guest) | 저장 가능(idle) | 진행(saving) | 완료(saved) | 실패(error) */
 type CloudUiState = "guest" | "idle" | "saving" | "saved" | "error";
@@ -249,10 +250,10 @@ export function ResultActionButtons({
     <div className="mt-4">
       <div className="grid grid-cols-2 gap-3">
         <Link
-          href={`/page_03_card-selection_1?master=${masterId}`}
+          href={tarotDrawWithMaster(masterId)}
           className="rounded-xl bg-[#6422AB] px-4 py-3 text-center text-[15px] font-semibold text-white"
         >
-          다시하기
+          같은 마스터로 카드 다시 뽑기
         </Link>
         {hasSupabase ? (
           cloudSaveButton()

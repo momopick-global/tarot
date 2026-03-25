@@ -17,9 +17,13 @@ export function SiteFrame({
 }>) {
   const pathname = usePathname();
   const hideHeader =
+    pathname?.startsWith("/tarot/result") ||
+    pathname?.startsWith("/tarot/draw") ||
     pathname?.startsWith("/page_07_reading-result_typea") ||
     pathname?.startsWith("/page_03_card-selection_1");
   const hideFooterByPath =
+    pathname?.startsWith("/tarot/draw") ||
+    pathname?.startsWith("/tarot/analyze") ||
     pathname?.startsWith("/page_03_card-selection_1") ||
     pathname?.startsWith("/page_06_analyzing");
   const mypageHref = MYPAGE_PATH;
