@@ -7,7 +7,7 @@ import { ROUTES } from "@/lib/routes";
 import { canonicalPath, OG_IMAGE_PATH } from "@/lib/seo/pageMeta";
 import { withAssetBase } from "@/lib/publicPath";
 
-const IMG_CRYSTAL_BALL = withAssetBase("/assets/img-visual-crystal-ball-v2.png");
+const HOME_HERO_BG = withAssetBase("/images/page_main_kor.png");
 
 const homeOgTitle = "지금 카드가 말해 주는 오늘의 힌트 | 유어타로";
 const homeOgDescription =
@@ -53,50 +53,35 @@ const homeOutlineNavLinkClass =
 export default function Home() {
   return (
     <main className="flex-1">
-      <section className="mx-auto w-full max-w-[390px] px-5 pt-14">
-        <h1 className="text-center text-[24px] font-semibold leading-[34px] text-neutral-10">
-          오늘 당신의 마음은
-          <br />
-          어떤 별을 품고 있나요?
-        </h1>
+      <section className="relative mx-auto h-[620px] w-full max-w-[390px] overflow-hidden">
+        <Image src={HOME_HERO_BG} alt="" fill priority className="object-cover object-center" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(8,6,25,0.12)_0%,rgba(8,6,25,0.24)_45%,rgba(8,6,25,0.72)_100%)]" />
+        <div className="absolute inset-x-0 bottom-8 z-10 px-5">
+          <h1 className="text-center text-[24px] font-semibold leading-[34px] text-neutral-10">
+            오늘 당신의 마음은
+            <br />
+            어떤 별을 품고 있나요?
+          </h1>
 
-        <p className="mt-3 text-center text-[16px] leading-[24px] text-white">
-          카드가 전하는 오늘의 감정 흐름과 행동 힌트를 1분 안에 확인해 보세요.
-        </p>
-
-        <div className="mt-10 flex items-center justify-center">
-          <Image
-            src={IMG_CRYSTAL_BALL}
-            alt="크리스탈볼"
-            width={350}
-            height={174}
-            className="h-[174px] w-[350px] max-w-full object-contain"
-            style={{ height: "auto" }}
-            priority
-          />
-        </div>
-        <p className="mt-2 text-center text-[12px] leading-[18px] text-neutral-30">
-          농부가 개발중입니다
-        </p>
-
-        <div className="mt-7 flex items-center justify-center">
-          <Link
-            href={ROUTES.tarotStart}
-            className="w-full rounded-xl bg-[#6422AB] px-5 py-4 text-center text-[20px] font-semibold text-neutral-10 shadow-[0_12px_24px_rgba(100,34,171,0.35)]"
-          >
-            오늘의 운세 보기
-          </Link>
-        </div>
-
-        <HomeParticipantCount />
-
-        <nav
-          aria-label="주요 페이지로 이동"
-          className="mt-10 border-t border-white/10 pt-8"
-        >
-          <p className="text-center text-[14px] font-semibold text-[#c9b8ff]">
-            더 알아보기
+          <p className="mt-3 text-center text-[16px] leading-[24px] text-[#d6d2ea]">
+            카드가 전하는 오늘의 감정 흐름과 행동 힌트를 1분 안에 확인해 보세요.
           </p>
+
+          <div className="mt-8 flex items-center justify-center">
+            <Link
+              href={ROUTES.tarotStart}
+              className="w-full rounded-xl bg-[#6422AB] px-5 py-4 text-center text-[20px] font-semibold text-neutral-10"
+            >
+              오늘의 운세 보기
+            </Link>
+          </div>
+
+          <HomeParticipantCount />
+        </div>
+      </section>
+      <section className="mx-auto w-full max-w-[390px] px-5 pb-8 pt-8">
+        <nav aria-label="주요 페이지로 이동">
+          <p className="text-center text-[14px] font-semibold text-[#c9b8ff]">더 알아보기</p>
           <ul className="mt-4 flex flex-col gap-3">
             <li>
               <Link href="/masters" className={homeOutlineNavLinkClass}>
