@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { GoogleAnalyticsGtag } from "@/components/GoogleAnalyticsGtag";
 import { GoogleTagManagerNoScript, GoogleTagManagerScript } from "@/components/GoogleTagManager";
 import { SiteFrame } from "@/components/SiteFrame";
 import { WebSiteJsonLd } from "@/components/WebSiteJsonLd";
@@ -73,6 +74,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-neutral-90 text-neutral-10">
         <GoogleTagManagerNoScript />
         <GoogleTagManagerScript />
+        <GoogleAnalyticsGtag />
         <WebSiteJsonLd />
         <SiteFrame>{children}</SiteFrame>
       </body>
