@@ -1,0 +1,189 @@
+#Requires AutoHotkey v2.0
+#SingleInstance Force
+SetTitleMatchMode(2)
+
+; 관리자 권한은 환경에 따라 오히려 실행을 막을 수 있어 기본 비활성화.
+forceAdmin := false
+if forceAdmin && !A_IsAdmin {
+    if A_AhkPath {
+        Run('*RunAs "' A_AhkPath '" "' A_ScriptFullPath '"')
+    } else {
+        Run('*RunAs "' A_ScriptFullPath '"')
+    }
+    ExitApp
+}
+
+; ✅ 창 제목 설정 (크롬 탭 제목의 일부만 정확히 입력)
+winTitle := "Google Gemini"
+targetWin := winTitle " ahk_exe chrome.exe"
+titleHints := ["Google Gemini", "Gemini", "Google Gemini -", "Gemini -"]
+
+messages := [
+"0 The Fool, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, young traveler with curious expression, wearing light layered cloak and simple garments, stepping forward on cliff edge, holding small bundle and staff, wind flowing fabric, dramatic open sky and distant mountains, sense of beginning and uncertainty, monochrome teal color palette with subtle gradients, strong clean linework with fine hatching and cross-hatching, slightly textured aged paper feel, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 0 at top, THE FOOL at bottom",
+"1 The Magician, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, confident man with intense gaze, wearing layered robe with symbolic patterns, one hand raised channeling energy, one hand pointing down, table with tools (wand, cup, sword, pentacle), structured mystical environment, monochrome teal color palette, strong clean linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number I at top, THE MAGICIAN at bottom",
+"2 The High Priestess, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, calm woman with hidden knowledge expression, wearing long flowing veil and layered ceremonial robe, seated between two pillars, holding scroll, moon symbol present, quiet sacred temple environment, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number II at top, THE HIGH PRIESTESS at bottom",
+"3 The Empress, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, nurturing woman with soft expression, wearing ornate gown with natural patterns, surrounded by abundant nature, plants and flowing landscape, relaxed seated posture, warm and fertile atmosphere, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number III at top, THE EMPRESS at bottom",
+"4 The Emperor, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, strong man with stern expression, wearing structured royal armor and cloak, seated on rigid stone throne, mountainous background, sense of authority and control, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number IV at top, THE EMPEROR at bottom",
+"5 The Hierophant, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, spiritual teacher with composed expression, wearing ceremonial layered robes, holding staff, seated in sacred hall, symbolic architecture behind, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number V at top, THE HIEROPHANT at bottom",
+"6 The Lovers, vintage tarot card illustration, detailed engraved line art style, realistic human faces visible, man and woman facing each other, emotional connection, subtle tension, natural environment or symbolic backdrop, balanced composition, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number VI at top, THE LOVERS at bottom",
+"7 The Chariot, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, determined warrior driving chariot, dynamic forward motion, strong directional lines, controlled power, architectural or open battlefield background, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number VII at top, THE CHARIOT at bottom",
+"8 Strength, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, calm woman gently controlling a powerful beast, composed expression, subtle tension between control and compassion, natural environment, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number VIII at top, STRENGTH at bottom",
+"9 The Hermit, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, elderly wise man with beard and sharp eyes, wearing layered nomadic cloak with intricate patterns and wrapped fabric, mixed leather and cloth textures, holding twisted wooden staff and antique lantern with warm glow, standing on rocky terrain, desert canyon background, solitary atmosphere, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number IX at top, THE HERMIT at bottom",
+"10 The Wheel of Fortune, vintage tarot card illustration, detailed engraved line art style, realistic human faces or symbolic figures, large rotating wheel with carved symbols, sense of motion and fate, sky and abstract environment, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number X at top, THE WHEEL OF FORTUNE at bottom",
+"11 Justice, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, balanced figure holding scales and sword, calm but firm expression, symmetrical composition, architectural background, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number XI at top, JUSTICE at bottom",
+"12 The Hanged Man, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, man suspended upside down, calm expression despite inversion, tree or structure holding him, altered perspective, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number XII at top, THE HANGED MAN at bottom",
+"13 Death, vintage tarot card illustration, detailed engraved line art style, realistic human face or skeletal figure visible, symbolic transition scene, armor or cloak, calm inevitability, landscape suggesting ending and beginning, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number XIII at top, DEATH at bottom",
+"14 Temperance, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, serene figure balancing liquid between two vessels, calm focused expression, natural flowing environment, harmony and balance, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number XIV at top, TEMPERANCE at bottom",
+"15 The Devil, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, dark figure with intense expression, chained figures nearby, oppressive environment, symbolic bondage, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number XV at top, THE DEVIL at bottom",
+"16 The Tower, vintage tarot card illustration, detailed engraved line art style, realistic human faces visible, collapsing tower struck by force, figures falling, dynamic chaos, dramatic sky, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number XVI at top, THE TOWER at bottom",
+"17 The Star, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, calm woman under night sky, pouring water, peaceful expression, stars shining above, serene natural environment, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number XVII at top, THE STAR at bottom",
+"18 The Moon, vintage tarot card illustration, detailed engraved line art style, realistic human faces or creatures visible, surreal night scene, moon dominating sky, mysterious atmosphere, layered landscape, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number XVIII at top, THE MOON at bottom",
+"19 The Sun, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, joyful figure under radiant sun, open posture, bright energy, natural landscape, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number XIX at top, THE SUN at bottom",
+"20 Judgement, vintage tarot card illustration, detailed engraved line art style, realistic human faces visible, figures rising or awakening, strong upward motion, symbolic call, dramatic sky, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number XX at top, JUDGEMENT at bottom",
+"21 The World, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, central figure in balanced pose, surrounded by circular composition, sense of completion, harmonious environment, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number XXI at top, THE WORLD at bottom",
+"22 Ace of Wands, vintage tarot card illustration, detailed engraved line art style, realistic human hand emerging from empty space holding a single sprouting wand, small leaves growing, energy beginning, subtle light around the wand, minimal rocky background, sense of potential and ignition, monochrome teal palette, strong clean linework with cross-hatching, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 22 at top, ACE OF WANDS at bottom",
+"23 Two of Wands, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, man standing on stone structure holding one wand while another is fixed beside him, looking out over distant landscape, sense of planning and choice, wide horizon view, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 23 at top, TWO OF WANDS at bottom",
+"24 Three of Wands, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, figure standing on cliff watching ships in distance, three wands planted firmly, sense of expansion and waiting, ocean horizon, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 24 at top, THREE OF WANDS at bottom",
+"25 Four of Wands, vintage tarot card illustration, detailed engraved line art style, realistic human faces visible, two figures celebrating beneath four wands forming arch, garlands hanging, festive atmosphere, stable joyful structure, open field background, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 25 at top, FOUR OF WANDS at bottom",
+"26 Five of Wands, vintage tarot card illustration, detailed engraved line art style, realistic human faces visible, multiple figures clashing with wands in chaotic motion, no clear leader, conflict and competition, dynamic overlapping composition, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 26 at top, FIVE OF WANDS at bottom",
+"27 Six of Wands, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, victorious rider holding wand with wreath, crowd acknowledging success, upward posture, triumph and recognition, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 27 at top, SIX OF WANDS at bottom",
+"28 Seven of Wands, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, lone figure defending position against multiple rising wands from below, elevated stance, tension and resistance, angled composition, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 28 at top, SEVEN OF WANDS at bottom",
+"29 Eight of Wands, vintage tarot card illustration, detailed engraved line art style, no visible faces, multiple wands flying diagonally across sky, fast motion lines, clear direction and speed, minimal landscape below, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 29 at top, EIGHT OF WANDS at bottom",
+"30 Nine of Wands, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, wounded but standing figure holding wand, bandaged head, defensive posture, remaining wands behind, resilience and endurance, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 30 at top, NINE OF WANDS at bottom",
+"31 Ten of Wands, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, exhausted figure carrying heavy bundle of ten wands, bent posture, burden and responsibility, narrow path, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 31 at top, TEN OF WANDS at bottom",
+"32 Page of Wands, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, young messenger holding wand and observing it curiously, upright posture, sense of exploration and enthusiasm, minimal desert background, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 32 at top, PAGE OF WANDS at bottom",
+"33 Knight of Wands, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, armored rider on moving horse holding wand forward, dynamic forward motion, aggressive energy, wind-swept composition, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 33 at top, KNIGHT OF WANDS at bottom",
+"34 Queen of Wands, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, confident woman seated holding wand, composed gaze, symbolic animal nearby (cat), calm authority, balanced composition, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 34 at top, QUEEN OF WANDS at bottom",
+"35 King of Wands, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, mature man seated firmly holding wand, commanding presence, strong posture, structured throne, leadership energy, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 35 at top, KING OF WANDS at bottom",
+"36 Ace of Cups, vintage tarot card illustration, detailed engraved line art style, realistic human hand emerging from clouds holding an overflowing cup, water flowing in multiple streams, subtle ripples forming below, sense of emotional beginning and abundance, minimal serene water landscape, monochrome teal color palette with soft tonal gradients, strong clean linework with fine hatching and cross-hatching, slightly textured aged paper feel, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 36 at top, ACE OF CUPS at bottom",
+"37 Two of Cups, vintage tarot card illustration, detailed engraved line art style, realistic human faces visible, man and woman facing each other exchanging cups, calm emotional connection, subtle mirrored posture, symbolic unity, minimal open space background, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 37 at top, TWO OF CUPS at bottom",
+"38 Three of Cups, vintage tarot card illustration, detailed engraved line art style, realistic human faces visible, three figures raising cups in celebration, joyful expressions, flowing garments, circular composition suggesting unity, light festive environment, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 38 at top, THREE OF CUPS at bottom",
+"39 Four of Cups, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, seated figure with indifferent expression, three cups placed in front, one offered from above but ignored, emotional stagnation, quiet natural background, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 39 at top, FOUR OF CUPS at bottom",
+"40 Five of Cups, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, sorrowful figure looking at spilled cups, two remaining upright behind, emotional loss and regret, subtle flowing water element, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 40 at top, FIVE OF CUPS at bottom",
+"41 Six of Cups, vintage tarot card illustration, detailed engraved line art style, realistic human faces visible, two figures exchanging cups with gentle expressions, nostalgic and innocent atmosphere, simple village background, balanced composition, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 41 at top, SIX OF CUPS at bottom",
+"42 Seven of Cups, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, figure facing multiple floating cups each containing different symbolic elements, surreal layered composition, illusion and choice, slightly distorted perspective, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 42 at top, SEVEN OF CUPS at bottom",
+"43 Eight of Cups, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, lone figure walking away from neatly arranged cups, back turned, distant mountains ahead, emotional withdrawal and search for meaning, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 43 at top, EIGHT OF CUPS at bottom",
+"44 Nine of Cups, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, satisfied figure seated with arms crossed, nine cups arranged in arc behind, content and fulfillment, stable composition, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 44 at top, NINE OF CUPS at bottom",
+"45 Ten of Cups, vintage tarot card illustration, detailed engraved line art style, realistic human faces visible, family-like figures standing together under arc of cups in sky, emotional harmony, flowing landscape, peaceful atmosphere, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 45 at top, TEN OF CUPS at bottom",
+"46 Page of Cups, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, young figure holding cup with curious expression, subtle unexpected element emerging from cup, calm sea background, sense of new emotion, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 46 at top, PAGE OF CUPS at bottom",
+"47 Knight of Cups, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, armored rider moving calmly while holding cup forward, smooth motion, reflective water environment, romantic and idealistic energy, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 47 at top, KNIGHT OF CUPS at bottom",
+"48 Queen of Cups, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, serene woman seated holding ornate cup, deep contemplative expression, water flowing gently around, emotional depth and intuition, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 48 at top, QUEEN OF CUPS at bottom",
+"49 King of Cups, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, composed man seated steadily above moving water, holding cup calmly, emotional control amidst instability, balanced posture, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 49 at top, KING OF CUPS at bottom",
+"50 Ace of Swords, vintage tarot card illustration, detailed engraved line art style, realistic human hand emerging from clouds gripping a sharp upright sword, intense vertical composition, radiant light bursting from blade, crown suspended near tip, clarity and decisive power, minimal sky background, monochrome teal palette with high contrast, sharp clean linework with dense cross-hatching, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 50 at top, ACE OF SWORDS at bottom",
+"51 Two of Swords, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, blindfolded figure holding two crossed swords, perfectly balanced pose, still tension, calm surface with underlying conflict, minimal water horizon background, monochrome teal palette, sharp linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 51 at top, TWO OF SWORDS at bottom",
+"52 Three of Swords, vintage tarot card illustration, detailed engraved line art style, symbolic heart pierced by three swords, rain falling diagonally, dramatic empty background, emotional pain and clarity combined, high contrast composition, monochrome teal palette, sharp linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 52 at top, THREE OF SWORDS at bottom",
+"53 Four of Swords, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, resting figure lying horizontally, sword placed beside or above, stillness and recovery, quiet enclosed environment, minimal architectural elements, monochrome teal palette, clean linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 53 at top, FOUR OF SWORDS at bottom",
+"54 Five of Swords, vintage tarot card illustration, detailed engraved line art style, realistic human faces visible, dominant figure holding swords while others retreat in background, tension and imbalance, scattered weapons on ground, wind lines suggesting aftermath, monochrome teal palette, sharp linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 54 at top, FIVE OF SWORDS at bottom",
+"55 Six of Swords, vintage tarot card illustration, detailed engraved line art style, realistic human faces visible, figures traveling in small boat across calm but somber water, swords placed upright within boat, transition and movement, distant horizon, monochrome teal palette, clean linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 55 at top, SIX OF SWORDS at bottom",
+"56 Seven of Swords, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, stealthy figure sneaking away holding multiple swords, cautious posture, uneven composition suggesting secrecy, distant camp or structure, monochrome teal palette, sharp linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 56 at top, SEVEN OF SWORDS at bottom",
+"57 Eight of Swords, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, blindfolded figure surrounded by upright swords, restricted movement, tight enclosed composition, subtle ground texture, sense of limitation and confusion, monochrome teal palette, dense linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 57 at top, EIGHT OF SWORDS at bottom",
+"58 Nine of Swords, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, figure sitting upright in distress, hands covering face, swords aligned behind or above, night tension, psychological anxiety, dark background emphasis, monochrome teal palette, dense linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 58 at top, NINE OF SWORDS at bottom",
+"59 Ten of Swords, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, fallen figure pierced by multiple swords, horizontal composition, finality and collapse, stark open landscape, high contrast lighting, monochrome teal palette, sharp linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 59 at top, TEN OF SWORDS at bottom",
+"60 Page of Swords, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, alert young figure holding sword upright, wind-swept environment, ready stance, curiosity and vigilance, dynamic angled composition, monochrome teal palette, sharp linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 60 at top, PAGE OF SWORDS at bottom",
+"61 Knight of Swords, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, armored rider charging forward aggressively, sword extended, strong diagonal motion lines, stormy sky background, intense momentum, monochrome teal palette, sharp linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 61 at top, KNIGHT OF SWORDS at bottom",
+"62 Queen of Swords, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, composed woman holding sword upright, sharp gaze, upright posture, minimal background, clarity and authority, monochrome teal palette, clean sharp linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 62 at top, QUEEN OF SWORDS at bottom",
+"63 King of Swords, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, mature man seated holding sword firmly, rigid posture, strong symmetrical composition, clear authority and logic, minimal architectural background, monochrome teal palette, sharp linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 63 at top, KING OF SWORDS at bottom",
+"64 Ace of Pentacles, vintage tarot card illustration, detailed engraved line art style, realistic human hand emerging from structured stone arch holding a large detailed pentacle coin, intricate geometric patterns engraved on coin surface, stable ground and garden below, sense of opportunity and material beginning, monochrome teal palette with subtle gradients, dense cross-hatching, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 64 at top, ACE OF PENTACLES at bottom",
+"65 Two of Pentacles, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, figure balancing two pentacles connected by looping ribbon-like structure, fluid motion within stable stance, distant ships on water, balance in fluctuation, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 65 at top, TWO OF PENTACLES at bottom",
+"66 Three of Pentacles, vintage tarot card illustration, detailed engraved line art style, realistic human faces visible, figures collaborating in structured architectural environment, one holding plans, one working on stone structure, one observing, detailed construction scene, teamwork and craftsmanship, monochrome teal palette, dense linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 66 at top, THREE OF PENTACLES at bottom",
+"67 Four of Pentacles, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, seated figure tightly holding pentacles close to body, rigid posture, structured city background, sense of control and holding, compact composition, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 67 at top, FOUR OF PENTACLES at bottom",
+"68 Five of Pentacles, vintage tarot card illustration, detailed engraved line art style, realistic human faces visible, two figures walking through harsh environment, visible hardship, architectural window with pentacle symbols glowing behind, contrast between lack and structure, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 68 at top, FIVE OF PENTACLES at bottom",
+"69 Six of Pentacles, vintage tarot card illustration, detailed engraved line art style, realistic human faces visible, central figure distributing pentacles to others, balanced gesture, scales present subtly, controlled generosity, structured marketplace or civic space, monochrome teal palette, strong linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 69 at top, SIX OF PENTACLES at bottom",
+"70 Seven of Pentacles, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, figure observing pentacles growing from structured plant-like forms, pause and evaluation, grounded posture, cultivated environment, monochrome teal palette, dense linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 70 at top, SEVEN OF PENTACLES at bottom",
+"71 Eight of Pentacles, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, craftsman working carefully on pentacle engravings, tools visible, repetitive detailed work, workshop environment, precision and focus, monochrome teal palette, dense cross-hatching, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 71 at top, EIGHT OF PENTACLES at bottom",
+"72 Nine of Pentacles, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, well-dressed figure standing in cultivated garden, pentacles arranged neatly, composed expression, controlled luxury, refined environment, monochrome teal palette, dense linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 72 at top, NINE OF PENTACLES at bottom",
+"73 Ten of Pentacles, vintage tarot card illustration, detailed engraved line art style, realistic human faces visible, multi-generational group within structured architectural setting, pentacles integrated into environment, stability and legacy, complex layered composition, monochrome teal palette, dense linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 73 at top, TEN OF PENTACLES at bottom",
+"74 Page of Pentacles, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, young figure holding pentacle with focused gaze, upright posture, minimal landscape, sense of study and opportunity, monochrome teal palette, clean linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 74 at top, PAGE OF PENTACLES at bottom",
+"75 Knight of Pentacles, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, armored rider on still horse holding pentacle steadily, grounded and unmoving stance, agricultural or field background, persistence and reliability, monochrome teal palette, dense linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 75 at top, KNIGHT OF PENTACLES at bottom",
+"76 Queen of Pentacles, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, nurturing woman seated holding pentacle close, calm expression, natural and structured environment combined, stability and care, monochrome teal palette, dense linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 76 at top, QUEEN OF PENTACLES at bottom",
+"77 King of Pentacles, vintage tarot card illustration, detailed engraved line art style, realistic human face visible, powerful man seated firmly holding pentacle, heavy structured throne, architectural background, material mastery and control, monochrome teal palette, dense linework, aged paper texture, centered composition, elegant tarot frame border, no margin, aspect ratio 1:1.6, number 77 at top, KING OF PENTACLES at bottom"
+
+]
+
+currentIndex := 1
+isSending := false
+
+; 전송 주기(ms). 현재 240000 = 4분. 빠르게 테스트하려면 10000(10초) 등으로.
+sendIntervalMs := 240000
+SetTimer(SendNextMessage, sendIntervalMs)
+SendNextMessage()
+
+SendNextMessage(*) {
+    global messages, currentIndex, targetWin, isSending, winTitle, titleHints
+
+    if isSending || (currentIndex > messages.Length) {
+        if (currentIndex > messages.Length) {
+            SetTimer(SendNextMessage, 0)
+            MsgBox("✅ 모든 전송이 완료되었습니다.")
+            ExitApp
+        }
+        return
+    }
+
+    isSending := true
+
+    try {
+        hwnd := FindGeminiChromeHwnd(titleHints)
+        if !hwnd {
+            ToolTip("❌ Gemini 크롬 창을 찾을 수 없음 (탭 제목 확인 필요)")
+            SetTimer(() => ToolTip(), -3000)
+            return
+        }
+
+        idTarget := "ahk_id " hwnd
+        WinActivate(idTarget)
+        if !WinWaitActive(idTarget, , 5) {
+            return
+        }
+
+        ; 입력창 포커스 안정화: 창 하단 중앙을 "창 기준 좌표"로 클릭
+        CoordMode("Mouse", "Window")
+        Sleep(300)
+        try {
+            WinGetClientPos(&cx, &cy, &cw, &ch, idTarget)
+        } catch {
+            WinGetPos(&cx, &cy, &cw, &ch, idTarget)
+            cx := 0, cy := 0
+        }
+        x := Round(cw * 0.5)
+        y := ch - 120
+        if (y < 40)
+            y := ch - 40
+        Click(x, y)
+        Sleep(200)
+
+        SendText(messages[currentIndex])
+        Sleep(150)
+        Send("{Enter}")
+
+        currentIndex += 1
+        ToolTip("🚀 메시지 전송 중... (" currentIndex - 1 "/" messages.Length ")")
+        SetTimer(() => ToolTip(), -3000)
+
+    } finally {
+        isSending := false
+    }
+}
+
+FindGeminiChromeHwnd(titleHints) {
+    ; 크롬 창을 모두 훑어서 제목에 Gemini 힌트가 들어간 창을 찾는다.
+    ; 찾으면 ahk_id로 고정해 탭 제목 변경에도 안정적으로 동작.
+    wins := WinGetList("ahk_exe chrome.exe")
+    for hwnd in wins {
+        title := WinGetTitle("ahk_id " hwnd)
+        if !title
+            continue
+        for hint in titleHints {
+            if InStr(title, hint) {
+                return hwnd
+            }
+        }
+    }
+    ; 마지막 fallback: chrome 창이 1개면 그걸 사용
+    if wins.Length = 1
+        return wins[1]
+    return 0
+}
+
+Esc::ExitApp
+F8::SendNextMessage()  ; 수동으로 다음 메시지 즉시 전송
