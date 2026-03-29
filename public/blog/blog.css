@@ -1,13 +1,16 @@
 /* 유어타로 블로그 — 가독성·경량 */
 :root {
-  --bg: #0f0f12;
-  --surface: #18181f;
-  --text: #e8e6e3;
-  --muted: #9a9590;
-  --accent: #c9a962;
-  --border: #2a2830;
-  --link: #d4bc7a;
-  --max: 42rem;
+  /* 메인 앱(SiteFrame) 톤에 맞춤 */
+  --bg: #202139;
+  --surface: rgba(9, 7, 28, 0.55);
+  --text: #f7f7f7;
+  --muted: #b8b3c9;
+  --accent: #d8ccff;
+  --border: rgba(255, 255, 255, 0.12);
+  --link: #d8ccff;
+  --header-bg: #17182e;
+  --frame: 390px;
+  --content: 350px;
 }
 
 * {
@@ -31,33 +34,77 @@ a {
 }
 
 a:hover {
-  color: #e8d5a3;
+  color: #ffffff;
 }
 
 .blog-wrap {
   min-height: 100vh;
-  padding: 1.5rem 1.25rem 3rem;
+  width: 100%;
+  max-width: var(--frame);
+  margin: 0 auto;
+  padding: 0 0 3rem;
 }
 
-.blog-header {
-  max-width: var(--max);
-  margin: 0 auto 2rem;
-  padding-bottom: 1rem;
+/* 메인 Header.tsx와 동일 레이아웃 */
+.blog-site-header {
+  width: 100%;
+  background: var(--header-bg);
+}
+
+.blog-site-header-inner {
+  display: flex;
+  height: 42px;
+  width: 100%;
+  max-width: var(--frame);
+  margin: 0 auto;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.blog-icon-btn {
+  display: flex;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.blog-icon-btn img {
+  display: block;
+}
+
+.blog-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.blog-logo img {
+  display: block;
+}
+
+.blog-toolbar {
+  max-width: var(--content);
+  margin: 0 auto;
+  padding: 0.65rem 0 0.85rem;
   border-bottom: 1px solid var(--border);
 }
 
-.blog-header a.home {
+.blog-back {
   font-size: 0.875rem;
   color: var(--muted);
+  text-decoration: none;
 }
 
-.blog-header a.home:hover {
+.blog-back:hover {
   color: var(--accent);
 }
 
 .blog-main {
-  max-width: var(--max);
+  max-width: var(--content);
   margin: 0 auto;
+  padding: 1.25rem 0 0;
 }
 
 .blog-main h1 {
@@ -79,16 +126,30 @@ a:hover {
   margin-right: 0.75rem;
   padding: 0.15rem 0.5rem;
   border-radius: 0.25rem;
-  background: var(--surface);
+  background: rgba(100, 34, 171, 0.25);
   color: var(--accent);
   font-size: 0.8125rem;
+}
+
+.blog-cover {
+  margin: 0 0 1.25rem;
+  border-radius: 0.6rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.blog-cover img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .blog-article h2 {
   font-size: 1.2rem;
   font-weight: 600;
   margin: 2rem 0 0.75rem;
-  color: #f0ebe4;
+  color: var(--text);
 }
 
 .blog-article h3 {

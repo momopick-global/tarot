@@ -12,6 +12,8 @@ const OUT_DIR = path.join(ROOT, "public", "blog");
 const SITE_ORIGIN =
   (process.env.NEXT_PUBLIC_SITE_URL || "https://yourtarot.cc").replace(/\/$/, "");
 const BASE_PATH = (process.env.NEXT_PUBLIC_BASE_PATH || "").replace(/\/$/, "");
+const DEFAULT_OG_IMAGE = "/next.svg";
+const PUBLIC_DIR = path.join(ROOT, "public");
 
 function prefix(p) {
   const x = p.startsWith("/") ? p : `/${p}`;
@@ -29,6 +31,27 @@ function escapeHtml(s) {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+function resolveOgImage(post) {
+  // 1) JSON에서 직접 지정한 절대/상대 경로 우선
+  if (typeof post.ogImage === "string" && post.ogImage.trim()) {
+    const raw = post.ogImage.trim();
+    if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
+    const rel = raw.startsWith("/") ? raw : `/${raw}`;
+    return absoluteUrl(rel);
+  }
+
+  // 2) /public/images/blog/{slug}.{ext} 자동 탐색
+  const exts = ["jpg", "jpeg", "png", "webp"];
+  for (const ext of exts) {
+    const rel = `/images/blog/${post.slug}.${ext}`;
+    const disk = path.join(PUBLIC_DIR, "images", "blog", `${post.slug}.${ext}`);
+    if (fs.existsSync(disk)) return absoluteUrl(rel);
+  }
+
+  // 3) 기본 이미지
+  return absoluteUrl(DEFAULT_OG_IMAGE);
 }
 
 function renderBlocks(content) {
@@ -120,6 +143,25 @@ const QUIZ_LINKS = [
   { href: "/quiz/tarot-reading", label: "타로 리딩" },
 ];
 
+function renderSiteHeader(opts) {
+  const menu = prefix("/menu");
+  const home = prefix("/");
+  const login = prefix("/login");
+  const imgMenu = prefix("/assets/icon-menu-header-v3.png");
+  const imgEye = prefix("/assets/icon-eye-header-v2.png");
+  const imgGuest = prefix("/assets/icon-user-guest-v1.png");
+  return `<header class="blog-site-header">
+    <div class="blog-site-header-inner">
+      <a class="blog-icon-btn" href="${escapeHtml(menu)}" aria-label="메뉴 열기"><img src="${escapeHtml(imgMenu)}" alt="" width="42" height="42" loading="lazy" decoding="async" /></a>
+      <a class="blog-logo" href="${escapeHtml(home)}" aria-label="홈"><img src="${escapeHtml(imgEye)}" alt="YourTarot" width="46" height="28" loading="lazy" decoding="async" /></a>
+      <a class="blog-icon-btn" href="${escapeHtml(login)}" aria-label="로그인 페이지로 이동"><img src="${escapeHtml(imgGuest)}" alt="" width="42" height="42" loading="lazy" decoding="async" /></a>
+    </div>
+  </header>
+  <div class="blog-toolbar">
+    <a class="blog-back" href="${escapeHtml(opts.backHref)}">${escapeHtml(opts.backLabel)}</a>
+  </div>`;
+}
+
 function loadPosts() {
   if (!fs.existsSync(DATA_DIR)) {
     console.warn("generate-blog: data/blog 없음 — 건너뜀");
@@ -143,6 +185,9 @@ function loadPosts() {
 function writeArticleHtml(post, allPosts) {
   const canonicalPath = `/blog/${post.slug}/`;
   const canonical = absoluteUrl(canonicalPath);
+  const ogImage = resolveOgImage(post);
+  const hasCustomCover = ogImage !== absoluteUrl(DEFAULT_OG_IMAGE);
+  const keywords = Array.isArray(post.tags) ? post.tags.join(", ") : "";
   const { section: faqSection, faqLd } = renderFaq(post.faq);
 
   const articleLd = {
@@ -151,6 +196,23 @@ function writeArticleHtml(post, allPosts) {
     headline: post.title,
     description: post.description,
     datePublished: post.date,
+    dateModified: post.date,
+    image: ogImage,
+    inLanguage: "ko-KR",
+    articleSection: post.category || "general",
+    keywords,
+    author: {
+      "@type": "Organization",
+      name: "유어타로",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "유어타로",
+      logo: {
+        "@type": "ImageObject",
+        url: absoluteUrl("/next.svg"),
+      },
+    },
     mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
   };
 
@@ -178,7 +240,7 @@ function writeArticleHtml(post, allPosts) {
   }
   relatedHtml += "</ul>\n</section>\n</footer>\n";
 
-  const tagsStr = Array.isArray(post.tags) ? post.tags.join(", ") : "";
+  const tagsStr = keywords;
 
   const html = `<!DOCTYPE html>
 <html lang="ko">
@@ -187,20 +249,30 @@ function writeArticleHtml(post, allPosts) {
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${escapeHtml(post.title)} | 유어타로</title>
   <meta name="description" content="${escapeHtml(post.description)}" />
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+  ${keywords ? `<meta name="keywords" content="${escapeHtml(keywords)}" />` : ""}
   <link rel="canonical" href="${escapeHtml(canonical)}" />
   <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="유어타로" />
+  <meta property="og:locale" content="ko_KR" />
   <meta property="og:title" content="${escapeHtml(post.title)}" />
   <meta property="og:description" content="${escapeHtml(post.description)}" />
   <meta property="og:url" content="${escapeHtml(canonical)}" />
+  <meta property="og:image" content="${escapeHtml(ogImage)}" />
+  <meta property="og:image:alt" content="${escapeHtml(`${post.title} | 유어타로 블로그`)}" />
   <meta property="article:published_time" content="${escapeHtml(post.date)}" />
+  <meta property="article:modified_time" content="${escapeHtml(post.date)}" />
+  <meta property="article:section" content="${escapeHtml(post.category || "general")}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="${escapeHtml(post.title)}" />
+  <meta name="twitter:description" content="${escapeHtml(post.description)}" />
+  <meta name="twitter:image" content="${escapeHtml(ogImage)}" />
   <link rel="stylesheet" href="${escapeHtml(prefix("/blog/blog.css"))}" />
   <script type="application/ld+json">${JSON.stringify(articleLd)}</script>
 ${faqLd ? `  <script type="application/ld+json">${JSON.stringify(faqLd)}</script>\n` : ""}</head>
 <body>
   <div class="blog-wrap">
-    <header class="blog-header">
-      <a class="home" href="${escapeHtml(prefix("/blog/"))}">← 블로그 목록</a>
-    </header>
+${renderSiteHeader({ backHref: prefix("/blog/"), backLabel: "← 블로그 목록" })}
     <main class="blog-main">
       <article class="blog-article" itemscope itemtype="https://schema.org/Article">
         <h1 itemprop="headline">${escapeHtml(post.title)}</h1>
@@ -209,6 +281,13 @@ ${faqLd ? `  <script type="application/ld+json">${JSON.stringify(faqLd)}</script
           <time itemprop="datePublished" datetime="${escapeHtml(post.date)}">${escapeHtml(post.date)}</time>
           ${tagsStr ? ` · <span>${escapeHtml(tagsStr)}</span>` : ""}
         </p>
+        ${
+          hasCustomCover
+            ? `<figure class="blog-cover">
+          <img src="${escapeHtml(ogImage)}" alt="${escapeHtml(post.title)} 대표 이미지" loading="eager" decoding="async" />
+        </figure>`
+            : ""
+        }
         <div itemprop="articleBody">
 ${renderBlocks(post.content)}
         </div>
@@ -249,9 +328,7 @@ function writeIndex(posts) {
 </head>
 <body>
   <div class="blog-wrap">
-    <header class="blog-header">
-      <a class="home" href="${escapeHtml(prefix("/"))}">← 유어타로 홈</a>
-    </header>
+${renderSiteHeader({ backHref: prefix("/"), backLabel: "← 유어타로 홈" })}
     <main class="blog-main">
       <h1 class="blog-list-title">블로그</h1>
       <p class="blog-list-lead">검색과 AI 인용에 맞춘 정적 글 모음입니다.</p>
