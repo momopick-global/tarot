@@ -27,6 +27,7 @@ export function FlowScene({
   backImageSrc,
   backImageSize,
   backLinkClassName,
+  backgroundSpillColor,
 }: Readonly<{
   children: React.ReactNode;
   backHref?: string;
@@ -46,6 +47,7 @@ export function FlowScene({
   backImageSize?: number;
   /** 뒤로가기 링크에만 적용 (예: /tarot/draw 에서 왼쪽 20px 간격) */
   backLinkClassName?: string;
+  backgroundSpillColor?: string;
 }>) {
   const pathname = usePathname() ?? "";
   const resolvedBackImageSrc =
@@ -55,18 +57,32 @@ export function FlowScene({
   const resolvedBackLinkClassName =
     backLinkClassName ?? (backVariant === "page03" ? "ml-[20px]" : "");
 
+  const resolvedBgSrc = backgroundSrc ?? BG;
+  const useSpillBackground = Boolean(backgroundSpillColor) && !hideBackgroundImage;
+
   return (
     <section
       key={pathname}
       className={`page-fade relative mx-auto min-h-[560px] w-full max-w-[390px] ${
         allowOverflow ? "overflow-visible" : "overflow-hidden"
       } ${
-        hideBackgroundImage ? "bg-[#07051c]" : ""
+        hideBackgroundImage && !useSpillBackground ? "bg-[#07051c]" : ""
       } ${sceneClassName ?? ""}`}
+      style={
+        useSpillBackground
+          ? {
+              backgroundColor: backgroundSpillColor,
+              backgroundImage: `url("${resolvedBgSrc}")`,
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "top center",
+              backgroundSize: "100% auto",
+            }
+          : undefined
+      }
     >
-      {!hideBackgroundImage ? (
+      {!hideBackgroundImage && !useSpillBackground ? (
         <Image
-          src={backgroundSrc ?? BG}
+          src={resolvedBgSrc}
           alt=""
           fill
           className={`${backgroundFit === "contain" ? "object-contain object-top" : "object-cover object-top"} ${backgroundImageClassName ?? ""}`}

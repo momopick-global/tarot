@@ -12,7 +12,7 @@ import { masterProfileWith, tarotDrawWithMaster } from "@/lib/routes";
 
 const GUIDE_POPUP_IMAGE_PATH = "/images/ch.png";
 
-const MASTER_DETAIL_OPEN_DELAY_MS = 1000;
+const MASTER_DETAIL_OPEN_DELAY_MS = 500;
 
 type ProfilePopupData = {
   name?: string;
