@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { withAssetBase } from "@/lib/publicPath";
 
 export function MenuContent({
   mypageHref,
@@ -9,6 +10,8 @@ export function MenuContent({
   mypageHref: string;
   onLinkClick?: () => void;
 }>) {
+  const blogHref = withAssetBase("/blog/index.html");
+
   return (
     <>
       <div className="mt-2 flex items-center">
@@ -32,7 +35,7 @@ export function MenuContent({
             <span aria-hidden>❓</span>
             자주 묻는 질문
           </Link>
-          <Link href="/blog/" onClick={onLinkClick} className="flex items-center gap-3 text-[18px] font-semibold">
+          <Link href={blogHref} onClick={onLinkClick} className="flex items-center gap-3 text-[18px] font-semibold">
             <span aria-hidden>📝</span>
             블로그
           </Link>
