@@ -145,15 +145,30 @@ function buildXml() {
   return xml;
 }
 
+function buildRobotsTxt() {
+  const sitemapUrl = `${SITE_ORIGIN}${BASE_PATH}/sitemap.xml`;
+  return `User-agent: *
+Allow: /
+
+Sitemap: ${sitemapUrl}
+`;
+}
+
 function main() {
   const xml = buildXml();
+  const robots = buildRobotsTxt();
   fs.mkdirSync(PUBLIC, { recursive: true });
   const publicPath = path.join(PUBLIC, "sitemap.xml");
   const rootPath = path.join(ROOT, "sitemap.xml");
   fs.writeFileSync(publicPath, xml, "utf8");
   fs.writeFileSync(rootPath, xml, "utf8");
+  const robotsPublic = path.join(PUBLIC, "robots.txt");
+  const robotsRoot = path.join(ROOT, "robots.txt");
+  fs.writeFileSync(robotsPublic, robots, "utf8");
+  fs.writeFileSync(robotsRoot, robots, "utf8");
   const nBlog = loadBlogEntries().length;
   console.log(`write-sitemap-xml: public/sitemap.xml + 루트 sitemap.xml (${nBlog}개 블로그 URL 포함)`);
+  console.log(`write-sitemap-xml: public/robots.txt + 루트 robots.txt`);
 }
 
 main();
