@@ -355,6 +355,59 @@ a:hover {
   margin: 0 0 2rem;
 }
 
+.blog-list-lead-mono {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.88em;
+  color: var(--accent);
+  word-break: break-all;
+}
+
+/* 카테고리 탭 (목록·카테고리 페이지 공통) */
+.blog-cat-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.35rem;
+  margin: 0 0 1.35rem;
+  padding: 0;
+}
+
+.blog-cat-tab {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 500;
+  text-decoration: none;
+  line-height: 1.2;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.blog-cat-tab:hover {
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.blog-cat-tab.is-active,
+.blog-cat-tab[aria-current="page"] {
+  border-color: var(--accent);
+  background: rgba(216, 204, 255, 0.12);
+  color: var(--accent);
+}
+
+.blog-list-empty {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.blog-card[hidden] {
+  display: none !important;
+}
+
 .blog-card {
   display: block;
   padding: 1.1rem 1.15rem;

@@ -34,6 +34,11 @@ const STATIC_PATHS = [
   "/partner/",
   "/faq/",
   "/blog/",
+  "/blog/love/",
+  "/blog/tarot/",
+  "/blog/psychology/",
+  "/blog/test/",
+  "/blog/life/",
   "/mypage/",
   "/draw/today/",
   "/tarot/start/",
@@ -77,6 +82,8 @@ function isoDate(d) {
   return d.toISOString().slice(0, 10);
 }
 
+const BLOG_CATEGORY_SLUGS = ["love", "tarot", "psychology", "test", "life"];
+
 function loadBlogEntries() {
   if (!fs.existsSync(DATA_BLOG)) return [];
   const files = fs.readdirSync(DATA_BLOG).filter((f) => f.endsWith(".json"));
@@ -88,9 +95,22 @@ function loadBlogEntries() {
     out.push({
       slug: data.slug,
       date: data.date,
+      category: typeof data.category === "string" ? data.category.toLowerCase().trim() : "",
     });
   }
   return out;
+}
+
+/** 카테고리 목록 URL의 lastmod — 해당 카테고리 글 중 최신 date */
+function blogCategoryLastMods(entries) {
+  const map = Object.fromEntries(BLOG_CATEGORY_SLUGS.map((s) => [s, null]));
+  for (const e of entries) {
+    if (!BLOG_CATEGORY_SLUGS.includes(e.category)) continue;
+    const lm = isoDate(new Date(e.date));
+    const cur = map[e.category];
+    if (!cur || lm > cur) map[e.category] = lm;
+  }
+  return map;
 }
 
 function buildXml() {
@@ -129,6 +149,15 @@ function buildXml() {
       changefreq: "monthly",
       priority: "0.75",
     });
+  }
+
+  const catLast = blogCategoryLastMods(blogPosts);
+  for (const slug of BLOG_CATEGORY_SLUGS) {
+    const idx = urls.findIndex((u) => u.loc === absUrl(`/blog/${slug}/`));
+    const lm = catLast[slug] || buildDateStr;
+    if (idx >= 0) {
+      urls[idx] = { ...urls[idx], lastmod: lm, changefreq: "weekly", priority: "0.72" };
+    }
   }
 
   const blogIndexIdx = urls.findIndex((u) => u.loc === absUrl("/blog/"));

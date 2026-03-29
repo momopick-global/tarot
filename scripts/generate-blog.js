@@ -145,6 +145,91 @@ const QUIZ_LINKS = [
   { href: "/quiz/tarot-reading", label: "타로 리딩" },
 ];
 
+/** 목록·정적 카테고리 페이지·탭 순서 (슬러그는 JSON category 값과 동일) */
+const BLOG_CATEGORIES = [
+  {
+    slug: "love",
+    tabLabel: "love",
+    heading: "연애·관계",
+    pageTitle: "연애·관계 블로그 | 유어타로",
+    description:
+      "연애 패턴, 경계, 신뢰, 소통, 이별 이후 마음 등 연애와 관계에 관한 유어타로 블로그 글 모음입니다.",
+  },
+  {
+    slug: "tarot",
+    tabLabel: "tarot",
+    heading: "타로",
+    pageTitle: "타로·카드 읽기 블로그 | 유어타로",
+    description:
+      "스프레드 질문, 메이저 아르카나, 역방향, 원카드, 코트 카드 등 타로 리딩과 해석에 관한 글입니다.",
+  },
+  {
+    slug: "psychology",
+    tabLabel: "psychology",
+    heading: "심리",
+    pageTitle: "심리·자기이해 블로그 | 유어타로",
+    description:
+      "애착, 정서 조절, 루미네이션, 경계와 에너지 등 일상 심리와 자기 이해에 도움이 되는 글입니다.",
+  },
+  {
+    slug: "test",
+    tabLabel: "test",
+    heading: "테스트",
+    pageTitle: "성향·테스트 블로그 | 유어타로",
+    description:
+      "연애 패턴 테스트, 성향 검사 결과 활용, 재검사, 동기 부여 등 테스트와 자기 점검에 관한 글입니다.",
+  },
+  {
+    slug: "life",
+    tabLabel: "life",
+    heading: "일상·라이프",
+    pageTitle: "일상·라이프 블로그 | 유어타로",
+    description:
+      "번아웃, 외로움, 돈 걱정, 가족 기대, 의미 찾기 등 일상과 삶의 균형에 관한 글 모음입니다.",
+  },
+];
+
+const BLOG_CATEGORY_SLUG_SET = new Set(BLOG_CATEGORIES.map((c) => c.slug));
+
+function postCategoryKey(p) {
+  const raw = String(p.category || "")
+    .toLowerCase()
+    .trim();
+  return BLOG_CATEGORY_SLUG_SET.has(raw) ? raw : "other";
+}
+
+function renderCategoryTabs(activeSlug) {
+  const blogRoot = prefix("/blog/");
+  const allActive = activeSlug == null || activeSlug === "";
+  let html = '<nav class="blog-cat-tabs" aria-label="블로그 카테고리">\n';
+  html += `  <a class="blog-cat-tab${allActive ? " is-active" : ""}" data-blog-cat="" href="${escapeHtml(blogRoot)}"${allActive ? ' aria-current="page"' : ""}>전체</a>\n`;
+  for (const c of BLOG_CATEGORIES) {
+    const href = prefix(`/blog/${c.slug}/`);
+    const active = activeSlug === c.slug;
+    html += `  <a class="blog-cat-tab${active ? " is-active" : ""}" data-blog-cat="${escapeHtml(c.slug)}" href="${escapeHtml(href)}"${active ? ' aria-current="page"' : ""}>${escapeHtml(c.tabLabel)}</a>\n`;
+  }
+  html += "</nav>\n";
+  return html;
+}
+
+function renderPostCards(posts) {
+  let body = "";
+  for (const p of posts) {
+    const u = prefix(`/blog/${p.slug}/`);
+    const catKey = postCategoryKey(p);
+    body += `<a class="blog-card" data-blog-category="${escapeHtml(catKey)}" href="${escapeHtml(u)}">\n`;
+    body += `<h2>${escapeHtml(p.title)}</h2>\n`;
+    body += `<p>${escapeHtml(p.description)}</p>\n`;
+    body += `<div class="blog-card-meta"><span class="cat">${escapeHtml(p.category || "기타")}</span>${escapeHtml(p.date)}</div>\n`;
+    body += `</a>\n`;
+  }
+  return body;
+}
+
+function blogCategoryScript() {
+  return `<script src="${escapeHtml(prefix("/blog/blog-category.js"))}" defer></script>`;
+}
+
 function renderSiteHeader(opts = {}) {
   const home = prefix("/");
   const login = prefix("/login");
@@ -407,35 +492,97 @@ ${blogMenuScript()}
 }
 
 function writeIndex(posts) {
-  let body = "";
-  for (const p of posts) {
-    const u = prefix(`/blog/${p.slug}/`);
-    body += `<a class="blog-card" href="${escapeHtml(u)}">\n`;
-    body += `<h2>${escapeHtml(p.title)}</h2>\n`;
-    body += `<p>${escapeHtml(p.description)}</p>\n`;
-    body += `<div class="blog-card-meta"><span class="cat">${escapeHtml(p.category || "기타")}</span>${escapeHtml(p.date)}</div>\n`;
-    body += `</a>\n`;
-  }
-
+  const body = renderPostCards(posts);
+  const tabs = renderCategoryTabs(null);
+  const canonical = absoluteUrl("/blog/");
+  const defaultDesc = "타로, 연애, 심리, 테스트, 일상에 관한 글 — 유어타로 블로그 정적 목록입니다.";
   const html = `<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>블로그 | 유어타로</title>
-  <meta name="description" content="타로, 연애, 심리에 관한 글 — 유어타로 블로그" />
-  <link rel="canonical" href="${escapeHtml(absoluteUrl("/blog/"))}" />
+  <meta name="description" content="${escapeHtml(defaultDesc)}" />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="${escapeHtml(canonical)}" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="블로그 | 유어타로" />
+  <meta property="og:description" content="${escapeHtml(defaultDesc)}" />
+  <meta property="og:url" content="${escapeHtml(canonical)}" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="블로그 | 유어타로" />
+  <meta name="twitter:description" content="${escapeHtml(defaultDesc)}" />
   <link rel="stylesheet" href="${escapeHtml(prefix("/blog/blog.css"))}" />
+</head>
+<body data-blog-list-page="all">
+  <div class="blog-wrap">
+${renderSiteHeader()}
+    <main class="blog-main">
+      <h1 class="blog-list-title">블로그</h1>
+      <p class="blog-list-lead">검색과 AI 인용에 맞춘 정적 글 모음입니다. 탭은 카테고리별 페이지로 이동하며, 이 페이지 주소에 <span class="blog-list-lead-mono">?category=love</span> 형태를 붙이면 같은 화면에서 글만 걸러 볼 수 있습니다.</p>
+${tabs}
+      <p id="blog-category-empty" class="blog-list-empty" hidden>이 카테고리에 해당하는 글이 없습니다.</p>
+${body || "<p>아직 게시된 글이 없습니다.</p>\n"}
+    </main>
+  </div>
+${renderBlogSiteFooter()}
+${renderBlogMenuDrawer()}
+${blogMenuScript()}
+${blogCategoryScript()}
+</body>
+</html>`;
+
+  fs.writeFileSync(path.join(OUT_DIR, "index.html"), html, "utf8");
+}
+
+function writeCategoryIndex(categorySlug, allPosts) {
+  const cat = BLOG_CATEGORIES.find((c) => c.slug === categorySlug);
+  if (!cat) return;
+  const filtered = allPosts.filter((p) => postCategoryKey(p) === categorySlug);
+  const body = renderPostCards(filtered);
+  const tabs = renderCategoryTabs(categorySlug);
+  const canonicalPath = `/blog/${categorySlug}/`;
+  const canonical = absoluteUrl(canonicalPath);
+  const collectionLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: cat.pageTitle.split("|")[0].trim(),
+    description: cat.description,
+    url: canonical,
+    isPartOf: {
+      "@type": "WebSite",
+      name: "유어타로",
+      url: absoluteUrl("/"),
+    },
+  };
+
+  const html = `<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>${escapeHtml(cat.pageTitle)}</title>
+  <meta name="description" content="${escapeHtml(cat.description)}" />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="${escapeHtml(canonical)}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="${escapeHtml(cat.pageTitle)}" />
+  <meta property="og:description" content="${escapeHtml(cat.description)}" />
+  <meta property="og:url" content="${escapeHtml(canonical)}" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="${escapeHtml(cat.pageTitle)}" />
+  <meta name="twitter:description" content="${escapeHtml(cat.description)}" />
+  <link rel="stylesheet" href="${escapeHtml(prefix("/blog/blog.css"))}" />
+  <script type="application/ld+json">${JSON.stringify(collectionLd)}</script>
 </head>
 <body>
   <div class="blog-wrap">
 ${renderSiteHeader()}
     <main class="blog-main">
-      <h1 class="blog-list-title">블로그</h1>
-      <p class="blog-list-lead">검색과 AI 인용에 맞춘 정적 글 모음입니다.</p>
-${body || "<p>아직 게시된 글이 없습니다.</p>\n"}
+      <h1 class="blog-list-title">${escapeHtml(cat.heading)}</h1>
+      <p class="blog-list-lead">${escapeHtml(cat.description)}</p>
+${tabs}
+${body || "<p class=\"blog-list-empty\">이 카테고리에 아직 글이 없습니다.</p>\n"}
     </main>
   </div>
 ${renderBlogSiteFooter()}
@@ -444,7 +591,9 @@ ${blogMenuScript()}
 </body>
 </html>`;
 
-  fs.writeFileSync(path.join(OUT_DIR, "index.html"), html, "utf8");
+  const dir = path.join(OUT_DIR, categorySlug);
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, "index.html"), html, "utf8");
 }
 
 function main() {
@@ -454,7 +603,12 @@ function main() {
     writeArticleHtml(p, posts);
   }
   writeIndex(posts);
-  console.log(`generate-blog: ${posts.length}개 글 → public/blog/`);
+  for (const c of BLOG_CATEGORIES) {
+    writeCategoryIndex(c.slug, posts);
+  }
+  console.log(
+    `generate-blog: ${posts.length}개 글 + 블로그 목록 + 카테고리 ${BLOG_CATEGORIES.length}개 → public/blog/`,
+  );
 }
 
 main();
