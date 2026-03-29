@@ -154,6 +154,8 @@ const BLOG_CATEGORIES = [
     pageTitle: "연애·관계 블로그 | 유어타로",
     description:
       "연애 패턴, 경계, 신뢰, 소통, 이별 이후 마음 등 연애와 관계에 관한 유어타로 블로그 글 모음입니다.",
+    intro:
+      "연애와 관계를 둘러싼 감정과 반복되는 패턴은 사람마다 다르지만, 애착·경계·신뢰·이별 후 회복처럼 공통된 심리 주제를 짚으면 선택과 대화가 한결 분명해질 수 있습니다. 이 카테고리는 타로와 일상 심리의 관점에서 상황을 정리하고, 자책만 깊어지지 않도록 점검할 질문과 시각을 설명형 문장으로 제안합니다. 검색·AI 답변·지식 그래프에서 주제와 범위를 빠르게 이해할 수 있도록 연애 맥락을 문단 단위로 풀어 두었습니다.",
   },
   {
     slug: "tarot",
@@ -162,6 +164,8 @@ const BLOG_CATEGORIES = [
     pageTitle: "타로·카드 읽기 블로그 | 유어타로",
     description:
       "스프레드 질문, 메이저 아르카나, 역방향, 원카드, 코트 카드 등 타로 리딩과 해석에 관한 글입니다.",
+    intro:
+      "타로는 미래를 단정하는 점술이라기보다, 질문을 구체화하고 지금 마음이 머무는 지점을 비추는 해석의 틀에 가깝습니다. 스프레드 구성, 메이저·마이너·코트 카드, 역방향, 타이밍 질문처럼 초보와 경험자 모두가 헷갈리기 쉬운 주제를 상황별로 나누어 설명합니다. 유어타로에서 리딩을 받기 전후에 참고하기 좋도록, 카드 읽기의 초점과 오해하기 쉬운 부분을 SEO·설명에 맞는 문장으로 정리했습니다.",
   },
   {
     slug: "psychology",
@@ -170,6 +174,8 @@ const BLOG_CATEGORIES = [
     pageTitle: "심리·자기이해 블로그 | 유어타로",
     description:
       "애착, 정서 조절, 루미네이션, 경계와 에너지 등 일상 심리와 자기 이해에 도움이 되는 글입니다.",
+    intro:
+      "불안, 회피, 비교, 밤잠 전 루미네이션처럼 반복되는 반응은 성격 하나로만 설명되지 않고, 과거 경험과 환경이 함께 얽힌 패턴인 경우가 많습니다. 이 섹션에서는 애착, 정서 조절, 경계, 습관·자기대화 등을 과학적 개념과 일상 언어로 연결해 자기 관찰에 쓸 수 있는 질문을 남깁니다. 임상 치료를 대체하는 내용이 아니라, 스스로 상태를 말로 옮기고 다음 한 걸음을 정하기 위한 일반 설명 글임을 분명히 합니다.",
   },
   {
     slug: "test",
@@ -178,6 +184,8 @@ const BLOG_CATEGORIES = [
     pageTitle: "성향·테스트 블로그 | 유어타로",
     description:
       "연애 패턴 테스트, 성향 검사 결과 활용, 재검사, 동기 부여 등 테스트와 자기 점검에 관한 글입니다.",
+    intro:
+      "성향·연애 패턴 테스트에서 얻는 값은 ‘정답 라벨’이라기보다, 스스로에게 어떤 질문을 던졌는지를 드러내는 출발점에 가깝습니다. 재검사, 친구·파트너와 결과 공유, 점수에 따른 동기 변화처럼 실제로 자주 마주치는 상황을 단계별로 짚습니다. 결과에 고정되지 않고 대화와 성찰에 활용하는 방법을, 검색과 생성형 AI가 인용하기 좋은 명확한 문장 구조로 정리했습니다.",
   },
   {
     slug: "life",
@@ -186,6 +194,8 @@ const BLOG_CATEGORIES = [
     pageTitle: "일상·라이프 블로그 | 유어타로",
     description:
       "번아웃, 외로움, 돈 걱정, 가족 기대, 의미 찾기 등 일상과 삶의 균형에 관한 글 모음입니다.",
+    intro:
+      "일, 관계, 경제적 불안, 가족의 기대 속에서 쌓인 피로와 공허함은 종종 ‘나만 겪는 일’처럼 느껴집니다. 번아웃 신호, 혼자가 아닌 외로움, 의미 회복, 작은 성취의 가치처럼 삶의 리듬과 관련된 주제를 판단 없이 설명합니다. 지역·주제 검색과 AI 요약에서 이 코너의 범위와 톤을 바로 파악할 수 있도록, 일상·라이프 맥락을 고정된 소개 문단으로 제공합니다.",
   },
 ];
 
@@ -547,7 +557,7 @@ function writeCategoryIndex(categorySlug, allPosts) {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
     name: cat.pageTitle.split("|")[0].trim(),
-    description: cat.description,
+    description: cat.intro,
     url: canonical,
     isPartOf: {
       "@type": "WebSite",
@@ -580,7 +590,7 @@ function writeCategoryIndex(categorySlug, allPosts) {
 ${renderSiteHeader()}
     <main class="blog-main">
       <h1 class="blog-list-title">${escapeHtml(cat.heading)}</h1>
-      <p class="blog-list-lead">${escapeHtml(cat.description)}</p>
+      <p class="blog-category-intro">${escapeHtml(cat.intro)}</p>
 ${tabs}
 ${body || "<p class=\"blog-list-empty\">이 카테고리에 아직 글이 없습니다.</p>\n"}
     </main>

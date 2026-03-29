@@ -355,6 +355,15 @@ a:hover {
   margin: 0 0 2rem;
 }
 
+/* 카테고리 전용 목록(/blog/love/ 등) — h1 아래 SEO·GEO용 소개 문단 */
+.blog-category-intro {
+  margin: 0 0 1.35rem;
+  color: var(--text);
+  font-size: 0.98rem;
+  line-height: 1.72;
+  opacity: 0.95;
+}
+
 .blog-list-lead-mono {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   font-size: 0.88em;
