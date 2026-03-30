@@ -28,14 +28,25 @@ export function AuthReturnRedirect() {
     const supabase = getSupabaseClient();
     if (!supabase) return;
 
-    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event !== "SIGNED_IN" && event !== "INITIAL_SESSION") return;
-      if (!session?.user) return;
+    const redirectAfterAuth = () => {
       if (sessionStorage.getItem(OAUTH_PENDING_KEY) !== "1") return;
-
       sessionStorage.removeItem(OAUTH_PENDING_KEY);
       const next = consumeAuthReturnPath();
       router.replace(next ?? DEFAULT_AFTER_LOGIN_PATH);
+    };
+
+    // Some OAuth returns can miss auth events depending on timing.
+    // Read the current session once to guarantee redirect progression.
+    void supabase.auth.getSession().then(({ data }) => {
+      if (data.session?.user) {
+        redirectAfterAuth();
+      }
+    });
+
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event !== "SIGNED_IN" && event !== "INITIAL_SESSION") return;
+      if (!session?.user) return;
+      redirectAfterAuth();
     });
 
     return () => {

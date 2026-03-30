@@ -55,7 +55,7 @@ export function useUser() {
 
     const redirectTo =
       typeof window !== "undefined"
-        ? `${window.location.origin}${withAssetBase("/auth/callback")}`
+        ? `${window.location.origin}${withAssetBase("/")}`
         : undefined;
 
     if (typeof window !== "undefined") {
