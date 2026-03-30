@@ -80,7 +80,7 @@ export default function PartnerPage() {
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
                   placeholder="회사명 / 브랜드명을 입력해주세요."
-                  className="w-full bg-transparent outline-none placeholder:text-neutral-60"
+                  className="w-full bg-transparent outline-none placeholder:text-neutral-60 focus-visible:outline-none"
                 />
               </div>
             </div>
@@ -92,7 +92,7 @@ export default function PartnerPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="담당자 이름을 입력해주세요."
-                  className="w-full bg-transparent outline-none placeholder:text-neutral-60"
+                  className="w-full bg-transparent outline-none placeholder:text-neutral-60 focus-visible:outline-none"
                 />
               </div>
             </div>
@@ -106,7 +106,7 @@ export default function PartnerPage() {
                   inputMode="email"
                   autoComplete="email"
                   placeholder="예: name@company.com"
-                  className="w-full bg-transparent outline-none placeholder:text-neutral-60"
+                  className="w-full bg-transparent outline-none placeholder:text-neutral-60 focus-visible:outline-none"
                 />
               </div>
             </div>
@@ -120,7 +120,7 @@ export default function PartnerPage() {
                   inputMode="url"
                   autoComplete="url"
                   placeholder="웹사이트 또는 서비스 (선택)"
-                  className="w-full bg-transparent outline-none placeholder:text-neutral-60"
+                  className="w-full bg-transparent outline-none placeholder:text-neutral-60 focus-visible:outline-none"
                 />
               </div>
             </div>

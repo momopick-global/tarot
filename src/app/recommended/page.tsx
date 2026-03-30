@@ -70,7 +70,7 @@ export default function RecommendedPage() {
                 inputMode="email"
                 autoComplete="email"
                 placeholder="이메일을 남겨주세요."
-                className="w-full bg-transparent outline-none placeholder:text-neutral-60"
+                className="w-full bg-transparent outline-none placeholder:text-neutral-60 focus-visible:outline-none"
               />
             </div>
           </div>
@@ -84,7 +84,7 @@ export default function RecommendedPage() {
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="당신의 소중한 의견을 남겨주세요."
-                className="min-h-[104px] w-full resize-none bg-transparent outline-none placeholder:text-neutral-60"
+                className="min-h-[104px] w-full resize-none bg-transparent outline-none placeholder:text-neutral-60 focus-visible:outline-none"
               />
             </div>
 
