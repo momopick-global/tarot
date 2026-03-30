@@ -1,8 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { API_ENDPOINTS } from "@/lib/constants";
-import { postJson } from "@/lib/apiClient";
+import { submitPartnerInquiry } from "@/hooks/usePartnerInquiry";
 
 export default function PartnerPage() {
   const [company, setCompany] = useState("");
@@ -30,7 +29,7 @@ export default function PartnerPage() {
     setErrorMessage(null);
 
     try {
-      await postJson<{ success: boolean }>(API_ENDPOINTS.partner, {
+      await submitPartnerInquiry({
         company: company.trim(),
         name: name.trim(),
         email: email.trim(),
@@ -47,10 +46,6 @@ export default function PartnerPage() {
       setType("");
     } catch (err) {
       setStatus("error");
-      if (err instanceof Error && /API request failed: (404|405)/.test(err.message)) {
-        setErrorMessage("제휴 문의 기능을 점검 중입니다. 잠시 후 다시 시도해 주세요.");
-        return;
-      }
       setErrorMessage(err instanceof Error ? err.message : "문의 전송에 실패했어요. 잠시 후 다시 시도해 주세요.");
     }
   }
