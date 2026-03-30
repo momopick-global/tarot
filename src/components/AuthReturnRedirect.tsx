@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   consumeAuthReturnPath,
   DEFAULT_AFTER_LOGIN_PATH,
@@ -16,7 +16,6 @@ import { getSupabaseClient } from "@/lib/supabase";
 export function AuthReturnRedirect() {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -25,9 +24,11 @@ export function AuthReturnRedirect() {
     const hasPendingOAuth = sessionStorage.getItem(OAUTH_PENDING_KEY) === "1";
     if (!hasPendingOAuth) return;
 
-    const oauthError = searchParams?.get("error");
-    const oauthErrorCode = searchParams?.get("error_code");
-    const oauthErrorDescription = searchParams?.get("error_description");
+    // useSearchParams는 정적 export 빌드에서 Suspense 경계가 필요해 window에서 읽습니다.
+    const params = new URLSearchParams(window.location.search);
+    const oauthError = params.get("error");
+    const oauthErrorCode = params.get("error_code");
+    const oauthErrorDescription = params.get("error_description");
     if (!oauthError) return;
 
     sessionStorage.removeItem(OAUTH_PENDING_KEY);
@@ -36,7 +37,7 @@ export function AuthReturnRedirect() {
       : oauthErrorCode ?? oauthError;
     window.alert(`소셜 로그인에 실패했어요.\n${message}`);
     router.replace("/login");
-  }, [pathname, searchParams, router]);
+  }, [pathname, router]);
 
   useEffect(() => {
     // OAuth provider redirects back to "/auth/callback" and can also land on "/".
