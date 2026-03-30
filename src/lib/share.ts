@@ -9,7 +9,21 @@ type KakaoSharePayload = {
 
 export function getCurrentShareUrl(): string {
   if (typeof window === "undefined") return "";
-  return window.location.href;
+  try {
+    const url = new URL(window.location.href);
+    // OAuth 실패/콜백 잔여 파라미터가 공유 링크에 섞이지 않도록 제거
+    [
+      "error",
+      "error_code",
+      "error_description",
+      "error_uri",
+      "code",
+      "state",
+    ].forEach((key) => url.searchParams.delete(key));
+    return url.toString();
+  } catch {
+    return window.location.href;
+  }
 }
 
 export async function copyShareUrl(url = getCurrentShareUrl()): Promise<boolean> {
