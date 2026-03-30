@@ -72,16 +72,14 @@ export async function upsertTarotResult(input: {
     interpretation: input.interpretation,
   };
 
-  const { data, error } = await supabase
-    .from("tarot_results")
-    .upsert(row, { onConflict: "user_id,reading_id" })
-    .select("id")
-    .single();
+  // `.select().single()`은 upsert 직후 RLS/표현식 조합에서 0행이면 PGRST116으로 실패할 수 있어,
+  // 저장 성공 여부만 본문 upsert의 error로 판별합니다.
+  const { error } = await supabase.from("tarot_results").upsert(row, { onConflict: "user_id,reading_id" });
 
   if (error) {
     return { data: null, error: new Error(error.message) };
   }
-  return { data: data as { id: number | string }, error: null };
+  return { data: null, error: null };
 }
 
 export async function fetchTarotResultsForUser(userId: string): Promise<{

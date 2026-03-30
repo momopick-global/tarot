@@ -1,5 +1,7 @@
 "use client";
 
+import { siteOrigin } from "@/lib/siteUrl";
+
 type KakaoSharePayload = {
   title?: string;
   description?: string;
@@ -7,11 +9,29 @@ type KakaoSharePayload = {
   url?: string;
 };
 
+/** Supabase 등이 URL 해시에 넣는 토큰은 공유·복사에 절대 포함하지 않음 */
+function shareSafeHashFragment(hash: string): string {
+  if (!hash || hash === "#") return "";
+  const body = hash.startsWith("#") ? hash.slice(1) : hash;
+  const lower = body.toLowerCase();
+  if (
+    lower.includes("access_token=") ||
+    lower.includes("refresh_token=") ||
+    lower.includes("provider_token=") ||
+    lower.includes("provider_refresh_token=")
+  ) {
+    return "";
+  }
+  return `#${body}`;
+}
+
 export function getCurrentShareUrl(): string {
   if (typeof window === "undefined") return "";
   try {
-    const url = new URL(window.location.href);
-    // OAuth 실패/콜백 잔여 파라미터가 공유 링크에 섞이지 않도록 제거
+    const origin = siteOrigin();
+    const pathAndQuery = `${window.location.pathname}${window.location.search}`;
+    const url = new URL(pathAndQuery, `${origin}/`);
+    // OAuth 실패/콜백 잔여 쿼리가 공유 링크에 섞이지 않도록 제거
     [
       "error",
       "error_code",
@@ -20,9 +40,11 @@ export function getCurrentShareUrl(): string {
       "code",
       "state",
     ].forEach((key) => url.searchParams.delete(key));
-    return url.toString();
+    const safeHash = shareSafeHashFragment(window.location.hash);
+    return `${url.origin}${url.pathname}${url.search}${safeHash}`;
   } catch {
-    return window.location.href;
+    const origin = siteOrigin();
+    return `${origin}${window.location.pathname}`;
   }
 }
 

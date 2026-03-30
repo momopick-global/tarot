@@ -65,13 +65,15 @@ export function ResultActionButtons({
    * Supabase 호출 없음. 같은 탭에서 이미 「저장하기」로 성공한 경우(sessionStorage)에만
    * 버튼을 「저장됨」으로 맞춤.
    */
+  const userId = user?.id;
+
   useEffect(() => {
     if (!hasSupabase || authLoading) return;
-    if (!user) {
+    if (!userId) {
       queueMicrotask(() => setCloudUi("guest"));
       return;
     }
-    const key = `yourtarot_cloud_saved:${user.id}:${tarotReadingId}`;
+    const key = `yourtarot_cloud_saved:${userId}:${tarotReadingId}`;
     queueMicrotask(() => {
       if (typeof window !== "undefined" && sessionStorage.getItem(key) === SESSION_SAVED_MARK) {
         setCloudUi("saved");
@@ -79,7 +81,7 @@ export function ResultActionButtons({
       }
       setCloudUi((prev) => (prev === "saving" ? prev : "idle"));
     });
-  }, [authLoading, hasSupabase, tarotReadingId, user]);
+  }, [authLoading, hasSupabase, tarotReadingId, userId]);
 
   const openGuestSaveDialog = useCallback(() => {
     setSaveLoginDialogOpen(true);
@@ -100,11 +102,12 @@ export function ResultActionButtons({
     if (!hasSupabase || !user || cloudUi === "saved" || cloudUi === "saving") return;
 
     const storageKey = `yourtarot_cloud_saved:${user.id}:${tarotReadingId}`;
+    const uid = user.id;
     setCloudUi("saving");
 
     void requestTarotResultCloudSave(storageKey, () =>
       upsertTarotResult({
-        userId: user.id,
+        userId: uid,
         readingId: tarotReadingId,
         cardName: cardDisplayName,
         masterName,
