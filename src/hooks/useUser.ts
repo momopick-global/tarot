@@ -3,6 +3,7 @@
 import React from "react";
 import type { Provider, User } from "@supabase/supabase-js";
 import { OAUTH_PENDING_KEY } from "@/lib/authReturnPath";
+import { withAssetBase } from "@/lib/publicPath";
 import { getSupabaseClient } from "@/lib/supabase";
 
 export type OAuthProvider = "google" | "kakao" | "facebook";
@@ -54,7 +55,7 @@ export function useUser() {
 
     const redirectTo =
       typeof window !== "undefined"
-        ? `${window.location.origin}/auth/callback`
+        ? `${window.location.origin}${withAssetBase("/auth/callback")}`
         : undefined;
 
     if (typeof window !== "undefined") {
