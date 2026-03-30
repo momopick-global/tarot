@@ -33,12 +33,12 @@ jobs:
           echo "basePath will be /${REPO}"
 
       - run: npm ci
-      # 저장소 Settings → Secrets and variables → Actions 에
-      # NEXT_PUBLIC_SUPABASE_URL (프로젝트 루트만, /auth/v1/callback 붙이지 말 것), NEXT_PUBLIC_SUPABASE_ANON_KEY 설정
+      # Settings → Secrets and variables → Actions
+      # Variables 또는 Repository secrets 에 동일 이름으로 설정 가능 (vars 우선, 없으면 secrets)
       - run: npm run build
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       - name: Exclude non-deploy assets
         run: rm -rf out/images/xxx
 
