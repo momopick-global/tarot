@@ -9,6 +9,7 @@ import {
   sanitizeAuthReturnPath,
   setAuthReturnPathFromQuery,
 } from "@/lib/authReturnPath";
+import { formatOAuthLoginError } from "@/lib/oauthErrors";
 import { withAssetBase } from "@/lib/publicPath";
 
 const ICON_TALK = withAssetBase("/assets/svg-ic-social-kakao.svg-20eca7d6-4d65-40b8-954f-17463d423b00.png");
@@ -66,9 +67,7 @@ function LoginPageInner() {
     try {
       await loginWithProvider(provider);
     } catch (error) {
-      const defaultMessage =
-        provider === "kakao" ? "카카오 로그인에 실패했어요." : "로그인 중 문제가 발생했습니다.";
-      const message = error instanceof Error ? error.message || defaultMessage : defaultMessage;
+      const message = formatOAuthLoginError(error, provider);
       window.alert(message);
     }
   };
