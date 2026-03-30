@@ -9,6 +9,15 @@ export type FeedbackPayload = {
   token: string;
 };
 
+/** PostgREST: 테이블이 없거나 스키마 캐시에 없을 때 */
+function isFeedbackTableMissing(message: string): boolean {
+  return (
+    /could not find the table ['"]public\.feedback['"]/i.test(message) ||
+    (/schema cache/i.test(message) && /\bfeedback\b/i.test(message)) ||
+    /relation ['"]public\.feedback['"] does not exist/i.test(message)
+  );
+}
+
 /**
  * 정적 export(`output: "export"`) 배포에서는 `/api/feedback` 이 없어 POST 가 405/404 가 됩니다.
  * Supabase 가 설정되어 있으면 DB에 직접 insert 하고, 없을 때만 API 로 폴백합니다.
@@ -28,7 +37,18 @@ export async function submitFeedback(payload: FeedbackPayload) {
     });
 
     if (error) {
-      throw new Error(error.message || "의견 전송에 실패했어요.");
+      const raw = error.message ?? "";
+      if (isFeedbackTableMissing(raw)) {
+        if (process.env.NODE_ENV === "development") {
+          console.warn(
+            "[feedback] Supabase에 public.feedback 테이블이 없습니다. supabase/migrations/20260328120000_feedback.sql 을 SQL Editor에서 실행하거나 supabase db push 로 적용하세요.",
+          );
+        }
+        throw new Error(
+          "의견을 저장할 수 없습니다. 잠시 후 다시 시도해 주세요. 문제가 계속되면 이메일로 문의해 주세요.",
+        );
+      }
+      throw new Error(raw || "의견 전송에 실패했어요.");
     }
     return { success: true as const };
   }
