@@ -10,11 +10,10 @@ let client: SupabaseClient | null = null;
  */
 function normalizeSupabaseProjectUrl(raw: string): string {
   let u = raw.trim().replace(/\/+$/, "");
-  const suffix = "/auth/v1/callback";
-  if (u.endsWith(suffix)) {
-    u = u.slice(0, -suffix.length).replace(/\/+$/, "");
-  }
-  return u;
+  // 잘못 붙은 auth 경로 제거 (콜백 URL을 프로젝트 URL로 넣은 경우 등)
+  u = u.replace(/\/auth\/v1\/callback\/?$/i, "");
+  u = u.replace(/\/auth\/v1\/?$/i, "");
+  return u.replace(/\/+$/, "");
 }
 
 export function getSupabaseClient(): SupabaseClient | null {
