@@ -18,7 +18,7 @@ const SITE_ORIGIN =
 const BASE_PATH = (process.env.NEXT_PUBLIC_BASE_PATH || "").replace(/\/$/, "");
 /** robots.txt Sitemap 줄 전용 (Search Console·크롤러가 apex 도메인으로 통일할 때) */
 const ROBOTS_SITEMAP_ORIGIN =
-  (process.env.NEXT_PUBLIC_ROBOTS_SITEMAP_ORIGIN || "https://yourtarot.cc").replace(/\/$/, "");
+  (process.env.NEXT_PUBLIC_ROBOTS_SITEMAP_ORIGIN || "https://www.yourtarot.cc").replace(/\/$/, "");
 
 /** sitemap.ts와 동일한 정적 경로 (trailing slash) */
 const STATIC_PATHS = [
