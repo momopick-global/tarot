@@ -7,6 +7,33 @@ type KakaoSharePayload = {
   url?: string;
 };
 
+type KakaoShareMode = "web" | "sdk";
+
+type KakaoSdk = {
+  isInitialized: () => boolean;
+  init: (appKey: string) => void;
+  Share: {
+    sendDefault: (options: {
+      objectType: "feed";
+      content: {
+        title: string;
+        description: string;
+        imageUrl: string;
+        link: {
+          mobileWebUrl: string;
+          webUrl: string;
+        };
+      };
+    }) => void;
+  };
+};
+
+declare global {
+  interface Window {
+    Kakao?: KakaoSdk;
+  }
+}
+
 export function getCurrentShareUrl(): string {
   if (typeof window === "undefined") return "";
   return window.location.href;
@@ -43,11 +70,79 @@ function openShareWindow(url: string): void {
   window.open(url, "_blank", "noopener,noreferrer,width=600,height=700");
 }
 
-export async function shareToKakao(payload: KakaoSharePayload = {}): Promise<boolean> {
-  const url = payload.url ?? getCurrentShareUrl();
+function shareToKakaoWeb(url: string): boolean {
   const target = encodeURIComponent(url);
   openShareWindow(`https://sharer.kakao.com/talk/friends/picker/link?url=${target}`);
   return true;
+}
+
+function getKakaoShareMode(): KakaoShareMode {
+  return process.env.NEXT_PUBLIC_KAKAO_SHARE_MODE === "sdk" ? "sdk" : "web";
+}
+
+function getAbsoluteImageUrl(path: string): string {
+  if (typeof window === "undefined") return path;
+  if (/^https?:\/\//.test(path)) return path;
+  const normalized = path.startsWith("/") ? path : `/${path}`;
+  return `${window.location.origin}${normalized}`;
+}
+
+async function ensureKakaoSdkLoaded(): Promise<KakaoSdk | null> {
+  if (typeof window === "undefined") return null;
+  if (window.Kakao) return window.Kakao;
+
+  await new Promise<void>((resolve, reject) => {
+    const existing = document.querySelector<HTMLScriptElement>('script[data-kakao-sdk="true"]');
+    if (existing) {
+      existing.addEventListener("load", () => resolve(), { once: true });
+      existing.addEventListener("error", () => reject(new Error("failed to load kakao sdk")), { once: true });
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://developers.kakao.com/sdk/js/kakao.min.js";
+    script.async = true;
+    script.dataset.kakaoSdk = "true";
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("failed to load kakao sdk"));
+    document.head.appendChild(script);
+  });
+
+  return window.Kakao ?? null;
+}
+
+export async function shareToKakao(payload: KakaoSharePayload = {}): Promise<boolean> {
+  const url = payload.url ?? getCurrentShareUrl();
+
+  if (getKakaoShareMode() !== "sdk") {
+    return shareToKakaoWeb(url);
+  }
+
+  try {
+    const kakao = await ensureKakaoSdkLoaded();
+    const appKey = process.env.NEXT_PUBLIC_KAKAO_JS_KEY;
+    if (!kakao || !appKey) return shareToKakaoWeb(url);
+
+    if (!kakao.isInitialized()) {
+      kakao.init(appKey);
+    }
+
+    kakao.Share.sendDefault({
+      objectType: "feed",
+      content: {
+        title: payload.title ?? "유어타로 결과",
+        description: payload.description ?? "당신의 운세를 확인하세요",
+        imageUrl: getAbsoluteImageUrl(payload.imageUrl ?? "/images/bg_final.png"),
+        link: {
+          mobileWebUrl: url,
+          webUrl: url,
+        },
+      },
+    });
+    return true;
+  } catch {
+    return shareToKakaoWeb(url);
+  }
 }
 
 export function shareToFacebook(url = getCurrentShareUrl()): void {

@@ -30,6 +30,7 @@ jobs:
         run: |
           REPO="${GITHUB_REPOSITORY##*/}"
           echo "NEXT_PUBLIC_BASE_PATH=/${REPO}" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_KAKAO_SHARE_MODE=web" >> "$GITHUB_ENV"
           echo "basePath will be /${REPO}"
 
       - run: npm ci
