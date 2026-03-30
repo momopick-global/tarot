@@ -6,6 +6,7 @@ import { withAssetBase } from "@/lib/publicPath";
 import { submitFeedback } from "@/hooks/useFeedback";
 
 const ICON_EYE = withAssetBase("/assets/svg-logo-yourtarot.svg-699577b6-cedf-4beb-8082-e9fc60a6227c.png");
+const GUIDE_POPUP_IMAGE_PATH = withAssetBase("/images/ch.png");
 
 export default function RecommendedPage() {
   const [contact, setContact] = useState("");
@@ -13,6 +14,7 @@ export default function RecommendedPage() {
   const [needResponse, setNeedResponse] = useState(false);
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   const canSubmit = useMemo(() => content.trim().length > 0 && status !== "submitting", [content, status]);
 
@@ -34,6 +36,7 @@ export default function RecommendedPage() {
       });
 
       setStatus("success");
+      setShowSuccessPopup(true);
       setContact("");
       setContent("");
       setNeedResponse(false);
@@ -104,11 +107,6 @@ export default function RecommendedPage() {
               </div>
             )}
 
-            {status === "success" && (
-              <div className="mt-2 text-[12px] text-emerald-300">
-                의견이 전송됐어요. 감사합니다.
-              </div>
-            )}
           </div>
 
           <button
@@ -121,6 +119,57 @@ export default function RecommendedPage() {
         </form>
 
       </section>
+
+      {showSuccessPopup ? (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center px-5"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="recommended-success-title"
+        >
+          <div className="absolute inset-0 bg-[rgba(2,1,10,0.55)] backdrop-blur-[3px]" aria-hidden />
+          <div className="relative z-10 w-full max-w-[350px] rounded-xl border border-primary bg-[rgba(9,7,28,0.94)] p-4 text-white shadow-2xl">
+            <div className="mb-1 flex justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowSuccessPopup(false);
+                  setStatus("idle");
+                }}
+                aria-label="안내 닫기"
+                className="text-[22px] leading-none text-white/90 hover:text-white"
+              >
+                ×
+              </button>
+            </div>
+            <div className="mb-3 flex justify-center">
+              <div className="relative h-[124px] w-[124px] overflow-hidden rounded-full">
+                <Image
+                  src={GUIDE_POPUP_IMAGE_PATH}
+                  alt="성공 안내 이미지"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            </div>
+            <p id="recommended-success-title" className="min-w-0 text-[16px] leading-[1.6] text-white">
+              소중한 의견이 전달되었습니다.
+              <br />
+              더 좋은 유어타로를 만드는 데 반영하겠습니다.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setShowSuccessPopup(false);
+                setStatus("idle");
+              }}
+              className="mt-4 w-full rounded-lg bg-[#6422AB] px-3 py-2.5 text-center text-[16px] font-semibold"
+            >
+              확인
+            </button>
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }
