@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   consumeAuthReturnPath,
   DEFAULT_AFTER_LOGIN_PATH,
@@ -16,6 +16,27 @@ import { getSupabaseClient } from "@/lib/supabase";
 export function AuthReturnRedirect() {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (pathname !== "/") return;
+
+    const hasPendingOAuth = sessionStorage.getItem(OAUTH_PENDING_KEY) === "1";
+    if (!hasPendingOAuth) return;
+
+    const oauthError = searchParams?.get("error");
+    const oauthErrorCode = searchParams?.get("error_code");
+    const oauthErrorDescription = searchParams?.get("error_description");
+    if (!oauthError) return;
+
+    sessionStorage.removeItem(OAUTH_PENDING_KEY);
+    const message = oauthErrorDescription
+      ? decodeURIComponent(oauthErrorDescription.replace(/\+/g, " "))
+      : oauthErrorCode ?? oauthError;
+    window.alert(`소셜 로그인에 실패했어요.\n${message}`);
+    router.replace("/login");
+  }, [pathname, searchParams, router]);
 
   useEffect(() => {
     // OAuth provider redirects back to "/auth/callback" and can also land on "/".
