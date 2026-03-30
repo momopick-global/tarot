@@ -68,6 +68,7 @@ export default function RecommendedPage() {
             </div>
             <div className="mt-2 border-b border-neutral-30 px-0.5 py-2 text-[16px] leading-[1.35] text-neutral-10 focus-within:border-[#8B5CF6]">
               <input
+                type="email"
                 value={contact}
                 onChange={(e) => setContact(e.target.value)}
                 inputMode="email"

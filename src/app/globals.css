@@ -44,10 +44,39 @@ body {
   height: 100%;
 }
 
-/* Prevent the browser default focus glow from clashing with brand focus color. */
-:focus-visible {
+/*
+ * Focus ring: do NOT use a global :focus-visible — it also hits text inputs and draws
+ * a thick purple rectangle in Chrome. Only apply the brand ring to real controls.
+ */
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+[role="button"]:focus-visible,
+[role="link"]:focus-visible,
+[tabindex]:not([tabindex="-1"]):focus-visible:not(input):not(textarea):not(select),
+input[type="checkbox"]:focus-visible,
+input[type="radio"]:focus-visible,
+input[type="submit"]:focus-visible,
+input[type="button"]:focus-visible,
+input[type="reset"]:focus-visible,
+input[type="file"]:focus-visible,
+input[type="image"]:focus-visible {
   outline: 2px solid var(--ds-primary-light);
   outline-offset: 2px;
+}
+
+/* Text fields: no outline box while typing (underline / container styles handle focus). */
+input:is([type="email"], [type="text"], [type="search"], [type="tel"], [type="url"], [type="password"], [type="number"]):focus,
+input:is([type="email"], [type="text"], [type="search"], [type="tel"], [type="url"], [type="password"], [type="number"]):focus-visible,
+input:not([type]):focus,
+input:not([type]):focus-visible,
+textarea:focus,
+textarea:focus-visible,
+select:focus,
+select:focus-visible {
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
 }
 
 .rotate-y-180 {
