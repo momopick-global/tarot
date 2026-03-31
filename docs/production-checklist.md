@@ -90,10 +90,16 @@
 
 **이슈 메모:**
 
-```
+```text
 (여기에 실패한 항목 번호와 스크린샷/에러 문구를 적기)
 ```
 
 ---
 
 이 문서는 코드와 함께 저장소에 두고, 배포·릴리즈 전에 팀이 공유해 사용하면 됩니다.
+
+## 관련 문서
+
+- `README.md`
+- `docs/DEPLOY-GITHUB-PAGES.md`
+- `docs/supabase-tarot-results.md`

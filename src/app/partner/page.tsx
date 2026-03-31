@@ -1,7 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { submitPartnerInquiry } from "@/hooks/usePartnerInquiry";
+import { withAssetBase } from "@/lib/publicPath";
+
+const GUIDE_POPUP_IMAGE_PATH = withAssetBase("/images/ch.png");
 
 export default function PartnerPage() {
   const [company, setCompany] = useState("");
@@ -11,6 +15,7 @@ export default function PartnerPage() {
   const [type, setType] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   const canSubmit = useMemo(() => {
     if (status === "submitting") return false;
@@ -39,6 +44,7 @@ export default function PartnerPage() {
       });
 
       setStatus("success");
+      setShowSuccessPopup(true);
       setCompany("");
       setName("");
       setEmail("");
@@ -153,12 +159,6 @@ export default function PartnerPage() {
               </div>
             )}
 
-            {status === "success" && (
-              <div className="mt-3 text-[12px] text-emerald-300">
-                문의가 전송됐어요. 감사합니다.
-              </div>
-            )}
-
             <button
               type="submit"
               disabled={!canSubmit}
@@ -173,6 +173,57 @@ export default function PartnerPage() {
           </div>
         </form>
       </section>
+
+      {showSuccessPopup ? (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center px-5"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="partner-success-title"
+        >
+          <div className="absolute inset-0 bg-[rgba(2,1,10,0.55)] backdrop-blur-[3px]" aria-hidden />
+          <div className="relative z-10 w-full max-w-[350px] rounded-xl border border-primary bg-[rgba(9,7,28,0.94)] p-4 text-white shadow-2xl">
+            <div className="mb-1 flex justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowSuccessPopup(false);
+                  setStatus("idle");
+                }}
+                aria-label="안내 닫기"
+                className="text-[22px] leading-none text-white/90 hover:text-white"
+              >
+                ×
+              </button>
+            </div>
+            <div className="mb-3 flex justify-center">
+              <div className="relative h-[124px] w-[124px] overflow-hidden rounded-full">
+                <Image
+                  src={GUIDE_POPUP_IMAGE_PATH}
+                  alt="성공 안내 이미지"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            </div>
+            <p id="partner-success-title" className="min-w-0 text-[16px] leading-[1.6] text-white">
+              제휴 문의가 전달되었습니다.
+              <br />
+              확인 후 빠르게 연락드리겠습니다.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setShowSuccessPopup(false);
+                setStatus("idle");
+              }}
+              className="mt-4 w-full rounded-lg bg-[#6422AB] px-3 py-2.5 text-center text-[16px] font-semibold"
+            >
+              확인
+            </button>
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }

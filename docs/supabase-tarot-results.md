@@ -1,4 +1,6 @@
-# `tarot_results` — Supabase 연동 메모
+# `tarot_results` Supabase 연동 가이드
+
+결과 저장 기능에서 사용하는 `tarot_results` 테이블의 스키마, 마이그레이션 순서, 중복 방지 정책을 정리한 문서입니다.
 
 ## 테이블 컬럼 (앱 기준)
 
@@ -44,3 +46,9 @@
 
 - **결과 페이지**: **저장하기** 클릭 시에만 Supabase `upsert`. 성공 토스트 **「마이페이지에 저장했어요」** → 버튼 **저장됨**.
 - **마이페이지**: DB에 저장된 기록만 표시(저장 버튼으로 적재된 행).
+
+## 관련 문서
+
+- `README.md`
+- `docs/data-model.md`
+- `docs/production-checklist.md`

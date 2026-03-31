@@ -1,4 +1,6 @@
-이 문서는 유어타로 서비스의 RESTful API 엔드포인트를 정의합니다. 첫 번째 릴리스에서는 결과 조회/저장, 의견·제휴 문의 제출, 계정 탈퇴 요청, reCAPTCHA 검증 등을 지원합니다. 이 문서를 참고하여 프론트엔드와 백엔드 개발을 진행합니다.
+# API 스펙 가이드
+
+유어타로 서비스의 RESTful API 엔드포인트를 정의한 문서입니다. 1차 릴리스 기준으로 결과 조회/저장, 의견·제휴 문의 제출, 계정 탈퇴 요청, reCAPTCHA 검증 등을 다룹니다.
 
 ## 일반 규칙
 
@@ -18,11 +20,11 @@
 
 **요청 바디**
 
-```
+```json
 {
   "contact":"string",         // (선택) 회신 받을 연락처. 예: "user@example.com"
   "content":"string",         // (필수) 의견/제안 내용
-  "needResponse":true,         // (필수) 답변이 필요한 경우true
+  "needResponse": true,         // (필수) 답변이 필요한 경우 true
   "token":"string"            // (필수) reCAPTCHA v3 토큰
 }
 ```
@@ -44,7 +46,7 @@
 
 **요청 바디**
 
-```
+```json
 {
   "companyName":"string",      // (필수) 회사/브랜드 이름
   "contactPerson":"string",    // (필수) 담당자 이름
@@ -72,7 +74,7 @@
 
 **요청 바디**
 
-```
+```json
 {
   "userId":"string",      // (필수) 탈퇴할 사용자 ID (인증된 사용자만 접근 가능)
   "confirm":true,          // (필수) 사용자가 탈퇴에 동의했음을 확인하는 플래그
@@ -98,7 +100,7 @@
 
 **요청 바디**
 
-```
+```json
 {
   "token":"string"   // (필수) reCAPTCHA v3 토큰
 }
@@ -106,7 +108,7 @@
 
 **응답**
 
-```
+```json
 {
   "success":true,
   "score":0.92
@@ -129,7 +131,7 @@
 
 **응답**
 
-```
+```json
 {
   "success":true,
   "result": {
@@ -157,7 +159,7 @@
 
 **요청 바디**
 
-```
+```json
 {
   "userId":"string",      // (선택) 결과를 저장할 사용자 ID
   "cardId":12,             // (필수) 카드 ID
@@ -230,4 +232,11 @@
 ---
 
 이 API 스펙은 유어타로 1차 오픈의 기본 기능을 위한 것입니다. 실제 구현 시 로깅, 에러 처리, 권한 관리, 데이터 검증 등을 추가하여 안정성을 높입니다. 2차 이후 업데이트에서는 결제·포인트 API를 확장하고, 다국어 지원을 위한 파라미터나 헤더를 추가할 수 있습니다.
+
+## 관련 문서
+
+- `README.md`
+- `docs/data-model.md`
+- `docs/folder-structure.md`
+- `docs/production-checklist.md`
 

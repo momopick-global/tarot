@@ -11,6 +11,15 @@ export type PartnerInquiryPayload = {
   token: string;
 };
 
+/** PostgREST: 테이블이 없거나 스키마 캐시에 없을 때 */
+function isPartnerInquiriesTableMissing(message: string): boolean {
+  return (
+    /could not find the table ['"]public\.partner_inquiries['"]/i.test(message) ||
+    (/schema cache/i.test(message) && /\bpartner_inquiries\b/i.test(message)) ||
+    /relation ['"]public\.partner_inquiries['"] does not exist/i.test(message)
+  );
+}
+
 /**
  * 정적 export(`output: "export"`) 배포에서는 `/api/partner` POST가 405/404가 될 수 있습니다.
  * Supabase가 설정된 경우 partner_inquiries에 직접 저장하고, 없을 때만 API로 폴백합니다.
@@ -28,7 +37,18 @@ export async function submitPartnerInquiry(payload: PartnerInquiryPayload) {
     });
 
     if (error) {
-      throw new Error(error.message || "제휴 문의 전송에 실패했어요.");
+      const raw = error.message ?? "";
+      if (isPartnerInquiriesTableMissing(raw)) {
+        if (process.env.NODE_ENV === "development") {
+          console.warn(
+            "[partner] Supabase에 public.partner_inquiries 테이블이 없습니다. supabase/migrations/20260330110000_partner_inquiries.sql 을 SQL Editor에서 실행하거나 supabase db push 로 적용하세요.",
+          );
+        }
+        throw new Error(
+          "문의를 저장할 수 없습니다. 잠시 후 다시 시도해 주세요. 문제가 계속되면 이메일로 문의해 주세요.",
+        );
+      }
+      throw new Error(raw || "제휴 문의 전송에 실패했어요.");
     }
     return { success: true as const };
   }

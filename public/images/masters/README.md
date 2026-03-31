@@ -1,8 +1,8 @@
-# 마스터별 에셋 (배경·썸네일·카드 뒷면)
+# 마스터별 에셋 가이드 (배경, 썸네일, 카드 뒷면)
 
-카드 **앞면**만 `public/images/cards/{폴더}/` 에 두고, 나머지는 여기 `masters/{폴더}/` 에 둡니다.
+카드 **앞면**은 `public/images/cards/{폴더}/`에 두고, 그 외 에셋은 `public/images/masters/{폴더}/`에 둡니다.
 
-- `01_Cassian/`, `02_Aiden/`, … `09_Pipi/`
+- `01_Cassian/`, `02_Aiden/`, ..., `09_Pipi/`
 - 각 폴더:
   - `thumb.png` — 마스터 썸네일 (`getMasterThumbSrc`)
   - `card-back.png` — 타로 카드 뒷면 (`getMasterCardBackSrc`, `CardSwipeDeck`)
@@ -21,3 +21,9 @@ npm run masters:tint-backgrounds
 ```
 
 스크립트: `scripts/tint-master-backgrounds.mjs`
+
+## 관련 문서
+
+- `README.md`
+- `docs/design-system.md`
+- `docs/folder-structure.md`
