@@ -51,6 +51,7 @@ export function CardSwipeDeck({
     const root = deckAreaRef.current;
     if (!root) return;
     const deckArea = root;
+    const isAndroid = typeof navigator !== "undefined" && /Android/i.test(navigator.userAgent);
 
     let currentIndex = 0;
     let progress = 0;
@@ -175,7 +176,7 @@ export function CardSwipeDeck({
         const abs = Math.abs(visualOffset);
         const zIndex = 360 - Math.round(abs * 44);
         let opacity = abs <= 4 ? 1 : Math.max(0.72, 1 - (abs - 4) * 0.9);
-        const blur = abs < 3.2 ? 0 : (abs - 3.2) * 0.55;
+        const blur = isAndroid ? 0 : abs < 3.2 ? 0 : (abs - 3.2) * 0.55;
         let x = style.x;
         let y = style.y;
         let scale = style.scale;
@@ -200,6 +201,7 @@ export function CardSwipeDeck({
         el.style.transform =
           `translateX(-50%) ` +
           `translate(${x.toFixed(2)}px, ${y.toFixed(2)}px) ` +
+          `translate(var(--shuffle-x, 0px), var(--shuffle-y, 0px)) ` +
           `scale(${scale.toFixed(4)}) ` +
           `rotate(${style.rotate.toFixed(2)}deg)`;
       }
@@ -426,32 +428,36 @@ export function CardSwipeDeck({
               const cards = Array.from(deck.querySelectorAll<HTMLDivElement>(".card"));
               cards.forEach((el, idx) => {
                 const delay = (idx % 10) * 12;
-                el.style.transition = `translate 220ms cubic-bezier(0.2, 0.8, 0.2, 1) ${delay}ms`;
+                el.style.transition = `transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1) ${delay}ms`;
               });
 
               // 1) 카드가 오른쪽으로 겹쳐 쌓임
               cards.forEach((el, idx) => {
                 const y = Math.min(26, idx * 1.4);
-                el.style.translate = `72px ${y}px`;
+                el.style.setProperty("--shuffle-x", "72px");
+                el.style.setProperty("--shuffle-y", `${y}px`);
               });
               await wait(260);
 
               // 2) 카드가 왼쪽으로 겹쳐 쌓임
               cards.forEach((el, idx) => {
                 const y = Math.min(22, idx * 1.2);
-                el.style.translate = `-68px ${y}px`;
+                el.style.setProperty("--shuffle-x", "-68px");
+                el.style.setProperty("--shuffle-y", `${y}px`);
               });
               await wait(260);
 
               // 3) 원위치로 복귀 후 덱 재배치(리셋)
               cards.forEach((el) => {
-                el.style.translate = "0 0";
+                el.style.setProperty("--shuffle-x", "0px");
+                el.style.setProperty("--shuffle-y", "0px");
               });
               await wait(180);
 
               cards.forEach((el) => {
                 el.style.transition = "";
-                el.style.translate = "";
+                el.style.removeProperty("--shuffle-x");
+                el.style.removeProperty("--shuffle-y");
               });
 
               setDeckOrder(makeShuffledOrder());

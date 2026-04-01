@@ -43,6 +43,7 @@ next-env.d.ts
 
 # local temporary/demo artifacts
 .npm-cache/
+.vscode/
 /card_swipe_interaction_demo.html
 /card_swipe_mobile_demo.html
 public/card_swipe_interaction_demo.html
