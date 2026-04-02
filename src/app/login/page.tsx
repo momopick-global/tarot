@@ -57,9 +57,9 @@ function LoginPageInner() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const host = window.location.hostname;
-    const isApexProd = host === "yourtarot.cc";
-    if (!isApexProd) return;
-    const nextUrl = `https://www.yourtarot.cc${window.location.pathname}${window.location.search}${window.location.hash}`;
+    const isWwwProd = host === "www.yourtarot.cc";
+    if (!isWwwProd) return;
+    const nextUrl = `https://yourtarot.cc${window.location.pathname}${window.location.search}${window.location.hash}`;
     window.location.replace(nextUrl);
   }, []);
 

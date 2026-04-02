@@ -12,7 +12,7 @@
 
 - `.github/workflows/github-pages.yml`  
   - `main` 또는 `master` 브랜치에 **push**하면 빌드 후 `out/`을 Pages에 배포합니다.
-- 빌드 시 `NEXT_PUBLIC_BASE_PATH=/<저장소이름>` 이 자동 설정됩니다 (예: 저장소가 `yourtarot`이면 `/yourtarot`).
+- 빌드 시 `NEXT_PUBLIC_BASE_PATH=/<저장소이름>` 이 자동 설정됩니다 (예: 저장소가 `tarot`이면 `/tarot`).
 - `next.config.ts`의 `basePath`와 동일한 값을 쓰며, 이미지·배경 URL은 `src/lib/publicPath.ts`의 `withAssetBase()`로 맞춥니다.
 
 ## 한 번만 해 줄 설정 (GitHub 웹) — **deploy 실패 시 필수**
@@ -34,7 +34,7 @@
 
 배포가 끝나면 주소 형식은 다음과 같습니다.
 
-`https://yourtarot-global.github.io/yourtarot/`  
+`https://momopick-global.github.io/tarot/`  
 (조직·저장소 이름에 따라 달라집니다. 포맷: `https://<owner>.github.io/<repo>/`)
 
 ## Supabase / OAuth

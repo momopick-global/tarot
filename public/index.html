@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>유어타로</title>
+    <meta
+      name="description"
+      content="타로 카드로 오늘의 감정 흐름과 행동 힌트를 확인하세요."
+    />
+    <style>
+      :root {
+        color-scheme: dark light;
+        --bg: #0f0d12;
+        --fg: #f4eef8;
+        --muted: #a89bb5;
+        --accent: #c9a227;
+      }
+      @media (prefers-color-scheme: light) {
+        :root {
+          --bg: #faf7fc;
+          --fg: #1a1420;
+          --muted: #5c5168;
+          --accent: #8a6b12;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        display: grid;
+        place-items: center;
+        padding: 1.5rem;
+        font-family: system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--fg);
+        line-height: 1.6;
+      }
+      main {
+        max-width: 28rem;
+        text-align: center;
+      }
+      h1 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        margin: 0 0 0.75rem;
+      }
+      p {
+        margin: 0 0 1.25rem;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      a {
+        display: inline-block;
+        padding: 0.65rem 1.25rem;
+        border-radius: 999px;
+        background: var(--accent);
+        color: var(--bg);
+        font-weight: 600;
+        text-decoration: none;
+      }
+      a:hover {
+        filter: brightness(1.08);
+      }
+      a:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>유어타로</h1>
+      <p>정적 진입 페이지입니다. 서비스 홈은 아래 링크로 이동하세요.</p>
+      <a href="/">홈으로 이동</a>
+    </main>
+  </body>
+</html>

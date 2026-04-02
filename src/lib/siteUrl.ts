@@ -4,7 +4,7 @@ export function siteOrigin(): string {
   if (fromEnv) return fromEnv;
   const vercel = process.env.VERCEL_URL?.replace(/\/$/, "");
   if (vercel) return `https://${vercel}`;
-  return "https://www.yourtarot.cc";
+  return "https://yourtarot.cc";
 }
 
 /** GitHub Pages 등 basePath (선행 슬래시, 끝 슬래시 없음) */

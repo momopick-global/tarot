@@ -2,6 +2,10 @@
   "name": "yourtarot2",
   "version": "0.1.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/momopick-global/tarot.git"
+  },
   "scripts": {
     "dev": "next dev",
     "dev:3037": "WATCHPACK_POLLING=true next dev --port 3037 --hostname 127.0.0.1",
