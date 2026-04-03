@@ -1,6 +1,7 @@
 "use client";
 
-import { siteOrigin } from "@/lib/siteUrl";
+import { ensureKakaoShareReady, hasKakaoJavaScriptKey, toAbsolutePublicUrl } from "@/lib/kakaoShareSdk";
+import { absoluteSiteUrl, siteOrigin } from "@/lib/siteUrl";
 
 type KakaoSharePayload = {
   title?: string;
@@ -85,8 +86,42 @@ function shareToKakaoWeb(url: string): boolean {
   return true;
 }
 
+const DEFAULT_KAKAO_FEED_TITLE = "유어타로";
+const DEFAULT_KAKAO_FEED_DESCRIPTION = "타로로 오늘의 흐름을 확인해 보세요.";
+
+/**
+ * `NEXT_PUBLIC_KAKAO_JAVASCRIPT_KEY`가 있으면 SDK 피드 템플릿(제목·설명·이미지 미리보기).
+ * 없거나 실패 시 기존 sharer.kakao.com 링크 피커로 폴백.
+ */
 export async function shareToKakao(payload: KakaoSharePayload = {}): Promise<boolean> {
   const url = payload.url ?? getCurrentShareUrl();
+  const title = payload.title?.trim() || DEFAULT_KAKAO_FEED_TITLE;
+  const description = payload.description?.trim() || DEFAULT_KAKAO_FEED_DESCRIPTION;
+  const imageFromPayload = toAbsolutePublicUrl(payload.imageUrl);
+  const fallbackOg = absoluteSiteUrl("/og/yourtarot_og_kr2.png");
+  const imageUrl = imageFromPayload || fallbackOg;
+
+  if (hasKakaoJavaScriptKey()) {
+    try {
+      const Kakao = await ensureKakaoShareReady();
+      await Kakao.Share.sendDefault({
+        objectType: "feed",
+        content: {
+          title,
+          description,
+          imageUrl,
+          link: {
+            mobileWebUrl: url,
+            webUrl: url,
+          },
+        },
+      });
+      return true;
+    } catch (e) {
+      console.warn("[shareToKakao] SDK 실패, 웹 공유로 폴백:", e);
+    }
+  }
+
   return shareToKakaoWeb(url);
 }
 

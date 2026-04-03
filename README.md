@@ -29,6 +29,7 @@ cp .env.local.example .env.local
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase 프로젝트 루트 URL (`https://xxxx.supabase.co`) |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key (public) |
 | `NEXT_PUBLIC_SITE_URL` | 사이트 절대 URL (운영 도메인) |
+| `NEXT_PUBLIC_KAKAO_JAVASCRIPT_KEY` | (선택) 카카오톡 공유 피드 미리보기용 JavaScript 키 — 없으면 링크-only 공유 |
 
 선택 환경변수:
 
