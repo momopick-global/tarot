@@ -34,6 +34,15 @@ export function HomeHeroBackground() {
     }
   }, []);
 
+  /** autoplay 정책·Safari/iOS에서 loadedData 없이 playing만 오는 경우 대비 */
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el) return;
+    void el.play().catch(() => {
+      setOverlayDismissed(true);
+    });
+  }, []);
+
   useEffect(() => {
     if (overlayDismissed) return;
     const t = window.setTimeout(() => setOverlayDismissed(true), LOAD_TIMEOUT_MS);
@@ -62,6 +71,8 @@ export function HomeHeroBackground() {
         preload="auto"
         poster={HOME_HERO_POSTER}
         onLoadedData={markVideoOk}
+        onCanPlay={markVideoOk}
+        onPlaying={markVideoOk}
         onError={markVideoFailed}
         onEnded={(e) => {
           playCountRef.current += 1;
