@@ -36,8 +36,6 @@ jobs:
       # Repository secrets: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY
       - run: npm run build
         env:
-          # 메인 사이트(운영 도메인) — OG/JSON-LD·github.io→메인 리다이렉트 기준. www 캐논이면 https://www.yourtarot.cc 로 변경.
-          NEXT_PUBLIC_SITE_URL: https://yourtarot.cc
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       - name: Exclude non-deploy assets

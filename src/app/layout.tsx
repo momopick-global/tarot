@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import { GithubPagesToMainSiteRedirect } from "@/components/GithubPagesToMainSiteRedirect";
 import { GoogleTagManagerNoScript, GoogleTagManagerScript } from "@/components/GoogleTagManager";
 import { SiteFrame } from "@/components/SiteFrame";
 import { WebSiteJsonLd } from "@/components/WebSiteJsonLd";
@@ -72,7 +71,6 @@ export default function RootLayout({
       className="h-full antialiased"
     >
       <body className="min-h-full flex flex-col bg-neutral-90 text-neutral-10">
-        <GithubPagesToMainSiteRedirect />
         <GoogleTagManagerNoScript />
         <GoogleTagManagerScript />
         <WebSiteJsonLd />
