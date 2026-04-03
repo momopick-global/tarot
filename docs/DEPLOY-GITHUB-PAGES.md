@@ -39,8 +39,8 @@
 
 ## 메인 사이트(운영 도메인)로 연결
 
-- 브라우저로 `*.github.io`에 들어오면 **`NEXT_PUBLIC_SITE_URL`** 기준 도메인(기본 `https://yourtarot.cc`)으로 **같은 경로**를 유지한 채 이동합니다. (`GithubPagesToMainSiteRedirect`)
-- GitHub Actions 빌드 단계에서도 `NEXT_PUBLIC_SITE_URL`을 위 값으로 넣어, OG·`metadataBase`·JSON-LD가 메인 도메인을 가리키게 합니다. **www를 캐논으로 쓸 경우** 워크플로 `env`의 `NEXT_PUBLIC_SITE_URL`을 `https://www.yourtarot.cc`로 바꾸면 됩니다.
+- 브라우저로 `*.github.io`에 들어오면 **`NEXT_PUBLIC_SITE_URL`** 기준 도메인(기본 `https://www.yourtarot.cc`)으로 **같은 경로**를 유지한 채 이동합니다. (`GithubPagesToMainSiteRedirect`)
+- GitHub Actions 빌드 단계에서도 `NEXT_PUBLIC_SITE_URL`을 위 값으로 넣어, OG·`metadataBase`·JSON-LD·사이트맵이 메인 도메인을 가리키게 합니다. **apex만 캐논으로 쓸 경우** 워크플로 `env`의 `NEXT_PUBLIC_SITE_URL`을 `https://yourtarot.cc`로 바꾸면 됩니다.
 
 ## Supabase / OAuth
 

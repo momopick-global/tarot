@@ -23,7 +23,7 @@ export function GithubPagesToMainSiteRedirect() {
     if (!host.endsWith(".github.io")) return;
 
     const main =
-      process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://yourtarot.cc";
+      process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://www.yourtarot.cc";
     const baseRaw = process.env.NEXT_PUBLIC_BASE_PATH || "";
     const path = stripBasePath(window.location.pathname, baseRaw);
     const suffix = path === "/" ? "/" : path;

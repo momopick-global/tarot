@@ -53,16 +53,6 @@ function LoginPageInner() {
     router.replace(returnToSafe);
   }, [user, loading, returnToSafe, router]);
 
-  /** 운영 도메인 정규화: OAuth state 저장/복구가 같은 origin에서만 안전합니다. */
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const host = window.location.hostname;
-    const isWwwProd = host === "www.yourtarot.cc";
-    if (!isWwwProd) return;
-    const nextUrl = `https://yourtarot.cc${window.location.pathname}${window.location.search}${window.location.hash}`;
-    window.location.replace(nextUrl);
-  }, []);
-
   const onSocialLogin = async (provider: "google" | "kakao" | "facebook") => {
     try {
       await loginWithProvider(provider);
