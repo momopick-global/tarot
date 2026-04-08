@@ -12,7 +12,7 @@ import { buildInterpretationText } from "@/lib/tarotResultsDb";
 import { FLOW_MASTERS } from "@/lib/flowData";
 import { withAssetBase } from "@/lib/publicPath";
 import { copyShareUrl, shareToFacebook, shareToKakao, shareToX } from "@/lib/share";
-import { ROUTES, tarotResultWith } from "@/lib/routes";
+import { ROUTES, tarotDrawWithMaster, tarotResultWith } from "@/lib/routes";
 
 const SHARE_LINK = withAssetBase("/assets/svg-ic-share-link.svg-26940f47-d010-498b-b1e1-68303b31e59e.png");
 const SHARE_KAKAO = withAssetBase("/assets/svg-ic-social-kakao.svg-20eca7d6-4d65-40b8-954f-17463d423b00.png");
@@ -221,6 +221,8 @@ function Page07ReadingResultTypeAInner() {
                   title: "유어타로 결과",
                   description: "당신의 운세를 확인하세요",
                   imageUrl: frontCardSrc,
+                  resultUrl: tarotResultWith(current.id, cardIndex),
+                  testUrl: tarotDrawWithMaster(current.id),
                 });
               }}
               aria-label="카카오 공유"

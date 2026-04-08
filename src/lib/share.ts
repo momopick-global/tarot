@@ -7,7 +7,12 @@ type KakaoSharePayload = {
   title?: string;
   description?: string;
   imageUrl?: string;
+  /** 메인 링크 (content.link) */
   url?: string;
+  /** 버튼 1: 결과 보기 → 결과 상세 페이지 URL */
+  resultUrl?: string;
+  /** 버튼 2: 테스트 하기 → 테스트 시작 페이지 URL */
+  testUrl?: string;
 };
 
 /** Supabase 등이 URL 해시에 넣는 토큰은 공유·복사에 절대 포함하지 않음 */
@@ -101,6 +106,27 @@ export async function shareToKakao(payload: KakaoSharePayload = {}): Promise<boo
   const fallbackOg = absoluteSiteUrl("/og/yourtarot_og_kr2.png");
   const imageUrl = imageFromPayload || fallbackOg;
 
+  const absResultUrl = payload.resultUrl
+    ? (toAbsolutePublicUrl(payload.resultUrl) ?? url)
+    : null;
+  const absTestUrl = payload.testUrl
+    ? (toAbsolutePublicUrl(payload.testUrl) ?? url)
+    : null;
+
+  const buttons: Record<string, unknown>[] = [];
+  if (absResultUrl) {
+    buttons.push({
+      title: "결과 보기",
+      link: { mobileWebUrl: absResultUrl, webUrl: absResultUrl },
+    });
+  }
+  if (absTestUrl) {
+    buttons.push({
+      title: "테스트 하기",
+      link: { mobileWebUrl: absTestUrl, webUrl: absTestUrl },
+    });
+  }
+
   if (hasKakaoJavaScriptKey()) {
     try {
       const Kakao = await ensureKakaoShareReady();
@@ -115,6 +141,7 @@ export async function shareToKakao(payload: KakaoSharePayload = {}): Promise<boo
             webUrl: url,
           },
         },
+        ...(buttons.length > 0 ? { buttons } : {}),
       });
       return true;
     } catch (e) {
