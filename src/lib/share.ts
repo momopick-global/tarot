@@ -94,8 +94,12 @@ function shareToKakaoWeb(url: string): boolean {
 const DEFAULT_KAKAO_FEED_TITLE = "유어타로";
 const DEFAULT_KAKAO_FEED_DESCRIPTION = "타로로 오늘의 흐름을 확인해 보세요.";
 
+/** 카카오 디벨로퍼 콘솔에 등록한 커스텀 메시지 템플릿 ID */
+const KAKAO_CUSTOM_TEMPLATE_ID = 131879;
+
 /**
- * `NEXT_PUBLIC_KAKAO_JAVASCRIPT_KEY`가 있으면 SDK 피드 템플릿(제목·설명·이미지 미리보기).
+ * 커스텀 템플릿(ID: 131879)으로 카카오 공유.
+ * 템플릿 변수: IMAGE_URL, TITLE, DESC, RESULT_URL, START_URL
  * 없거나 실패 시 기존 sharer.kakao.com 링크 피커로 폴백.
  */
 export async function shareToKakao(payload: KakaoSharePayload = {}): Promise<boolean> {
@@ -108,40 +112,23 @@ export async function shareToKakao(payload: KakaoSharePayload = {}): Promise<boo
 
   const absResultUrl = payload.resultUrl
     ? (toAbsolutePublicUrl(payload.resultUrl) ?? url)
-    : null;
+    : url;
   const absTestUrl = payload.testUrl
     ? (toAbsolutePublicUrl(payload.testUrl) ?? url)
-    : null;
-
-  const buttons: Record<string, unknown>[] = [];
-  if (absResultUrl) {
-    buttons.push({
-      title: "결과 보기",
-      link: { mobileWebUrl: absResultUrl, webUrl: absResultUrl },
-    });
-  }
-  if (absTestUrl) {
-    buttons.push({
-      title: "테스트 하기",
-      link: { mobileWebUrl: absTestUrl, webUrl: absTestUrl },
-    });
-  }
+    : url;
 
   if (hasKakaoJavaScriptKey()) {
     try {
       const Kakao = await ensureKakaoShareReady();
-      await Kakao.Share.sendDefault({
-        objectType: "feed",
-        content: {
-          title,
-          description,
-          imageUrl,
-          link: {
-            mobileWebUrl: url,
-            webUrl: url,
-          },
+      await Kakao.Share.sendCustom({
+        templateId: KAKAO_CUSTOM_TEMPLATE_ID,
+        templateArgs: {
+          IMAGE_URL: imageUrl,
+          TITLE: title,
+          DESC: description,
+          RESULT_URL: absResultUrl,
+          START_URL: absTestUrl,
         },
-        ...(buttons.length > 0 ? { buttons } : {}),
       });
       return true;
     } catch (e) {

@@ -7,6 +7,7 @@ const KAKAO_SDK_SRC = "https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js";
 
 type KakaoShare = {
   sendDefault: (opts: Record<string, unknown>) => Promise<unknown>;
+  sendCustom: (opts: { templateId: number; templateArgs?: Record<string, string> }) => Promise<unknown>;
 };
 
 type KakaoGlobal = {
