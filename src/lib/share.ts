@@ -98,24 +98,38 @@ const DEFAULT_KAKAO_FEED_DESCRIPTION = "타로로 오늘의 흐름을 확인해 
 const KAKAO_CUSTOM_TEMPLATE_ID = 131879;
 
 /**
+ * 카카오 링크 미리보기 크롤러는 WebP URL에서 썸네일이 안 나오는 경우가 많아 PNG OG로 대체.
+ * (직접 URL을 지정해도 공개 HTTPS·카카오 정책에 맞는 포맷이어야 함.)
+ */
+function kakaoFeedImageUrl(resolvedAbsolute: string | undefined): string {
+  const fallback = absoluteSiteUrl("/og/yourtarot_og_kr2.png");
+  if (!resolvedAbsolute) return fallback;
+  if (/\.webp(\?|#|$)/i.test(resolvedAbsolute)) return fallback;
+  return resolvedAbsolute;
+}
+
+/**
  * 커스텀 템플릿(ID: 131879)으로 카카오 공유.
- * 템플릿 변수: IMAGE_URL, TITLE, DESC, RESULT_URL, START_URL
+ * 템플릿 변수: IMAGE_URL, TITLE, DESC, RESULT_URL, START_URL,
+ *   그리고 메인 영역 링크용 LINK_URL · CONTENT_URL · MAIN_URL (콘솔에서 content.link에 매핑)
  * 없거나 실패 시 기존 sharer.kakao.com 링크 피커로 폴백.
  */
 export async function shareToKakao(payload: KakaoSharePayload = {}): Promise<boolean> {
-  const url = payload.url ?? getCurrentShareUrl();
   const title = payload.title?.trim() || DEFAULT_KAKAO_FEED_TITLE;
   const description = payload.description?.trim() || DEFAULT_KAKAO_FEED_DESCRIPTION;
-  const imageFromPayload = toAbsolutePublicUrl(payload.imageUrl);
-  const fallbackOg = absoluteSiteUrl("/og/yourtarot_og_kr2.png");
-  const imageUrl = imageFromPayload || fallbackOg;
+
+  const absContentUrl =
+    toAbsolutePublicUrl(payload.url ?? payload.resultUrl) ?? getCurrentShareUrl();
 
   const absResultUrl = payload.resultUrl
-    ? (toAbsolutePublicUrl(payload.resultUrl) ?? url)
-    : url;
+    ? (toAbsolutePublicUrl(payload.resultUrl) ?? absContentUrl)
+    : absContentUrl;
   const absTestUrl = payload.testUrl
-    ? (toAbsolutePublicUrl(payload.testUrl) ?? url)
-    : url;
+    ? (toAbsolutePublicUrl(payload.testUrl) ?? absContentUrl)
+    : absContentUrl;
+
+  const imageFromPayload = toAbsolutePublicUrl(payload.imageUrl);
+  const imageUrl = kakaoFeedImageUrl(imageFromPayload);
 
   if (hasKakaoJavaScriptKey()) {
     try {
@@ -128,6 +142,9 @@ export async function shareToKakao(payload: KakaoSharePayload = {}): Promise<boo
           DESC: description,
           RESULT_URL: absResultUrl,
           START_URL: absTestUrl,
+          LINK_URL: absContentUrl,
+          CONTENT_URL: absContentUrl,
+          MAIN_URL: absContentUrl,
         },
       });
       return true;
@@ -136,7 +153,7 @@ export async function shareToKakao(payload: KakaoSharePayload = {}): Promise<boo
     }
   }
 
-  return shareToKakaoWeb(url);
+  return shareToKakaoWeb(absContentUrl);
 }
 
 export function shareToFacebook(url = getCurrentShareUrl()): void {

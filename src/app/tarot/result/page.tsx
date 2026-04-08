@@ -221,7 +221,8 @@ function Page07ReadingResultTypeAInner() {
                   title: "유어타로 결과",
                   description: "당신의 운세를 확인하세요",
                   imageUrl: frontCardSrc,
-                  resultUrl: tarotResultWith(current.id, cardIndex),
+                  url: tarotResultWith(current.id, card),
+                  resultUrl: tarotResultWith(current.id, card),
                   testUrl: tarotDrawWithMaster(current.id),
                 });
               }}

@@ -1,6 +1,6 @@
 "use client";
 
-import { siteOrigin } from "@/lib/siteUrl";
+import { absoluteSiteUrl, basePathPrefix, siteOrigin } from "@/lib/siteUrl";
 
 /** 카카오 CDN 고정 버전 — 배포 재현성용 */
 const KAKAO_SDK_SRC = "https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js";
@@ -69,7 +69,11 @@ export async function ensureKakaoShareReady(): Promise<KakaoGlobal> {
   return Kakao;
 }
 
-/** 상대·basePath 포함 경로 → 공유용 절대 https URL */
+/**
+ * 상대·basePath 포함 경로 → 공유용 절대 https URL
+ * - `withAssetBase`로 만든 경로(`/repo/images/...`)는 이미 basePath가 붙어 있으므로 origin만 붙임
+ * - 앱 라우트(`/tarot/result?...`)는 basePath가 없을 수 있으므로 `absoluteSiteUrl`로 보정
+ */
 export function toAbsolutePublicUrl(pathOrUrl: string | undefined): string | undefined {
   if (!pathOrUrl?.trim()) return undefined;
   const raw = pathOrUrl.trim();
@@ -77,5 +81,9 @@ export function toAbsolutePublicUrl(pathOrUrl: string | undefined): string | und
     return raw.startsWith("http://") ? raw.replace(/^http:\/\//, "https://") : raw;
   }
   const path = raw.startsWith("/") ? raw : `/${raw}`;
-  return new URL(path, `${siteOrigin()}/`).href;
+  const prefix = basePathPrefix();
+  if (prefix && (path === prefix || path.startsWith(`${prefix}/`))) {
+    return `${siteOrigin()}${path}`;
+  }
+  return absoluteSiteUrl(path);
 }
